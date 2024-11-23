@@ -15,8 +15,8 @@ description: A Helm chart to deploy REDCap on a Kubernetes cluster.
 home: https://github.com/aphp/redcap-helmchart
 icon: https://www.lib.washington.edu/dataservices/images/REDCaplogo.jpg
 maintainers:
-- name: Kévin ZGRZENDEK
-  email: kevin.zgrzendek@aphp.fr
+- name: kzgrzendek
+  email: kevin.zgrzendek@gmail.com
   url: https://github.com/kzgrzendek
 keywords:
 - redcap
