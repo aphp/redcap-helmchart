@@ -12,7 +12,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 5.5.6
 description: A Helm chart to deploy REDCap on a Kubernetes cluster.
-home: https://gitlab.eds.aphp.fr/ADM/k8s/charts-and-manifests/redcap
+home: https://github.com/aphp/redcap-helmchart
 icon: https://www.lib.washington.edu/dataservices/images/REDCaplogo.jpg
 maintainers:
 - name: Kévin ZGRZENDEK
