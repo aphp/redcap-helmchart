@@ -2,52 +2,52 @@ httpd:
   # -- If `true`, activates the deploment of the Apache HTTPd proxy.
   enabled: true
 
-  image: 
+  image:
     # -- Image repository for Apache HTTPd.
     repository: aphp/redcap-httpd-shibd
     # -- Image tag for Apache HTTPd.
     tag: "1.0.0"
     # -- PullPolicy for Apache HTTPd's image.
     pullPolicy: Always
-  
-  tls:  
+
+  tls:
     # -- If `true` activates TLS termination on the Apache HTTPd proxy.
     enabled: true
     # -- Configuration relating to the server TLS certificate.
     certificate:
-      # -- Name of the existing Secret holding the certificate for the TLS termination. The secret must be of type `tls`. 
+      # -- Name of the existing Secret holding the certificate for the TLS termination. The secret must be of type `tls`.
       existingSecret: ""
     # -- Configuration relating to the certification chain certificate.
     caChain:
-      # -- Reference of an existing Secret holding the certificate for the certification chain, if needed. 
+      # -- Reference of an existing Secret holding the certificate for the certification chain, if needed.
       secretKeyRef:
-        # -- The name of the existing Secret holding the certificate for the certification chain, if needed. 
+        # -- The name of the existing Secret holding the certificate for the certification chain, if needed.
         name: "certigna-wild-ca"
-        # -- The key inside the existing Secret holding the certificate for the certification chain, if needed. 
+        # -- The key inside the existing Secret holding the certificate for the certification chain, if needed.
         key: "wildca.crt"
 
 
   shibboleth:
     # -- If `true`, activates the Shibboleth daemon, which enables is needed for enabling SAMLv2 authentication with REDCap.
     enabled: false
-    sp: 
+    sp:
       # -- EntityID of the SAMLv2 Service Provider (SP).
       entityID: ""
       metadata:
         certificate:
           # -- Reference to the secret holding the metadata file for the Service Provider.
           existingSecret: ""
-    idp: 
+    idp:
       # -- EntityID of the SAMLv2 Identity Provider (IdP).
       entityID: ""
-      metadata: 
+      metadata:
         secretKeyRef:
           # -- Name of the secret holding the metadata file for the Identity Provider.
           name: ""
           # -- Key of the secret holding the metadata file for the Identity Provider.
           key: ""
 
-  # -- Number of replicas wanted for the Apache 
+  # -- Number of replicas wanted for the Apache
   replicaCount: 1
   # -- Resources for the Apache HTTPd pod(s).
   resources: {}
@@ -62,7 +62,7 @@ redcap:
   init:
     # -- If `true`, enables REDCap init process.
     enabled: false
-    image: 
+    image:
       # -- Image repository for REDCap init process.
       repository: rclone/rclone
       # -- Image tag for REDCap init process.
@@ -100,7 +100,7 @@ redcap:
     # -- Tag for REDCap PHP-FPM Image.
     tag: "1.0.0"
 
-  config: 
+  config:
     # -- If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION).
     logAllErrors: "FALSE"
     # -- The URL on which the application is exposed (useful if the application is behind a reverse-proy).
@@ -120,7 +120,7 @@ redcap:
       salt:
         # -- The value of the salt used by the application to cypher senssitive data.
         value: ""
-        secretKeyRef: 
+        secretKeyRef:
           # -- The name of the secret holding the value of the salt used by the application to cypher senssitive data.  If set, the value of that secret will override the `redcap.config.database.salt.value` value.
           name: ""
           # -- The key of the secret holding the value of the salt used by the application to cypher senssitive data. If set, the value of that secret will override the `redcap.config.database.salt.value` value.
@@ -142,7 +142,7 @@ redcap:
             # -- The key of the secret holding the password used to connect to REDCAP's database. If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
             key: ""
 
-    mail: 
+    mail:
       auth:
         # -- The hostname or IP of the mail server used by REDCap.
         server: ""
@@ -156,12 +156,12 @@ redcap:
         from: ""
         # -- The username used to connect to the mail server.
         username: ""
-        password: 
+        password:
         # -- The password used to connect to the mail server.
           value: ""
           # -- Reference to an existing secret holding the password used to connect to the mail server. If set, the value of that secret will override the `redcap.config.mail.auth.password.value` value.
           existingSecret: ""
-  
+
   # -- The number of replicas for REDCap's deployment.
   replicaCount: 1
   # -- The resource request/limits for REDCap's deployment.
@@ -173,9 +173,9 @@ redcap:
   # -- The affinities for REDCap's deployment.
   affinity: {}
 
-  adminJob: 
+  adminJob:
     # -- Schedule of the Admin Job, which runs every hours by default. This job is nedded to refresh REDCap administrative's data.
-    schedule: "0 * * * *"  
+    schedule: "0 * * * *"
     image:
       # -- Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s).
       repository: "aphp/redcap-fcgi-client"
@@ -195,7 +195,6 @@ redcap:
         cpu: "0.5"
 
 
-
 # -- See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/mysql
 # @default -- Settings for a standalone MySQL deployment compatible with REDCap.
 mysql:
@@ -209,7 +208,7 @@ mysql:
   auth:
     # -- Automatically create a database at the first run.
     createDatabase: true
-    # -- Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true` 
+    # -- Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
     database: "redcap"
 
 
@@ -224,11 +223,11 @@ mysql:
         # -- Port exposed by the MySQL service.
         mysql: 3306
 
-    persistence: 
+    persistence:
       # -- StorageClass used for database persistence.
       storageClass: ""
-      # -- AccessMode used for database persistence. 
-      accessModes: 
+      # -- AccessMode used for database persistence.
+      accessModes:
       - "ReadWriteOnce"
       # -- Size of the storage used for database persistence.
       size: "50G"
@@ -240,18 +239,18 @@ backupJob:
   # -- ImagePllSecret for the REDCap backup CronJob.
   imagePullSecrets: []
   # -- Schedule of the Backup Job, which runs every 8 hours by default.
-  schedule: "0 */8 * * *" 
+  schedule: "0 */8 * * *"
   # -- Name of the archive holding the backup if REDCap.
   archiveName: redcap-backup.tar.gz
 
   redcap:
-      image: 
-        # -- Image repository for the REDCap application backup container.
-        repository: busybox
-        # -- Image tag for the REDCap application backup container.
-        tag: "1"
-        # -- Image pullPolicy for the REDCap application backup container.
-        pullPolicy: Always
+    image:
+      # -- Image repository for the REDCap application backup container.
+      repository: busybox
+      # -- Image tag for the REDCap application backup container.
+      tag: "1"
+      # -- Image pullPolicy for the REDCap application backup container.
+      pullPolicy: Always
 
   database:
     image:
@@ -263,7 +262,7 @@ backupJob:
       pullPolicy: Always
 
   uploader:
-    image: 
+    image:
       # -- Image repository for the REDCap backup uploader container.
       repository: rclone/rclone
       # -- Image tag for the REDCap backup uploader container.
@@ -309,16 +308,16 @@ restoreJob:
   # -- Name of the backup archive to restore.
   archiveName: redcap-backup.tar.gz
   redcap:
-      image: 
-        # -- Image repository for the REDCap application restore container.
-        repository: busybox
-        # -- Image tag for the REDCap application restore container.
-        tag: "1"
-        # -- Image pullPolicy for the REDCap application restore container.
-        pullPolicy: Always
+    image:
+      # -- Image repository for the REDCap application restore container.
+      repository: busybox
+      # -- Image tag for the REDCap application restore container.
+      tag: "1"
+      # -- Image pullPolicy for the REDCap application restore container.
+      pullPolicy: Always
 
   database:
-    image: 
+    image:
       # -- Image repository for the REDCap database restore container.
       repository: bitnami/mysql
       # -- Image yag for the REDCap application restore container.
@@ -363,7 +362,6 @@ restoreJob:
       cpu: "0.5"
 
 
-
 # -- Audit log-shipping solution, using Logstash to query audit data in REDCap DB to ship them to the audit stack. See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/logstash
 # @default -- A configuration made for OVH's Log Data Platform (Logstah + Graylog + OpenSearch)
 audit:
@@ -374,7 +372,7 @@ audit:
     # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
     app.kubernetes.io/role: redcap-audit
 
-  image: 
+  image:
     # -- Tag of the Logstsh image.
     tag: "8.10.2"
 
@@ -409,7 +407,7 @@ audit:
     - name: driver-dir
       # -- Mount path ofthe volume used to persist the JDBC driver.
       mountPath: /driver
-          
+
   # -- If set to `true`, allows the use of multiple pipelines. Needed for audit concurrent pipelines for performance reasons.
   enableMultiplePipelines: true
   # -- Name of an existing ConfigMap holding the pipeline(s)'s configuration.
@@ -427,19 +425,19 @@ audit:
           name: ""
           key: ""
 
-  persistence: 
-    # -- If set to `true`, enables persistence for Logstash. Useful for disaster recovery purposes, as the pipeline(s)'s cache is stored persisted by Logstash. 
+  persistence:
+    # -- If set to `true`, enables persistence for Logstash. Useful for disaster recovery purposes, as the pipeline(s)'s cache is stored persisted by Logstash.
     enabled: true
     # -- Storage class used for Logstash's persistence.
     storageClass: ""
     # -- Access Mode used for Logstash's persistence.
-    accessModes: 
+    accessModes:
     - "ReadWriteOnce"
     # -- Size requested for Logstash's persistence.
     size: "10G"
 
   # -- Volumes required for Logstash's deployment.
-  extraVolumes: 
+  extraVolumes:
   # -- JDBC Driver downloaded by the init container.
   - name: driver-dir
     emptyDir:
@@ -464,13 +462,13 @@ audit:
     config:
       # -- Scheduling of the rate at whichh Logstash will query REDCap database for nez event. Must be in `cron` format.
       pollingSchedule: ""
-      # -- Path to the certificate used to validate the audit stack endpoint's certificate. 
+      # -- Path to the certificate used to validate the audit stack endpoint's certificate.
       caPath: ""
       # -- Host of the audit stack endpoint.
       host: ""
       # -- Port of the audit stack endpoint.
       port: ""
-    
+
 
 serviceAccount:
   # -- Specifies whether a service account should be created
@@ -482,7 +480,7 @@ serviceAccount:
 
 networkPolicies:
   # -- If set to `true`, enables NetworkPolicies. Highly recommended for production!
-  enabled: true 
+  enabled: true
 
 ingress:
   # -- If set to `true`, enables ingress.
@@ -499,7 +497,7 @@ service:
     # -- Annotations for the Apache HTTPd service.
     annotations: {}
     # -- Type of the Apache HTTPd service.
-    type: ClusterIP 
+    type: ClusterIP
     # -- Port of the Apache HTTPd service.
     port: 1443
     # -- Protocol of the Apache HTTPd service.
@@ -527,7 +525,6 @@ service:
     portName: redcap-service-port
 
 
-
 autoscaling:
   # -- If set to `true`, enables autoscaling
   enabled: false
@@ -549,10 +546,10 @@ persistence:
     storageClass: ""
     # -- AccessMode of the volume used to persist REDCap code.
     accessMode: "RWX"
-    existingClaim: 
+    existingClaim:
       # -- Name of an existing PVC used to persist REDCap code. If set, overrides the previous settings, as no PVC will be created for that purpose.
       name: ""
-  
+
   edocs:
     # -- Size of the volume used to persist documents uplpoaded by REDCap users.
     size: 8Gi
@@ -560,6 +557,6 @@ persistence:
     storageClass: ""
     # -- AccessMode of the volume used to persist documents uplpoaded by REDCap users.
     accessMode: "RWX"
-    existingClaim: 
+    existingClaim:
       # -- Name of an existing PVC used to persist documents uplpoaded by REDCap users. If set, overrides the previous settings, as no PVC will be created for that purpose.
       name: ""
