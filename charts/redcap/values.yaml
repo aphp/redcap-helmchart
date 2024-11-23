@@ -422,8 +422,8 @@ audit:
   - name: AUDIT_TOKEN
     valueFrom:
       secretKeyRef:
-          name: ""
-          key: ""
+        name: ""
+        key: ""
 
   persistence:
     # -- If set to `true`, enables persistence for Logstash. Useful for disaster recovery purposes, as the pipeline(s)'s cache is stored persisted by Logstash.
@@ -445,7 +445,7 @@ audit:
   # -- Volume handling the CA used to validate the HTTPS conenxion to the audit stack the logs are send to.
   - name: api-ca
     secret:
-     secretName: ""
+      secretName: ""
 
   # -- Volume mounts required for Logstash's deployment.
   extraVolumeMounts:
