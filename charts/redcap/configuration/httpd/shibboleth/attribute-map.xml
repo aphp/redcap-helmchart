@@ -1,0 +1,20 @@
+<Attributes xmlns="urn:mace:shibboleth:2.0:attribute-map" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!--
+    The mappings are a mix of SAML 1.1 and SAML 2.0 attribute names agreed to within the Shibboleth
+    community. The non-OID URNs are SAML 1.1 names and most of the OIDs are SAML 2.0 names, with a
+    few exceptions for newer attributes where the name is the same for both versions. You will
+    usually want to uncomment or map the names for both SAML versions as a unit.
+    -->
+
+    <!-- Added attributes mapping to IdP of APHP -->
+
+        <Attribute name="lpf_aphpCiviliteLibelle" id="lpf_aphpCiviliteLibelle"/>
+        <Attribute name="lpf_aphpQualificationLibelle" id="lpf_aphpQualificationLibelle"/>
+        <Attribute name="lpf_cn" id="lpf_cn"/>
+        <Attribute name="lpf_codemetier" id="lpf_codemetier"/>
+        <Attribute name="lpf_displayName" id="lpf_displayName"/>
+        <Attribute name="lpf_mail" id="lpf_mail"/>
+        <Attribute name="lpf_sn" id="lpf_sn"/>
+
+</Attributes>

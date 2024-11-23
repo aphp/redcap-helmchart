@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "redcap.adminJob.fullname" . }}
+  labels:
+    {{- include "redcap.adminJob.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.redcap.adminJob.schedule }}
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 600
+      backoffLimit: 1
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          name: {{ include "redcap.adminJob.fullname" . }}
+          labels:
+            {{- include "redcap.adminJob.labels" . | nindent 12 }}
+
+        spec:
+          securityContext:
+            fsGroup: 2000
+            fsGroupChangePolicy: "OnRootMismatch"
+            runAsNonRoot: true
+
+          {{- with .Values.redcap.adminJob.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+
+          containers:
+          - name: redcap-update-tasks
+            image: "{{ .Values.redcap.adminJob.image.repository }}:{{ .Values.redcap.adminJob.image.tag }}"
+            imagePullPolicy: {{ .Values.redcap.adminJob.image.pullPolicy }}
+
+            resources:
+              {{- toYaml .Values.redcap.adminJob.resources | nindent 14 }}
+
+            env:
+            - name: SCRIPT_FILENAME
+              value: /var/www/redcap/cron.php
+            - name: REQUEST_URI
+              value: /
+            - name: QUERY_STRING
+              value: /
+            - name: REQUEST_METHOD
+              value: GET
+
+            args:
+            - -bind
+            - -connect
+            - "{{- include "redcap.serviceName" . }}:{{ .Values.service.redcap.port }}"
+
+            securityContext:
+              allowPrivilegeEscalation: false
+
+          restartPolicy: Never

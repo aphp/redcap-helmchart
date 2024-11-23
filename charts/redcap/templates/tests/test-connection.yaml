@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "redcap.fullname" . }}-test-connection"
+  labels:
+    {{- include "redcap.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox:1.37-glibc
+      command: ['wget']
+      args: ['{{ include "redcap.fullname" . }}:{{ .Values.service.redcap.port }}']
+      livenessProbe:
+        httpGet:
+          path: /
+          port: http
+      readinessProbe:
+        httpGet:
+          path: /
+          port: http
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1000
+
+  restartPolicy: Never

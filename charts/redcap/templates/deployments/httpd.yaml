@@ -1,0 +1,158 @@
+{{- if .Values.httpd.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "%s-%s" .Release.Name (ternary "httpd-shibd" "httpd" .Values.httpd.shibboleth.enabled) }}
+  labels:
+    {{- include "httpd.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.httpd.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "httpd.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+      labels:
+        {{- include "httpd.labels" . | nindent 8 }}
+
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        
+      containers:
+      - name: {{ printf "%s-%s" .Release.Name (ternary "httpd-shibd" "httpd" .Values.httpd.shibboleth.enabled) }}
+        image: "{{ .Values.httpd.image.repository }}:{{ .Values.httpd.image.tag }}"
+        imagePullPolicy: {{ .Values.httpd.image.pullPolicy }}
+
+        env:
+        - name: SHIBSP_LISTENER_ADDRESS
+          value: /var/run/supervisor/shibd.sock
+
+        args:
+        - "-c"
+        - "/etc/supervisor/supervisord-redcap-front.conf"
+      
+        resources:
+          {{- toYaml .Values.httpd.resources | nindent 10 }}
+
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+
+        volumeMounts: 
+        - name: redcap-code
+          mountPath: /var/www/redcap
+        - name: supervisor-conf
+          mountPath: /etc/supervisor/supervisord-redcap-front.conf
+          subPath: supervisord.conf
+        - name: httpd-conf
+          mountPath: /etc/httpd/conf/httpd.conf
+          subPath: httpd.conf
+        - name: logo-login-eds
+          mountPath: /var/www/static/logo-eds-bleu.png
+          subPath: logo-eds-bleu.png
+
+        {{- if .Values.httpd.tls.enabled }}
+        {{- if .Values.httpd.tls.certificate.existingSecret }}
+        - name: https-certs
+          mountPath: /var/run/secrets/https-certs/
+          readOnly: true
+        {{- end }}
+        {{- if .Values.httpd.tls.caChain.secretKeyRef.key}}
+        - name: https-ca-chain
+          mountPath: /var/run/secrets/ca-certs/ca_chain.crt
+          subPath: {{ .Values.httpd.tls.caChain.secretKeyRef.key }}
+        {{- end }}
+        {{- end }}
+
+        {{- if .Values.httpd.shibboleth.enabled }}
+        - name: extra-conf
+          mountPath: /etc/httpd/conf.d/shib.conf
+          subPath: shib.conf
+        - name: shibboleth-conf
+          mountPath: /etc/shibboleth
+        - name: sp-metadata-cert
+          mountPath: /var/run/secrets/certs/
+          readOnly: true
+        - name: idp-metadata
+          mountPath: /var/run/secrets
+          readOnly: true
+        {{- end }}
+
+        securityContext:
+          allowPrivilegeEscalation: false
+
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /var/www/redcap/index.php
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+      volumes:
+      - name: redcap-code 
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-code-pvc
+      - name: httpd-conf
+        configMap:
+          name: {{ .Release.Name }}-httpd
+      - name: supervisor-conf
+        configMap:
+          name: {{ .Release.Name }}-supervisor
+      - name: logo-login-eds
+        configMap:
+          name: {{ .Release.Name }}-httpd-logo-eds
+
+      {{- if .Values.httpd.tls.enabled }}
+      {{- if .Values.httpd.tls.certificate.existingSecret }}
+      - name: https-certs
+        secret:
+          secretName: {{ .Values.httpd.tls.certificate.existingSecret }}
+          optional: false
+      {{- end }}
+      {{- if .Values.httpd.tls.caChain.secretKeyRef.name }}
+      - name: https-ca-chain
+        secret:
+          secretName: {{ .Values.httpd.tls.caChain.secretKeyRef.name }}
+      {{- end }}
+      {{- end }}
+
+      {{- if .Values.httpd.shibboleth.enabled }}
+      - name: extra-conf
+        configMap:
+          name: {{ .Release.Name }}-extra
+      - name: shibboleth-conf
+        configMap:
+          name: {{ .Release.Name }}-shibboleth
+      - name: sp-metadata-cert
+        secret:
+          secretName: {{ .Values.httpd.shibboleth.sp.metadata.certificate.existingSecret }}
+          optional: false
+      - name: idp-metadata
+        secret:
+          secretName: {{ .Values.httpd.shibboleth.idp.metadata.secretKeyRef.name }}
+          items:
+          - key: {{ .Values.httpd.shibboleth.idp.metadata.secretKeyRef.key }}
+            path: metadatas/idp-meta.xml
+          optional: false
+      {{- end }}
+
+      {{- with .Values.httpd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.httpd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.httpd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
