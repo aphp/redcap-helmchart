@@ -4,9 +4,9 @@ httpd:
 
   image:
     # -- Image repository for Apache HTTPd.
-    repository: aphp/redcap-httpd-shibd
+    repository: ghcr.io/aphp/redcap-httpd-shibd
     # -- Image tag for Apache HTTPd.
-    tag: "1.0.0"
+    tag: "f9d4c7c2809aa40e6be985500ac1c51424959a1d"
     # -- PullPolicy for Apache HTTPd's image.
     pullPolicy: Always
 
@@ -94,11 +94,11 @@ redcap:
 
   image:
     # -- Image repository for REDCap PHP-FPM Image.
-    repository: aphp/redcap-phpfpm
+    repository: ghcr.io/aphp/redcap-php-fpm
     # -- PullPolicy for REDCap PHP-FPM Image.
     pullPolicy: Always
     # -- Tag for REDCap PHP-FPM Image.
-    tag: "1.0.0"
+    tag: "f9d4c7c2809aa40e6be985500ac1c51424959a1d"
 
   config:
     # -- If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION).
@@ -178,9 +178,9 @@ redcap:
     schedule: "0 * * * *"
     image:
       # -- Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s).
-      repository: "aphp/redcap-fcgi-client"
+      repository: "ghcr.io/aphp/redcap-fastcgi-client"
       # -- Tag of the Admin Job's image.
-      tag: "1.0.0"
+      tag: "f9d4c7c2809aa40e6be985500ac1c51424959a1d"
       # -- PullPolicy of the Admin Job's image.
       pullPolicy: Always
       # -- ImagePullSecret of the Admin Job's image.
