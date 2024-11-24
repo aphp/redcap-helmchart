@@ -225,7 +225,7 @@ mysql:
 
     persistence:
       # -- StorageClass used for database persistence.
-      storageClass: ""
+      storageClass: "default"
       # -- AccessMode used for database persistence.
       accessModes:
       - "ReadWriteOnce"
@@ -429,7 +429,7 @@ audit:
     # -- If set to `true`, enables persistence for Logstash. Useful for disaster recovery purposes, as the pipeline(s)'s cache is stored persisted by Logstash.
     enabled: true
     # -- Storage class used for Logstash's persistence.
-    storageClass: ""
+    storageClass: "default"
     # -- Access Mode used for Logstash's persistence.
     accessModes:
     - "ReadWriteOnce"
@@ -543,7 +543,7 @@ persistence:
     # -- Size of the volume used to persist REDCap code.
     size: 1Gi
     # -- Storage Class of the volume used to persist REDCap code.
-    storageClass: ""
+    storageClass: "default"
     # -- AccessMode of the volume used to persist REDCap code.
     accessMode: "RWX"
     existingClaim:
@@ -554,7 +554,7 @@ persistence:
     # -- Size of the volume used to persist documents uplpoaded by REDCap users.
     size: 8Gi
     # -- StorageClass of the volume used to persist documents uplpoaded by REDCap users.
-    storageClass: ""
+    storageClass: "default"
     # -- AccessMode of the volume used to persist documents uplpoaded by REDCap users.
     accessMode: "RWX"
     existingClaim:

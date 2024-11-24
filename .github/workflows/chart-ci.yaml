@@ -8,47 +8,61 @@ on:
 
 jobs: 
   lint-test:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-        - name: Set up Helm
-          uses: azure/setup-helm@v4.2.0
-          with:
-            version: v3.14.4
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: v3.14.4
 
-        - uses: actions/setup-python@v5
-          with:
-            python-version: '3.x'
-            check-latest: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          check-latest: true
 
-        - name: Set up chart-testing
-          uses: helm/chart-testing-action@v2.6.1
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
 
-        - name: Run chart-testing (list-changed)
-          id: list-changed
-          run: |
-            changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
-            if [[ -n "$changed" ]]; then
-              echo "changed=true" >> "$GITHUB_OUTPUT"
-            fi
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
-        - name: Run chart-testing (lint)
-          if: steps.list-changed.outputs.changed == 'true'
-          run: |
-            helm repo add bitnami https://charts.bitnami.com/bitnami 
-            ct lint --target-branch ${{ github.event.repository.default_branch }}
+      - name: Run chart-testing (lint)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami 
+          ct lint --target-branch ${{ github.event.repository.default_branch }}
 
-        - name: Create kind cluster
-          if: steps.list-changed.outputs.changed == 'true'
-          uses: helm/kind-action@v1.10.0
+      - name: Create kind cluster
+        if: steps.list-changed.outputs.changed == 'true'
+        uses: helm/kind-action@v1.10.0
 
-        - name: Run chart-testing (install)
-          if: steps.list-changed.outputs.changed == 'true'
-          run: ct install --target-branch ${{ github.event.repository.default_branch }}
+      - name: Run chart-testing (install)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct install --target-branch ${{ github.event.repository.default_branch }}
+
+  kubeconform:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Validate Helm Chart
+      uses: wdaan/helm-kubeconform-action@v0.1.6
+      with:
+        additionalSchemaPaths: |
+          schemas/{{ .ResourceKind }}.json
+        chartsDirectory: "charts"
+        ignoreMissingSchemas: "true"
+        kubernetesVersion: "1.24.0"
+      
 
   generate-doc:
     needs: lint-test
