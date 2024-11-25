@@ -10,8 +10,11 @@ spec:
   containers:
     - name: wget
       image: busybox:1.37-glibc
-      command: ['wget']
-      args: ['{{ include "redcap.fullname" . }}:{{ .Values.service.redcap.port }}']
+      command: ['nc']
+      args: 
+      - -zv
+      - "{{ include "httpd.serviceName" . }}"
+      - "{{ ternary 1443 1080 .Values.httpd.tls.enabled }}"
       readinessProbe:
         tcpSocket:
           port: {{ ternary 1443 1080 .Values.httpd.tls.enabled }}
