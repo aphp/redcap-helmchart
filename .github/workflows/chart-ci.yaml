@@ -52,13 +52,15 @@ jobs:
 
   kubeconform:
     runs-on: ubuntu-latest
+    needs: lint-test
     steps:
     - uses: actions/checkout@master
     - name: Validate Helm Chart
-      uses: wdaan/helm-kubeconform-action@v0.1.6
+      uses: shivjm/helm-kubeconform-action@v0.2.0
       with:
         additionalSchemaPaths: |
           schemas/{{ .ResourceKind }}.json
+        strict: "true"
         chartsDirectory: "charts"
         ignoreMissingSchemas: "true"
         kubernetesVersion: "1.24.0"
