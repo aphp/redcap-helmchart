@@ -12,7 +12,7 @@ httpd:
 
   tls:
     # -- If `true` activates TLS termination on the Apache HTTPd proxy.
-    enabled: true
+    enabled: false
     # -- Configuration relating to the server TLS certificate.
     certificate:
       # -- Name of the existing Secret holding the certificate for the TLS termination. The secret must be of type `tls`.
@@ -22,9 +22,20 @@ httpd:
       # -- Reference of an existing Secret holding the certificate for the certification chain, if needed.
       secretKeyRef:
         # -- The name of the existing Secret holding the certificate for the certification chain, if needed.
-        name: "certigna-wild-ca"
+        name: ""
         # -- The key inside the existing Secret holding the certificate for the certification chain, if needed.
-        key: "wildca.crt"
+        key: ""
+
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/role
+              operator: In
+              values:
+              - redcap-app
+          topologyKey: topology.kubernetes.io/zone
 
 
   shibboleth:
@@ -104,9 +115,9 @@ redcap:
     # -- If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION).
     logAllErrors: "FALSE"
     # -- The URL on which the application is exposed (useful if the application is behind a reverse-proy).
-    externalURL: ""
-    # -- The email of the adminstrator that is presented to the users.
-    adminMail: ""
+    externalURL: "localhost"
+    # -- The email of the administrator that is presented to the users.
+    adminMail: "redcap-admin@local.com"
 
     tls:
       curlCA:
@@ -118,24 +129,24 @@ redcap:
 
     database:
       salt:
-        # -- The value of the salt used by the application to cypher senssitive data.
+        # -- The value of the salt used by the application to cypher sensitive data.
         value: ""
         secretKeyRef:
-          # -- The name of the secret holding the value of the salt used by the application to cypher senssitive data.  If set, the value of that secret will override the `redcap.config.database.salt.value` value.
+          # -- The name of the secret holding the value of the salt used by the application to cypher sensitive data.  If set, the value of that secret will override the `redcap.config.database.salt.value` value.
           name: ""
-          # -- The key of the secret holding the value of the salt used by the application to cypher senssitive data. If set, the value of that secret will override the `redcap.config.database.salt.value` value.
+          # -- The key of the secret holding the value of the salt used by the application to cypher sensitive data. If set, the value of that secret will override the `redcap.config.database.salt.value` value.
           key: ""
 
       auth:
         # -- The hostname of REDCap's database instance.
-        hostname: ""
+        hostname: "redcap-mysql"
         # -- The name of REDCAP's database.
-        databaseName: ""
+        databaseName: "redcap"
         # -- The username used to connect to REDCAP's database.
-        username: ""
+        username: "redcap"
         password:
           # -- The password used to connect to REDCAP's database.
-          value: ""
+          value: "Redc@p*!"
           secretKeyRef:
             # -- The name of the secret holding the password used to connect to REDCAP's database. If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
             name: ""
@@ -202,17 +213,25 @@ mysql:
   enabled: true
   # -- Deployment type for the database, standalone or replicated.
   architecture: "standalone"
-  # -- Name of a configmap holding an SQL script to inistialize the database with.
+  # -- Name of a configmap holding an SQL script to initialize the database with.
   initdbScriptsConfigMap: ""
+  networkPolicy:
+    enabled: true
 
   auth:
     # -- Automatically create a database at the first run.
     createDatabase: true
     # -- Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
     database: "redcap"
+    # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
+    username: "redcap"
+    # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
+    # Not secure in production, use secret reference instead!
+    password: "Redc@p*!"
 
 
   primary:
+    fullname: "redcap-mysql"
     existingConfigmap: "redcap-mysql-config"
     podLabels:
       # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
@@ -230,7 +249,15 @@ mysql:
       accessModes:
       - "ReadWriteOnce"
       # -- Size of the storage used for database persistence.
-      size: "50G"
+      size: "10G"
+
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1"
+      limits:
+        memory: "4Gi"
+        cpu: "2"
 
 
 backupJob:
@@ -257,7 +284,7 @@ backupJob:
       # -- Image repository for the REDCap database backup container.
       repository: bitnami/mysql
       # -- Image tag for the REDCap database backup container.
-      tag: "8.0.32-debian-11-r14"
+      tag: "8.4.3-debian-12-r4"
       # -- Image pullPolicy for the REDCap database backup container.
       pullPolicy: Always
 
@@ -372,10 +399,6 @@ audit:
     # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
     app.kubernetes.io/role: redcap-audit
 
-  image:
-    # -- Tag of the Logstsh image.
-    tag: "8.10.2"
-
   initContainers:
   # -- Init container in charge of downloading the JDBC driver needed to connect to the MySQL database.
   # @default -- A simple container to download the jar JDBC driver on a volume shared with Logstash.
@@ -389,7 +412,7 @@ audit:
     # -- Env var to set the URL of the JDBC driver to download.
     - name: JDBC_DRIVER_URL
       # -- URL of the JDBC driver to download.
-      value: https://cdn.mysql.com/Downloads/Connector-J/mysql-connector-j-8.1.0.tar.gz
+      value: https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz
 
     # -- Command to be run to download and extract the JDBC driver.
     # @default -- Using `wget` do download the driver, and miving it to the shared persitent volume.
@@ -397,9 +420,9 @@ audit:
     - "sh"
     - "-c"
     - "cd driver/ && \
-      wget -O - ${JDBC_DRIVER_URL} | tar xzvf - mysql-connector-j-8.1.0/mysql-connector-j-8.1.0.jar && \
-      mv mysql-connector-j-8.1.0/mysql-connector-j-8.1.0.jar . && \
-      rm -rf mysql-connector-j-8.1.0/"
+      wget -O - ${JDBC_DRIVER_URL} | tar xzvf - mysql-connector-j-8.4.0/mysql-connector-j-8.4.0.jar && \
+      mv mysql-connector-j-8.4.0/mysql-connector-j-8.4.0.jar . && \
+      rm -rf mysql-connector-j-8.4.0/"
 
     # -- Volume mount used to persist the JDBC driver.
     volumeMounts:
@@ -480,7 +503,7 @@ serviceAccount:
 
 networkPolicies:
   # -- If set to `true`, enables NetworkPolicies. Highly recommended for production!
-  enabled: true
+  enabled: false
 
 ingress:
   # -- If set to `true`, enables ingress.

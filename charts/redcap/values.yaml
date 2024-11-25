@@ -26,7 +26,7 @@ httpd:
         # -- The key inside the existing Secret holding the certificate for the certification chain, if needed.
         key: ""
 
-    affinity: 
+    affinity:
       podAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
@@ -258,7 +258,6 @@ mysql:
       limits:
         memory: "4Gi"
         cpu: "2"
-
 
 
 backupJob:
