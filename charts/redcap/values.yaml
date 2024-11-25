@@ -62,7 +62,13 @@ httpd:
   # -- Number of replicas wanted for the Apache
   replicaCount: 1
   # -- Resources for the Apache HTTPd pod(s).
-  resources: {}
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "1Gi"
+      cpu: "0.5"
   # -- Node Selector for the the Apache HTTPD pod(s).
   nodeSelector: {}
   # -- Toleration for the the Apache HTTPD pod(s).
@@ -255,7 +261,7 @@ mysql:
     resources:
       requests:
         memory: "2Gi"
-        cpu: "1"
+        cpu: "0.5"
       limits:
         memory: "4Gi"
         cpu: "2"
