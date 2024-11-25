@@ -22,6 +22,8 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
         
       containers:
       - name: {{ printf "%s-%s" .Release.Name (ternary "httpd-shibd" "httpd" .Values.httpd.shibboleth.enabled) }}
