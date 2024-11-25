@@ -210,6 +210,7 @@ redcap:
 # -- See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/mysql
 # @default -- Settings for a standalone MySQL deployment compatible with REDCap.
 mysql:
+  fullnameOverride: "redcap-mysql"
   # -- If set to `true`, enables the deployment of MySQL as REDCap's database.
   enabled: true
   # -- Deployment type for the database, standalone or replicated.
@@ -232,7 +233,6 @@ mysql:
 
 
   primary:
-    fullname: "redcap-mysql"
     existingConfigmap: "redcap-mysql-config"
     podLabels:
       # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
