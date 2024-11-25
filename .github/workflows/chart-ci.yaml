@@ -67,7 +67,7 @@ jobs:
       
 
   generate-doc:
-    needs: kubeconform
+    needs: scan
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
