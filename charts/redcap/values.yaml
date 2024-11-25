@@ -23,6 +23,7 @@ httpd:
       secretKeyRef:
         # -- The name of the existing Secret holding the certificate for the certification chain, if needed.
         name: ""
+        # -- The key inside the existing Secret hold
         # -- The key inside the existing Secret holding the certificate for the certification chain, if needed.
         key: ""
 
@@ -507,11 +508,20 @@ networkPolicies:
 
 ingress:
   # -- If set to `true`, enables ingress.
-  enabled: false
-  # -- Ingress' hosts
-  hosts: []
+  enabled: true
+  # -- Ingress' class name
+  className: nginx
+
   # -- Ingress' annotations
   annotations: {}
+
+  # -- Ingress' hosts
+  hosts:
+    - host: localhost
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
   # -- Ingress TLS configuration
   tls: []
 
@@ -523,12 +533,8 @@ service:
     annotations: {}
     # -- Type of the Apache HTTPd service.
     type: ClusterIP
-    # -- Port of the Apache HTTPd service.
-    port: 1443
     # -- Protocol of the Apache HTTPd service.
     protocol: TCP
-    # -- Target port of the Apache HTTPd service.
-    targetPort: 1443
     # -- Name of the Apache HTTPd service.
     portName: httpd-service-port
 

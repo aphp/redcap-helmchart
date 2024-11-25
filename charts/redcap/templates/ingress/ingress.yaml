@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled }}
 {{- $fullName := include "redcap.fullname" . -}}
-{{- $svcPort := .Values.service.httpd.port -}}
+{{- $svcPort := ternary 1443 1080 .Values.httpd.tls.enabled -}}
 {{- $svcName := include "httpd.serviceName" . -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}

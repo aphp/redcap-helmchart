@@ -13,5 +13,5 @@ spec:
     - from:
       ports:
         - protocol: TCP
-          port: {{ .Values.service.httpd.targetPort }}
+          port: {{ ternary 1443 1080 .Values.httpd.tls.enabled }}
 {{- end }}

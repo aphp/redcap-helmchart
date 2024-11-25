@@ -43,7 +43,7 @@ spec:
 
         ports:
         - name: http
-          containerPort: 80
+          containerPort: {{ ternary 1443 1080 .Values.httpd.tls.enabled }}
           protocol: TCP
 
         volumeMounts: 
@@ -55,9 +55,6 @@ spec:
         - name: httpd-conf
           mountPath: /etc/httpd/conf/httpd.conf
           subPath: httpd.conf
-        - name: logo-login-eds
-          mountPath: /var/www/static/logo-eds-bleu.png
-          subPath: logo-eds-bleu.png
 
         {{- if .Values.httpd.tls.enabled }}
         {{- if .Values.httpd.tls.certificate.existingSecret }}
@@ -90,10 +87,14 @@ spec:
           allowPrivilegeEscalation: false
 
         readinessProbe:
-          exec:
-            command:
-            - cat
-            - /var/www/redcap/index.php
+          tcpSocket:
+            port: {{ ternary 1443 1080 .Values.httpd.tls.enabled }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        livenessProbe:
+          tcpSocket:
+            port: {{ ternary 1443 1080 .Values.httpd.tls.enabled }}
           initialDelaySeconds: 5
           periodSeconds: 5
 
@@ -107,9 +108,7 @@ spec:
       - name: supervisor-conf
         configMap:
           name: {{ .Release.Name }}-supervisor
-      - name: logo-login-eds
-        configMap:
-          name: {{ .Release.Name }}-httpd-logo-eds
+
 
       {{- if .Values.httpd.tls.enabled }}
       {{- if .Values.httpd.tls.certificate.existingSecret }}
