@@ -12,14 +12,16 @@ spec:
       image: busybox:1.37-glibc
       command: ['wget']
       args: ['{{ include "redcap.fullname" . }}:{{ .Values.service.redcap.port }}']
-      livenessProbe:
-        httpGet:
-          path: /
-          port: http
       readinessProbe:
-        httpGet:
-          path: /
-          port: http
+        tcpSocket:
+          port: {{ ternary 1443 1080 .Values.httpd.tls.enabled }}
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      livenessProbe:
+        tcpSocket:
+          port: {{ ternary 1443 1080 .Values.httpd.tls.enabled }}
+        initialDelaySeconds: 5
+        periodSeconds: 5
       resources:
         limits:
           cpu: 100m
