@@ -42,6 +42,12 @@ jobs:
           helm repo add bitnami https://charts.bitnami.com/bitnami 
           ct lint --target-branch ${{ github.event.repository.default_branch }}
 
+      - name: Run Helm Kubeconform plugin
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          helm plugin install https://github.com/jtyr/kubeconform-helm
+          helm kubeconform ./charts/redcap --output json --kubernetes-version 1.24 --strict --summary
+
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1.10.0
@@ -49,23 +55,9 @@ jobs:
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }}
-
-  scan:
-    runs-on: ubuntu-latest
-    needs: lint-test
-    steps:
-    - uses: actions/checkout@master
-    - name: Validate Helm Chart
-      uses: shivjm/helm-kubeconform-action@v0.3.0
-      with:
-        strict: "true"
-        chartsDirectory: "charts"
-        ignoreMissingSchemas: "true"
-        kubernetesVersion: "1.24.0"
       
-
-  generate-doc:
-    needs: scan
+  generate-doc-schema:
+    needs: lint-test
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -97,7 +89,7 @@ jobs:
 
 
   release:
-    needs: generate-doc
+    needs: generate-doc-schema
     permissions:
       contents: write
     runs-on: ubuntu-latest
