@@ -30,8 +30,41 @@ spec:
       {{- end }}
 
       initContainers:
-      {{- with .Values.redcap.extraInitContainers }}
+      {{- if .Values.redcap.install.enabled }}
+
+      {{- if not (empty .Values.redcap.overrideInitContainers) }}
+      {{- with .Values.redcap.install.overrideInitContainers }}
         {{- . | toYaml | nindent 6 }}
+      {{- end }}
+
+      {{ else }}
+      - name: init-download-redcap
+        image: "{{ .Values.redcap.install.image.repository }}:{{ .Values.redcap.install.image.tag }}"
+        imagePullPolicy: {{ .Values.redcap.install.image.pullPolicy }}
+
+        env:
+        - name : REDCAP_VERSION
+          value: 
+        - name: REDCAP_COMMUNITY_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: redcap-ext-qual-s3-creds
+              key: USERNAME
+        - name: REDCAP_COMMUNITY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redcap-ext-qual-s3-creds
+              key: PASSWORD
+
+
+        command:
+        - |-
+          wget --method=post -O /tmp/redcap.zip -q \
+            --body-data="username=$REDCAP_COMMUNITY_USERNAME&password=$REDCAP_COMMUNITY_PASSWORD&version=$APPSETTING_zipVersion&install=1" \
+            --header=Content-Type:application/x-www-form-urlencoded https://redcap.vanderbilt.edu/plugins/redcap_consortium/versions.php
+
+
+      {{- end }}
       {{- end }}
 
       - name: wait-for-db
@@ -67,7 +100,7 @@ spec:
 
       - name: msmtp-config-injector
         image: "busybox:1"
-        imagePullPolicy: {{ .Values.redcap.init.image.pullPolicy }}
+        imagePullPolicy: Always
         command: 
         - "sh"
         - "-c"

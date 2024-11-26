@@ -7,7 +7,9 @@ metadata:
     {{- include "redcap.restoreJob.labels" . | nindent 4 }}
 spec:
   schedule: {{ .Values.restoreJob.schedule }}
-  suspend: true # We don't want the restore Job to run on a schedule basis, but we still want the convenience to have the job teampleted correctly, ready to be manually fired from the JobTemplate inside that Cronjob.
+  suspend: true # We don't want the restore Job to run on a scheduled basis, but we still want the convenience to have that job templated correctly, ready to be manually fired from the JobTemplate inside that Cronjob.
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       activeDeadlineSeconds: 7200
@@ -22,6 +24,8 @@ spec:
 
         spec:
           securityContext:
+            runAsUser: 2000
+            runAsGroup: 2000
             fsGroup: 2000
             fsGroupChangePolicy: "OnRootMismatch"
             runAsNonRoot: true

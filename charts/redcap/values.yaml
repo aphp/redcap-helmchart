@@ -77,7 +77,7 @@ httpd:
   affinity: {}
 
 redcap:
-  init:
+  install:
     # -- If `true`, enables REDCap init process.
     enabled: false
     image:
@@ -88,29 +88,9 @@ redcap:
       # -- PullPolicy for REDCap init process.
       pullPolicy: Always
 
-    s3:
-      # -- Path of the REDcap install package on the S3 bucket.
-      packagePath: ""
-      # -- Path of the REDcap localizaton file on the S3 bucket.
-      localizationPath: ""
+    
 
-      config:
-        # -- Region of the S3 bucket.
-        region: ""
-        # -- LocalizationConstraint of the S3 bucket.
-        locationConstraint: ""
-        # -- Endpoint of the S3 bucket.
-        endpoint: ""
-
-        auth:
-          # -- AccessKeyID needed for authentication on the S3 bucket.
-          accessKeyID: ""
-          # -- SecretAccessKey needed for authentication on the S3 bucket.
-          secretAccessKey: ""
-          # -- Reference to an existing secret holding the AccessKeyID and SecretAccessKey needed for authentication on the S3 bucket. If set, overrides the AccessKeyID and SecretAccessKey values.
-          existingSecret: ""
-
-  extraInitContainers: []
+    overrideInitContainers: []
 
   image:
     # -- Image repository for REDCap PHP-FPM Image.
