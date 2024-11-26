@@ -46,7 +46,7 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: |
           helm plugin install https://github.com/jtyr/kubeconform-helm
-          helm kubeconform ./charts/redcap --output json --kubernetes-version 1.24 --strict --summary
+          helm kubeconform ./charts/redcap --output json --kubernetes-version "1.24.0" --strict --summary
 
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
