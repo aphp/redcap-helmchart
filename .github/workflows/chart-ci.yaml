@@ -56,10 +56,8 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Validate Helm Chart
-      uses: shivjm/helm-kubeconform-action@v0.2.0
+      uses: shivjm/helm-kubeconform-action@v0.3.0
       with:
-        additionalSchemaPaths: |
-          schemas/{{ .ResourceKind }}.json
         strict: "true"
         chartsDirectory: "charts"
         ignoreMissingSchemas: "true"
