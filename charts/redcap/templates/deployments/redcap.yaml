@@ -30,44 +30,8 @@ spec:
       {{- end }}
 
       initContainers:
-      {{- if .Values.redcap.init.enabled }}
-      - name: init-code-retriever
-        image: "{{ .Values.redcap.init.image.repository }}:{{ .Values.redcap.init.image.tag }}"
-        imagePullPolicy: {{ .Values.redcap.init.image.pullPolicy }}
-
-        {{- if .Values.redcap.init.s3.config.auth.existingSecret }}
-        env:
-        - name: RCLONE_CONFIG_REDCAP_INIT_BUCKET_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.redcap.init.s3.config.auth.existingSecret }}
-              key: ACCESS_KEY_ID
-        - name: RCLONE_CONFIG_REDCAP_INIT_BUCKET_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.redcap.init.s3.config.auth.existingSecret }}
-              key: SECRET_ACCESS_KEY
-        {{- end }}
-
-        command: 
-        - "sh"
-        - "-c"
-        - "/tmp/redcap-install.sh"
-
-        securityContext:
-          allowPrivilegeEscalation: false
-
-        volumeMounts:
-        - name: rclone-conf
-          mountPath: /config/rclone/rclone.conf
-          subPath: rclone.conf
-        - name: init-redcap-tmp
-          mountPath: /tmp
-        - name: redcap-code
-          mountPath: /redcap
-        - name: install-script
-          mountPath: /tmp/redcap-install.sh
-          subPath: redcap-install.sh
+      {{- with .Values.redcap.extraInitContainers }}
+        {{- . | toYaml | nindent 6 }}
       {{- end }}
 
       - name: wait-for-db
@@ -199,26 +163,12 @@ spec:
         {{- end }}
 
       volumes:
-      {{- if .Values.redcap.init.enabled }}
-      - name: rclone-conf
-        secret:
-          secretName: {{ include "redcap.secrets.init.rclone.conf.name" . }}
-      - name: install-script
-        configMap:
-          name: {{ .Release.Name }}-redcap-install-script
-          defaultMode: 0777
-      {{- end }}
-
-      - name: init-redcap-tmp
-        emptyDir:
-          sizeLimit: 100Mi
       - name: redcap-code
         persistentVolumeClaim:
           claimName: {{ default (include "redcap.persistence.code.pvc.name" .) .Values.persistence.redcap_code.existingClaim.name }}
       - name: edocs 
         persistentVolumeClaim:
           claimName: {{ default (include "redcap.persistence.edocs.pvc.name" .) .Values.persistence.edocs.existingClaim.name }}
-
       - name: mail-conf
         configMap:
           name: {{ .Release.Name }}-mail-conf
@@ -257,6 +207,9 @@ spec:
       - name: msmtp-passwd
         secret:
           secretName: {{ .Values.redcap.config.mail.auth.password.existingSecret }}
+      {{- end }}
+      {{- with .Values.redcap.extraVolumes }}
+        {{- . | toYaml | nindent 6 }}
       {{- end }}
 
 

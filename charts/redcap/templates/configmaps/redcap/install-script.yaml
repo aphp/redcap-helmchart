@@ -1,8 +1,0 @@
-{{- if .Values.redcap.init.enabled }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-redcap-install-script
-data: 
-{{ tpl (.Files.Glob "configuration/redcap/init/redcap-install.sh").AsConfig . | nindent 2 }}
-{{- end }}

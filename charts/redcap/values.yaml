@@ -82,9 +82,9 @@ redcap:
     enabled: false
     image:
       # -- Image repository for REDCap init process.
-      repository: rclone/rclone
+      repository: bitnami/rclone
       # -- Image tag for REDCap init process.
-      tag: "1.61"
+      tag: "1.68.2"
       # -- PullPolicy for REDCap init process.
       pullPolicy: Always
 
@@ -109,6 +109,8 @@ redcap:
           secretAccessKey: ""
           # -- Reference to an existing secret holding the AccessKeyID and SecretAccessKey needed for authentication on the S3 bucket. If set, overrides the AccessKeyID and SecretAccessKey values.
           existingSecret: ""
+
+  extraInitContainers: []
 
   image:
     # -- Image repository for REDCap PHP-FPM Image.
@@ -198,7 +200,7 @@ redcap:
       # -- Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s).
       repository: "ghcr.io/aphp/redcap-fastcgi-client"
       # -- Tag of the Admin Job's image.
-      tag: "f9d4c7c2809aa40e6be985500ac1c51424959a1d"
+      tag: "cb2f15856345c9b0399691bafea189c13f709610"
       # -- PullPolicy of the Admin Job's image.
       pullPolicy: Always
       # -- ImagePullSecret of the Admin Job's image.
@@ -298,9 +300,9 @@ backupJob:
   uploader:
     image:
       # -- Image repository for the REDCap backup uploader container.
-      repository: rclone/rclone
+      repository: bitnami/rclone
       # -- Image tag for the REDCap backup uploader container.
-      tag: "1.61"
+      tag: "1.68.2"
       # -- Image pullPolicy for the REDCap backup uploader container.
       pullPolicy: Always
 
@@ -362,9 +364,9 @@ restoreJob:
   downloader:
     image:
       # -- Image repository for the REDCap downloader container.
-      repository: rclone/rclone
+      repository: bitnami/rclone
       # -- Image tag for the REDCap downloader container.
-      tag: "1.61"
+      tag: "1.68.2"
       # -- Image pullPolicy for the REDCap downloader container.
       pullPolicy: Always
 
@@ -413,7 +415,7 @@ audit:
     # -- Image used for the pod downloading the driver.
     image: alpine:3.18
     # -- Image pullPolicy used for the pod downloading the driver.
-    pullPolicy: Always
+    imagePullPolicy: Always
 
     env:
     # -- Env var to set the URL of the JDBC driver to download.
@@ -429,7 +431,15 @@ audit:
     - "cd driver/ && \
       wget -O - ${JDBC_DRIVER_URL} | tar xzvf - mysql-connector-j-8.4.0/mysql-connector-j-8.4.0.jar && \
       mv mysql-connector-j-8.4.0/mysql-connector-j-8.4.0.jar . && \
+      chown 1001:1001 mysql-connector-j-8.4.0.jar && \
+      chmod 755 mysql-connector-j-8.4.0.jar && \
       rm -rf mysql-connector-j-8.4.0/"
+
+    securityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      privileged: false
 
     # -- Volume mount used to persist the JDBC driver.
     volumeMounts:

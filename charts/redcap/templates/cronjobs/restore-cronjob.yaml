@@ -61,9 +61,9 @@ spec:
             volumeMounts:
             - mountPath: /backup-data
               name: backup-data
-            - mountPath: /config/rclone/
-              name: rclone-conf
-              readOnly: true
+            - name: rclone-conf
+              mountPath: /.rclone.conf
+              subPath: rclone.conf
             - name: download-script
               mountPath: /tmp/backup-download.sh
               subPath: backup-download.sh
