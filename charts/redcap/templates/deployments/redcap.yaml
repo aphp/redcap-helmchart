@@ -32,7 +32,7 @@ spec:
       initContainers:
       {{- if .Values.redcap.install.enabled }}
 
-      {{- if not (empty .Values.redcap.overrideInitContainers) }}
+      {{- if not (empty .Values.redcap.install.overrideInitContainers) }}
       {{- with .Values.redcap.install.overrideInitContainers }}
         {{- . | toYaml | nindent 6 }}
       {{- end }}
@@ -41,27 +41,25 @@ spec:
       - name: init-download-redcap
         image: "{{ .Values.redcap.install.image.repository }}:{{ .Values.redcap.install.image.tag }}"
         imagePullPolicy: {{ .Values.redcap.install.image.pullPolicy }}
-
         env:
         - name : REDCAP_VERSION
           value: 
         - name: REDCAP_COMMUNITY_USERNAME
           valueFrom:
             secretKeyRef:
-              name: redcap-ext-qual-s3-creds
+              name: {{ default (include "redcap.secrets.community.creds.name" .) .Values.redcap.install.communityAuth.existingSecret }}
               key: USERNAME
         - name: REDCAP_COMMUNITY_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: redcap-ext-qual-s3-creds
+              name: {{ default (include "redcap.secrets.community.creds.name" .) .Values.redcap.install.communityAuth.existingSecret }}
               key: PASSWORD
-
 
         command:
         - |-
           wget --method=post -O /tmp/redcap.zip -q \
-            --body-data="username=$REDCAP_COMMUNITY_USERNAME&password=$REDCAP_COMMUNITY_PASSWORD&version=$APPSETTING_zipVersion&install=1" \
-            --header=Content-Type:application/x-www-form-urlencoded https://redcap.vanderbilt.edu/plugins/redcap_consortium/versions.php
+               --body-data="username=$REDCAP_COMMUNITY_USERNAME&password=$REDCAP_COMMUNITY_PASSWORD&version=$APPSETTING_zipVersion&install=1" \
+               --header=Content-Type:application/x-www-form-urlencoded https://redcap.vanderbilt.edu/plugins/redcap_consortium/versions.php
 
 
       {{- end }}

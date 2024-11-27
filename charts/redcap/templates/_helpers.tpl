@@ -251,6 +251,10 @@ Secrets names
 {{ .Release.Name }}-database-credentials
 {{- end }}
 
+{{- define "redcap.secrets.community.creds.name" -}}
+{{ .Release.Name }}-community-credentials
+{{- end }}
+
 {{- define "redcap.secrets.init.rclone.conf.name" -}}
 {{ .Release.Name }}-init-rclone-conf
 {{- end }}

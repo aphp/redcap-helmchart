@@ -88,7 +88,10 @@ redcap:
       # -- PullPolicy for REDCap init process.
       pullPolicy: Always
 
-    
+    communityAuth:
+      username: ""
+      password: ""
+      existingSecret: ""
 
     overrideInitContainers: []
 
