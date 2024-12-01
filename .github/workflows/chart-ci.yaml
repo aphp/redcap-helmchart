@@ -35,7 +35,7 @@ jobs:
             jq '.assets[] | select(.name=="polaris_linux_amd64.tar.gz")'.browser_download_url | \
             xargs curl -s -L | \
           tar xvz -C .local/bin polaris
-          echo "$(pwd)/.local/bin" $GITHUB_PATH
+          echo "$PWD/.local/bin" >> $GITHUB_PATH
 
       - uses: actions/setup-python@v5
         with:
