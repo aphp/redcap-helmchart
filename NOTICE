@@ -4,5 +4,5 @@ This software contains the following dependencies developped by Broadcom :
   - mysql : https://github.com/bitnami/charts/tree/main/bitnami/mysql
   - logstash : https://github.com/bitnami/charts/tree/main/bitnami/logstash
 
-Those dependecies are present in the "bitnami/charts" github repositoryn provided by Broadcom under the Apache 2.0 licence, 
+Those dependecies are present in the "bitnami/charts" github repository provided by Broadcom under the Apache 2.0 licence, 
 as stated by the following document : https://github.com/bitnami/charts/tree/main?tab=License-1-ov-file

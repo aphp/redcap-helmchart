@@ -32,8 +32,8 @@ spec:
       initContainers:
       {{- if .Values.redcap.install.enabled }}
 
-      {{- if not (empty .Values.redcap.install.overrideInitContainers) }}
-      {{- with .Values.redcap.install.overrideInitContainers }}
+      {{- if not (empty .Values.redcap.install.overrideInstallContainer) }}
+      {{- with .Values.redcap.install.overrideInstallContainer }}
         {{- . | toYaml | nindent 6 }}
       {{- end }}
 
@@ -41,9 +41,18 @@ spec:
       - name: init-download-redcap
         image: "{{ .Values.redcap.install.image.repository }}:{{ .Values.redcap.install.image.tag }}"
         imagePullPolicy: {{ .Values.redcap.install.image.pullPolicy }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 2000
+          runAsGroup: 2000
+
         env:
+        - name : REDCAP_INSTALL_PATH
+          value: "/redcap"
+        - name : OVERRIDE_INSTALL
+          value: {{ .Values.redcap.install.override | toString | quote }}
         - name : REDCAP_VERSION
-          value: 
+          value: {{ .Values.redcap.install.version }}
         - name: REDCAP_COMMUNITY_USERNAME
           valueFrom:
             secretKeyRef:
@@ -56,13 +65,21 @@ spec:
               key: PASSWORD
 
         command:
-        - |-
-          wget --method=post -O /tmp/redcap.zip -q \
-               --body-data="username=$REDCAP_COMMUNITY_USERNAME&password=$REDCAP_COMMUNITY_PASSWORD&version=$APPSETTING_zipVersion&install=1" \
-               --header=Content-Type:application/x-www-form-urlencoded https://redcap.vanderbilt.edu/plugins/redcap_consortium/versions.php
+        - "sh"
+        - "-c"
+        - "/home/curl_user/redcap-install.sh"
 
-
+        volumeMounts:
+        - name: redcap-code
+          mountPath: /redcap
+        - name: init-install-script
+          mountPath: /home/curl_user/redcap-install.sh
+          subPath: redcap-install.sh
       {{- end }}
+      {{- end }}
+
+      {{- with .Values.redcap.extraInitContainers }}
+        {{- . | toYaml | nindent 6 }}
       {{- end }}
 
       - name: wait-for-db
@@ -193,7 +210,17 @@ spec:
           subPath: MAIL_PASSWORD
         {{- end }}
 
+      {{- with .Values.redcap.extraContainers }}
+        {{- . | toYaml | nindent 6 }}
+      {{- end }}
+
       volumes:
+      {{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
+      - name: init-install-script
+        configMap:
+          name: {{ .Release.Name }}-init-install-script
+          defaultMode: 0777
+      {{- end }}
       - name: redcap-code
         persistentVolumeClaim:
           claimName: {{ default (include "redcap.persistence.code.pvc.name" .) .Values.persistence.redcap_code.existingClaim.name }}

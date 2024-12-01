@@ -6,7 +6,7 @@ httpd:
     # -- Image repository for Apache HTTPd.
     repository: ghcr.io/aphp/redcap-httpd-shibd
     # -- Image tag for Apache HTTPd.
-    tag: "f9d4c7c2809aa40e6be985500ac1c51424959a1d"
+    tag: "1.1.0"
     # -- PullPolicy for Apache HTTPd's image.
     pullPolicy: Always
 
@@ -23,9 +23,9 @@ httpd:
       secretKeyRef:
         # -- The name of the existing Secret holding the certificate for the certification chain, if needed.
         name: ""
-        # -- The key inside the existing Secret hold
         # -- The key inside the existing Secret holding the certificate for the certification chain, if needed.
         key: ""
+
 
     affinity:
       podAffinity:
@@ -80,20 +80,48 @@ redcap:
   install:
     # -- If `true`, enables REDCap init process.
     enabled: false
+    # -- If `true`, overwrite any existing installation with the new one.
+    override: false
     image:
       # -- Image repository for REDCap init process.
-      repository: bitnami/rclone
+      repository: "alpine/curl"
       # -- Image tag for REDCap init process.
-      tag: "1.68.2"
+      tag: "8.9.1"
       # -- PullPolicy for REDCap init process.
       pullPolicy: Always
 
+    # -- Version of the REDCap package to install
+    version: "14.5.26"
+
     communityAuth:
+      # -- Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.
       username: ""
+      # -- Password of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.
       password: ""
+      # -- Existing secret containing the credentials of the REDCap Community user with whom the installation package is downloaded.
       existingSecret: ""
 
-    overrideInitContainers: []
+    # -- Overrides the initContainers that downloads the REDCap application package.
+    overrideInstallContainer: []
+
+    initJob:
+      image:
+        # -- Image of the Init Job. Must be and FCGI Client capable to query REDCap's pod(s).
+        repository: "ghcr.io/aphp/redcap-fastcgi-client"
+        # -- Tag of the Admin Job's image.
+        tag: "1.1.0"
+        # -- PullPolicy of the Init Job's image.
+        pullPolicy: Always
+        # -- ImagePullSecret of the Init Job's image.
+        imagePullSecrets: []
+      # -- Resources for the Init Job's pod.
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "0.25"
+        limits:
+          memory: "1Gi"
+          cpu: "0.5"
 
   image:
     # -- Image repository for REDCap PHP-FPM Image.
@@ -101,7 +129,16 @@ redcap:
     # -- PullPolicy for REDCap PHP-FPM Image.
     pullPolicy: Always
     # -- Tag for REDCap PHP-FPM Image.
-    tag: "f9d4c7c2809aa40e6be985500ac1c51424959a1d"
+    tag: "1.1.0"
+
+  # -- Add additional init containers to the PHP-FPM container hostin the REDCap application.
+  extraInitContainers: []
+
+  # -- Add additional containers to the PHP-FPM container hostin the REDCap application.
+  extraContainers: []
+
+  # -- Add additional volumes to the PHP-FPM container hostin the REDCap application.
+  extraVolumes: []
 
   config:
     # -- If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION).
@@ -122,7 +159,7 @@ redcap:
     database:
       salt:
         # -- The value of the salt used by the application to cypher sensitive data.
-        value: ""
+        value: "UjtNfDs2ELs2v6p"
         secretKeyRef:
           # -- The name of the secret holding the value of the salt used by the application to cypher sensitive data.  If set, the value of that secret will override the `redcap.config.database.salt.value` value.
           name: ""
@@ -183,7 +220,7 @@ redcap:
       # -- Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s).
       repository: "ghcr.io/aphp/redcap-fastcgi-client"
       # -- Tag of the Admin Job's image.
-      tag: "cb2f15856345c9b0399691bafea189c13f709610"
+      tag: "1.1.0"
       # -- PullPolicy of the Admin Job's image.
       pullPolicy: Always
       # -- ImagePullSecret of the Admin Job's image.

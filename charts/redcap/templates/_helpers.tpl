@@ -9,6 +9,10 @@ Expand the name of the chart.
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}-admin-job
 {{- end }}
 
+{{- define "redcap.initJob.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}-init-job
+{{- end }}
+
 {{- define "redcap.backupJob.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}-backup-job
 {{- end }}
@@ -40,6 +44,19 @@ If release name contains chart name it will be used as a full name.
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "redcap.initJob.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}-init-job
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}-init-job
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}-init-job
 {{- end }}
 {{- end }}
 {{- end }}
@@ -129,6 +146,16 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "redcap.initJob.labels" -}}
+helm.sh/chart: {{ include "redcap.chart" . }}
+{{ include "redcap.initJob.selectorLabels" . }}
+{{ include "redcap.initJob.networkPolicy.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
 {{- define "redcap.adminJob.labels" -}}
 helm.sh/chart: {{ include "redcap.chart" . }}
 {{ include "redcap.adminJob.selectorLabels" . }}
@@ -188,6 +215,11 @@ app.kubernetes.io/name: {{ include "redcap.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "redcap.initJob.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "redcap.initJob.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
 {{- define "redcap.adminJob.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "redcap.adminJob.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
@@ -218,6 +250,10 @@ Networkpolicies selector labels
 */}}
 {{- define "redcap.networkPolicy.selectorLabels" -}}
 app.kubernetes.io/role: redcap-app
+{{- end }}
+
+{{- define "redcap.initJob.networkPolicy.selectorLabels" -}}
+app.kubernetes.io/role: redcap-init-job
 {{- end }}
 
 {{- define "redcap.adminJob.networkPolicy.selectorLabels" -}}

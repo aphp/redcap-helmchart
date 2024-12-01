@@ -1,0 +1,55 @@
+{{- if .Values.redcap.install.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "redcap.initJob.fullname" . }}
+  labels:
+    {{- include "redcap.initJob.labels" . | nindent 4 }}
+spec:
+  backoffLimit: 5
+  template:
+    metadata:
+      name: {{ include "redcap.initJob.fullname" . }}
+      labels:
+        {{- include "redcap.initJob.labels" . | nindent 8 }}
+    spec:
+      securityContext:
+        runAsUser: 2000
+        runAsGroup: 2000
+        fsGroup: 2000
+        fsGroupChangePolicy: "OnRootMismatch"
+        runAsNonRoot: true 
+
+      {{- with .Values.redcap.install.initJob.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      containers:
+      - name: redcap-update-tasks
+        image: "{{ .Values.redcap.install.initJob.image.repository }}:{{ .Values.redcap.install.initJob.image.tag }}"
+        imagePullPolicy: {{ .Values.redcap.install.initJob.image.pullPolicy }}
+
+        resources:
+          {{- toYaml .Values.redcap.install.initJob.resources | nindent 14 }}
+
+        env:
+        - name: SCRIPT_NAME
+          value: /var/www/redcap/install.php
+        - name: SCRIPT_FILENAME
+          value: /var/www/redcap/install.php
+        - name: QUERY_STRING
+          value: auto=1
+        - name: REQUEST_METHOD
+          value: GET
+
+        args:
+        - -bind
+        - -connect
+        - "{{- include "redcap.serviceName" . }}:{{ .Values.service.redcap.port }}"
+
+        securityContext:
+          allowPrivilegeEscalation: false
+
+      restartPolicy: OnFailure
+{{- end }}

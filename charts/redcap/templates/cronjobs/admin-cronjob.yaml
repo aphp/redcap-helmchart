@@ -42,12 +42,10 @@ spec:
               {{- toYaml .Values.redcap.adminJob.resources | nindent 14 }}
 
             env:
+            - name: SCRIPT_NAME
+              value: /var/www/redcap/cron.php
             - name: SCRIPT_FILENAME
               value: /var/www/redcap/cron.php
-            - name: REQUEST_URI
-              value: /
-            - name: QUERY_STRING
-              value: /
             - name: REQUEST_METHOD
               value: GET
 
