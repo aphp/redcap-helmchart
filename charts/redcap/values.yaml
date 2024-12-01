@@ -459,7 +459,7 @@ audit:
       runAsUser: 1001
       runAsGroup: 1001
       runAsNonRoot: true
-      privileged: false
+      allowPrivilegeEscalation: false
 
     # -- Volume mount used to persist the JDBC driver.
     volumeMounts:
