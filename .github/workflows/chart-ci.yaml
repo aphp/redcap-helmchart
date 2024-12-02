@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - "dev"
-    tags:
-      - "v*.*.*"
+      - "main"
 
 jobs: 
   lint-test:
@@ -147,10 +146,28 @@ jobs:
       - name: Add Helm repositories
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
+        
+      ### DEV specific steps ###
+      - name: Add release suffix - DEV
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          yq -i '.version |= . + "-dev"' charts/redcap/Chart.yaml
   
-      - name: Run chart-releaser
+      - name: Run chart-releaser - DEV
+        if: github.ref == 'refs/heads/dev'
         uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           skip_existing: true
+          mark_as_latest: false
+        
+      ### PROD specific steps ###
+      - name: Run chart-releaser - MAIN
+        if: github.ref == 'refs/heads/main'
+        uses: helm/chart-releaser-action@v1.6.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          skip_existing: true
+          mark_as_latest: true
