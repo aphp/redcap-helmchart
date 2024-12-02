@@ -3,8 +3,9 @@ name: Chart CI
 on:
   push:
     branches:
-      - main
-      - dev
+      - "dev"
+    tags:
+      - "v*.*.*"
 
 jobs: 
   lint-test:
@@ -146,8 +147,24 @@ jobs:
       - name: Add Helm repositories
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
+
+      - name: Package Chart
+        env:
+          CHART_PATH: "./charts/redcap"
+        run: |
+          CHART_VERSION=$(yq -r '.version' ${CHART_PATH}/Chart.yaml)
+
+          if $CI_COMMIT_BRANCH == "dev"; then
+            CHART_VERSION+="-dev.git.$(git rev-parse --short HEAD)"
+          fi
+  
+          mkdir $PWD/.cr
+          helm package ${CHART_PATH} --version=${CHART_VERSION} --destination=$PWD/.cr
   
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          skip_packaging: true
+          skip_existing: true
