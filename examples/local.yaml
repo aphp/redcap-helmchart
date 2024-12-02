@@ -1,0 +1,11 @@
+httpd:
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: "app.kubernetes.io/role"
+            operator: "In"
+            values:
+            - "redcap-app"
+        topologyKey: "topology.kubernetes.io/zone"

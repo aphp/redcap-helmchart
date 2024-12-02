@@ -4,11 +4,11 @@ httpd:
 
   image:
     # -- Image repository for Apache HTTPd.
-    repository: ghcr.io/aphp/redcap-httpd-shibd
+    repository: "ghcr.io/aphp/redcap-httpd-shibd"
     # -- Image tag for Apache HTTPd.
     tag: "1.1.0"
     # -- PullPolicy for Apache HTTPd's image.
-    pullPolicy: Always
+    pullPolicy: "Always"
 
   tls:
     # -- If `true` activates TLS termination on the Apache HTTPd proxy.
@@ -25,19 +25,6 @@ httpd:
         name: ""
         # -- The key inside the existing Secret holding the certificate for the certification chain, if needed.
         key: ""
-
-
-    affinity:
-      podAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-            - key: app.kubernetes.io/role
-              operator: In
-              values:
-              - redcap-app
-          topologyKey: topology.kubernetes.io/zone
-
 
   shibboleth:
     # -- If `true`, activates the Shibboleth daemon, which enables is needed for enabling SAMLv2 authentication with REDCap.
@@ -111,7 +98,7 @@ redcap:
         # -- Tag of the Admin Job's image.
         tag: "1.1.0"
         # -- PullPolicy of the Init Job's image.
-        pullPolicy: Always
+        pullPolicy: "Always"
         # -- ImagePullSecret of the Init Job's image.
         imagePullSecrets: []
       # -- Resources for the Init Job's pod.
@@ -125,9 +112,9 @@ redcap:
 
   image:
     # -- Image repository for REDCap PHP-FPM Image.
-    repository: ghcr.io/aphp/redcap-php-fpm
+    repository: "ghcr.io/aphp/redcap-php-fpm"
     # -- PullPolicy for REDCap PHP-FPM Image.
-    pullPolicy: Always
+    pullPolicy: "Always"
     # -- Tag for REDCap PHP-FPM Image.
     tag: "1.1.0"
 
@@ -222,7 +209,7 @@ redcap:
       # -- Tag of the Admin Job's image.
       tag: "1.1.0"
       # -- PullPolicy of the Admin Job's image.
-      pullPolicy: Always
+      pullPolicy: "Always"
       # -- ImagePullSecret of the Admin Job's image.
       imagePullSecrets: []
     # -- Resources for the admin job's pod.
@@ -297,34 +284,34 @@ backupJob:
   # -- Schedule of the Backup Job, which runs every 8 hours by default.
   schedule: "0 */8 * * *"
   # -- Name of the archive holding the backup if REDCap.
-  archiveName: redcap-backup.tar.gz
+  archiveName: "redcap-backup.tar.gz"
 
   redcap:
     image:
       # -- Image repository for the REDCap application backup container.
-      repository: busybox
+      repository: "busybox"
       # -- Image tag for the REDCap application backup container.
       tag: "1"
       # -- Image pullPolicy for the REDCap application backup container.
-      pullPolicy: Always
+      pullPolicy: "Always"
 
   database:
     image:
       # -- Image repository for the REDCap database backup container.
-      repository: bitnami/mysql
+      repository: "bitnami/mysql"
       # -- Image tag for the REDCap database backup container.
       tag: "8.4.3-debian-12-r4"
       # -- Image pullPolicy for the REDCap database backup container.
-      pullPolicy: Always
+      pullPolicy: "Always"
 
   uploader:
     image:
       # -- Image repository for the REDCap backup uploader container.
-      repository: bitnami/rclone
+      repository: "bitnami/rclone"
       # -- Image tag for the REDCap backup uploader container.
       tag: "1.68.2"
       # -- Image pullPolicy for the REDCap backup uploader container.
-      pullPolicy: Always
+      pullPolicy: "Always"
 
     s3:
       # -- Path of the REDcap backup archive on the S3 bucket.
@@ -362,33 +349,33 @@ restoreJob:
   # -- Schedule for the restore Cronjob. CronJob resources needs a valide schedule, but this one will never be used since it will always be suspended (see spec.suspend field).
   schedule: "0 0 1 1 *"
   # -- Name of the backup archive to restore.
-  archiveName: redcap-backup.tar.gz
+  archiveName: "redcap-backup.tar.gz"
   redcap:
     image:
       # -- Image repository for the REDCap application restore container.
-      repository: busybox
+      repository: "busybox"
       # -- Image tag for the REDCap application restore container.
       tag: "1"
       # -- Image pullPolicy for the REDCap application restore container.
-      pullPolicy: Always
+      pullPolicy: "Always"
 
   database:
     image:
       # -- Image repository for the REDCap database restore container.
-      repository: bitnami/mysql
+      repository: "bitnami/mysql"
       # -- Image yag for the REDCap application restore container.
       tag: "8.0.32-debian-11-r14"
       # -- Image pullPolicy for the REDCap application restore container.
-      pullPolicy: Always
+      pullPolicy: "Always"
 
   downloader:
     image:
       # -- Image repository for the REDCap downloader container.
-      repository: bitnami/rclone
+      repository: "bitnami/rclone"
       # -- Image tag for the REDCap downloader container.
       tag: "1.68.2"
       # -- Image pullPolicy for the REDCap downloader container.
-      pullPolicy: Always
+      pullPolicy: "Always"
 
     s3:
       # -- Path of the REDcap backup archive on the S3 bucket.
@@ -426,22 +413,22 @@ audit:
 
   podLabels:
     # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
-    app.kubernetes.io/role: redcap-audit
+    app.kubernetes.io/role: "redcap-audit"
 
   initContainers:
   # -- Init container in charge of downloading the JDBC driver needed to connect to the MySQL database.
   # @default -- A simple container to download the jar JDBC driver on a volume shared with Logstash.
-  - name: init-driver-download
+  - name: "init-driver-download"
     # -- Image used for the pod downloading the driver.
-    image: alpine:3.18
+    image: "alpine:3.18"
     # -- Image pullPolicy used for the pod downloading the driver.
-    imagePullPolicy: Always
+    imagePullPolicy: "Always"
 
     env:
     # -- Env var to set the URL of the JDBC driver to download.
-    - name: JDBC_DRIVER_URL
+    - name: "JDBC_DRIVER_URL"
       # -- URL of the JDBC driver to download.
-      value: https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz
+      value: "https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz"
 
     # -- Command to be run to download and extract the JDBC driver.
     # @default -- Using `wget` do download the driver, and miving it to the shared persitent volume.
@@ -464,9 +451,9 @@ audit:
     # -- Volume mount used to persist the JDBC driver.
     volumeMounts:
     # -- Name of the volume used to persist the JDBC driver.
-    - name: driver-dir
+    - name: "driver-dir"
       # -- Mount path ofthe volume used to persist the JDBC driver.
-      mountPath: /driver
+      mountPath: "/driver"
 
   # -- If set to `true`, allows the use of multiple pipelines. Needed for audit concurrent pipelines for performance reasons.
   enableMultiplePipelines: true
@@ -474,12 +461,12 @@ audit:
   existingConfiguration: "redcap-mysql-audit-logstash-pipeline"
   # -- Extra environment variables needed.
   extraEnvVars:
-  - name: MYSQL_PASSWD
+  - name: "MYSQL_PASSWD"
     valueFrom:
       secretKeyRef:
         name: ""
         key: ""
-  - name: AUDIT_TOKEN
+  - name: "AUDIT_TOKEN"
     valueFrom:
       secretKeyRef:
         name: ""
@@ -499,21 +486,21 @@ audit:
   # -- Volumes required for Logstash's deployment.
   extraVolumes:
   # -- JDBC Driver downloaded by the init container.
-  - name: driver-dir
+  - name: "driver-dir"
     emptyDir:
       sizeLimit: 50Mi
   # -- Volume handling the CA used to validate the HTTPS conenxion to the audit stack the logs are send to.
-  - name: api-ca
+  - name: "api-ca"
     secret:
       secretName: ""
 
   # -- Volume mounts required for Logstash's deployment.
   extraVolumeMounts:
   # -- JDBC Driver downloaded by the init container.
-  - name: driver-dir
+  - name: "driver-dir"
     mountPath: /driver
   # -- Volume handling the CA used to validate the HTTPS connexion to the audit stack the logs are send to.
-  - name: api-ca
+  - name: "api-ca"
     mountPath: /var/run/secret/api-ca.pem
     subpath: ""
 
@@ -546,17 +533,17 @@ ingress:
   # -- If set to `true`, enables ingress.
   enabled: true
   # -- Ingress' class name
-  className: nginx
+  className: "nginx"
 
   # -- Ingress' annotations
   annotations: {}
 
   # -- Ingress' hosts
   hosts:
-    - host: localhost
+    - host: "localhost"
       paths:
         - path: /
-          pathType: ImplementationSpecific
+          pathType: "ImplementationSpecific"
 
   # -- Ingress TLS configuration
   tls: []
@@ -568,11 +555,11 @@ service:
     # -- Annotations for the Apache HTTPd service.
     annotations: {}
     # -- Type of the Apache HTTPd service.
-    type: ClusterIP
+    type: "ClusterIP"
     # -- Protocol of the Apache HTTPd service.
-    protocol: TCP
+    protocol: "TCP"
     # -- Name of the Apache HTTPd service.
-    portName: httpd-service-port
+    portName: "httpd-service-port"
 
 
   redcap:
@@ -581,15 +568,15 @@ service:
     # -- Annotations for the REDCap service.
     annotations: {}
     # -- Type of the REDCap service.
-    type: ClusterIP
+    type: "ClusterIP"
     # -- Port of the REDCap service.
     port: 9000
     # -- Protocol of the REDCap service.
-    protocol: TCP
+    protocol: "TCP"
     # -- Port of the REDCap service.
     targetPort: 9000
     # -- Name of the REDCap service.
-    portName: redcap-service-port
+    portName: "redcap-service-port"
 
 
 autoscaling:
@@ -608,9 +595,9 @@ autoscaling:
 persistence:
   redcap_code:
     annotations:
-      helm.sh/resource-policy: keep
+      helm.sh/resource-policy: "keep"
     # -- Size of the volume used to persist REDCap code.
-    size: 1Gi
+    size: "1Gi"
     # -- Storage Class of the volume used to persist REDCap code.
     storageClass: "standard"
     # -- AccessMode of the volume used to persist REDCap code.
@@ -621,9 +608,9 @@ persistence:
 
   edocs:
     annotations:
-      helm.sh/resource-policy: keep
+      helm.sh/resource-policy: "keep"
     # -- Size of the volume used to persist documents uplpoaded by REDCap users.
-    size: 8Gi
+    size: "8Gi"
     # -- StorageClass of the volume used to persist documents uplpoaded by REDCap users.
     storageClass: "standard"
     # -- AccessMode of the volume used to persist documents uplpoaded by REDCap users.
