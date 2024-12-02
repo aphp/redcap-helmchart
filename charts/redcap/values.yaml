@@ -213,7 +213,7 @@ redcap:
         password:
           # -- The password used to connect to REDCAP's database.
           # @section -- REDCap settings
-          value: "Redc@p*!"
+          value: "Redcap*!"
           secretKeyRef:
             # -- The name of the secret holding the password used to connect to REDCAP's database.
             #    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
@@ -329,7 +329,7 @@ mysql:
     # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
     #    Not secure in production, use secret reference instead!
     # @section -- REDCap MySQL DDatabase settings
-    password: "Redc@p*!"
+    password: "Redcap*!"
 
 
   primary:

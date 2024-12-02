@@ -1,6 +1,7 @@
 # `aphp/redcap-helmchart`
 
 ## Presentation
+
 This repository hosts the REDCap Helm Chart developped by the Greater Paris University Hospitals (`APHP` in French - Assistance Publique des Hôpitaux de Paris). This Chart allows for a cloud-natuve and cloud-agnostic deployment of REDCap, a secure web application for building and managing online surveys and databases.
 
 REDCap is devopped by the Vanderbilt University and **is not provided by this Chart or any of its dependencies.**
@@ -24,34 +25,31 @@ On top of that, you can also choose to deploy :
 - A Backup Cronjob, that can generate an archive containing a database dump, a dump of the `edocs` folder, and a dump of the folder hosting the REDCap Application.
   This backup is then sended to an S3-compatible storage.
 - A Restore Job that can be triggered to restore a previous backup
-- An `audit` component, that will request the Audit tables of the REDCap Databasen and use Logstash to ship them to the audit stack of your choice
+- An `audit` component, that will request the Audit tables of the REDCap Database, and use Logstash to ship them to the audit stack of your choice
 
-A few examples of configuration can be found in the [examples](./examples/) folder, and the documentation of the Chart can be found in its [README file](./charts/redcap/README.md).
+The documentation of the Chart can be found in its [README file](./charts/redcap/README.md).
 
 ## How can I test it?
 
-If you wish to quickly fire a REDCap installation with this chart, you may follow the following steps : 
+In the [example directory](./examples/), there several subdirectories containing documented examples according to your needs. 
+- If you want to quicly boot-up a local/test environement, you can start by looking at the [local example](./examples/local/)
+- If you want to start deploying a more stable and secure environment, you can have a look at the [production example](./examples/production/)
 
-- Have a ready-to-use Kubernetes cluster on which you can deploy REDCap. You can quicly deploy one locally, or on a VM [using KinD with Ingress](https://kind.sigs.k8s.io/docs/user/ingress/).
+## General questions
 
-- Create a secret holding your REDCap Community Site credentials :
-  ```sh
-  kubectl create secret generic redcap-community-credentials --from-literal USERNAME=my-username --from-literal PASSWORD=my-password
-  ```
-- Edit the line 04 of the [basic-install file](./examples/basic-install.yaml) to enter the hostname you wish to use for your ingress.
-- Add this Helm Repository to your Helm installation : 
-  ```sh
-  helm repo add aphp-redcap https://aphp.github.io/redcap-helmchart
-  ```
-- Update your Helm repositories :
-  ```sh
-  helm repo update
-  ```
-- Install this chart using the modified values file : 
-  ```sh
-  helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
-  ```
-
+- Is this installation compatible with OIDC/SAML?
+  Yes, you can configure OIDC directly in REDCap settings, whilst you'll need to configure and activate SAML2 in the chart's settings [see the chart's documentation](./charts/redcap/README.md). Other authentication methods like LDAP should also work, but haven't been tested properly.
+- What REDCap feature can I use?
+  This Chart aims to deploy REDCap in an evironment that looks 'familiar' for the application, so you should be able to use any feature you'd use in a more traditional context.
+  At the Greater Paris University Hospitals, we use this chart in production for a yeat on several projet. It is possible though that with time, new versions of REDCap will need extra dependencies to be available on the PHP FPM server. If it's the case, the corresponding container image will be released.
+- How secure is it?
+  With its many parameters, and the exposition of several admin pages like cronjob ot install, this installation will be as secure as its configuration. This chart offers many security feature (containerisation, rootless processes, traffic isolation with network policies), so be sure to check them, and to have a comprehensive view of your installation!
+- How can I update it?
+  We recommend to setup your REDCap installtion using the default method stated [in the examples](./examples/), that is to provide the chart with your REDCap Community credentials via a Secret. You can then simply use the REDCap "one click update" feature to update your installation via the Control Center. 
+- How can I manage backups?
+  If you're going with the backup/restore feature of this Chart, every backup will contain the redcap application directory, the edocs directory, and a database dump, so you'll be able to restore everything in one go. You're of course free to use any other method!
+- I can't get the REDCap application via the community website because my admins won't whitelist the URL/whatever other reasons!
+  You can override the init container in charge of retrieving the REDCap application, and add as many other initContainers you like to build your own retrieval logic. I might take some time to get into the logic, but you can help yourself with the few snippets presents [in the exmaple directory](./examples/snippets/).
 
 ## Continous Integration / Continous Delivery
 
