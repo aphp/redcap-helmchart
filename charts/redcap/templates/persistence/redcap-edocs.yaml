@@ -1,0 +1,30 @@
+{{- if not .Values.persistence.edocs.existingClaim.name }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "redcap.persistence.edocs.pvc.name" . }}
+  namespace: {{ .Release.Namespace }}
+{{- with .Values.persistence.edocs.annotations  }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app: "{{ .Release.Name }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+
+spec:
+  accessModes:
+    - {{ .Values.persistence.edocs.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.edocs.size | quote }}
+{{- if .Values.persistence.edocs.storageClass }}
+{{- if (eq "-" .Values.persistence.edocs.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.edocs.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}

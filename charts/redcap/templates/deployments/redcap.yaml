@@ -1,0 +1,287 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "redcap.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.redcap.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "redcap.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "redcap.labels" . | nindent 8 }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+
+    spec:
+      securityContext:
+        fsGroup: 2000
+        fsGroupChangePolicy: "OnRootMismatch"
+        runAsNonRoot: true
+
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecrets }}
+      {{- end }}
+
+      initContainers:
+      {{- if .Values.redcap.install.enabled }}
+
+      {{- if not (empty .Values.redcap.install.overrideInstallContainer) }}
+      {{- with .Values.redcap.install.overrideInstallContainer }}
+        {{- . | toYaml | nindent 6 }}
+      {{- end }}
+
+      {{ else }}
+      - name: init-download-redcap
+        image: "{{ .Values.redcap.install.image.repository }}:{{ .Values.redcap.install.image.tag }}"
+        imagePullPolicy: {{ .Values.redcap.install.image.pullPolicy }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 2000
+          runAsGroup: 2000
+
+        env:
+        - name : REDCAP_INSTALL_PATH
+          value: "/redcap"
+        - name : OVERRIDE_INSTALL
+          value: {{ .Values.redcap.install.override | toString | quote }}
+        - name : REDCAP_VERSION
+          value: {{ .Values.redcap.install.version }}
+        - name: REDCAP_COMMUNITY_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ default (include "redcap.secrets.community.creds.name" .) .Values.redcap.install.communityAuth.existingSecret }}
+              key: USERNAME
+        - name: REDCAP_COMMUNITY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ default (include "redcap.secrets.community.creds.name" .) .Values.redcap.install.communityAuth.existingSecret }}
+              key: PASSWORD
+
+        command:
+        - "sh"
+        - "-c"
+        - "/home/curl_user/redcap-install.sh"
+
+        volumeMounts:
+        - name: redcap-code
+          mountPath: /redcap
+        - name: init-install-script
+          mountPath: /home/curl_user/redcap-install.sh
+          subPath: redcap-install.sh
+      {{- end }}
+      {{- end }}
+
+      {{- with .Values.redcap.extraInitContainers }}
+        {{- . | toYaml | nindent 6 }}
+      {{- end }}
+
+      - name: wait-for-db
+        image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
+        imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
+
+        env:
+        - name: DB_PASSWD
+          {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+              key: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
+          {{- else }}
+          value: {{ .Values.redcap.config.database.auth.password.value }}
+          {{- end }}
+
+        command: 
+        - "sh"
+        - "-c"
+        - "mysql \
+              --host={{ .Values.redcap.config.database.auth.hostname }} \
+              --port={{ default 3306 .Values.mysql.primary.service.ports.mysql }}
+              --user={{ .Values.redcap.config.database.auth.username }} \
+              --password=${DB_PASSWD} \  
+              --database {{ .Values.redcap.config.database.auth.databaseName }} \
+              --wait \
+              --execute \"SHOW TABLES;\" \
+              -v"
+
+        securityContext:
+          allowPrivilegeEscalation: false
+
+      - name: msmtp-config-injector
+        image: "busybox:1"
+        imagePullPolicy: Always
+        command: 
+        - "sh"
+        - "-c"
+        - "cat /var/run/secrets/msmtp/config > /msmtp/.msmtprc &&
+           chmod -Rv 600 /msmtp/.msmtprc"
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 2000
+          runAsGroup: 2000
+
+        volumeMounts:
+        - name: redcap-code
+          mountPath: /redcap
+        - name: edocs
+          mountPath: /edocs
+        - name: msmtp-conf
+          mountPath: /var/run/secrets/msmtp/config
+          subPath: msmtprc
+          readOnly: false
+        - name: msmtp-conf-dir
+          mountPath: /msmtp
+
+      containers:
+      - name: {{ .Release.Name }}-phpfpm
+        image: "{{ .Values.redcap.image.repository }}:{{ .Values.redcap.image.tag }}"
+        imagePullPolicy: {{ .Values.redcap.image.pullPolicy }}
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 2000
+          runAsGroup: 2000
+
+        env:
+        - name: XDG_CONFIG_HOME
+          value: "/var/run/secrets"
+
+        resources:
+          {{- toYaml .Values.redcap.resources | nindent 10 }}
+
+        ports:
+        - name: phpfpmport
+          containerPort: 9000
+          protocol: TCP
+
+        volumeMounts:
+        - name: redcap-code
+          mountPath: /app/redcap
+        - name: edocs
+          mountPath: /edocs
+        - name: database-conf
+          mountPath: /app/redcap/database.php
+          subPath: database.php
+        - name: database-creds
+          mountPath: /var/run/secrets/credentials.php
+          subPath: credentials.php
+        {{- if .Values.redcap.config.database.auth.password.secretKeyRef.key }}
+        - name: database-password
+          mountPath: /var/run/secrets/DB_PASSWD
+          subPath: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
+        {{- end }}
+        {{- if .Values.redcap.config.database.salt.secretKeyRef.key }}
+        - name: database-salt
+          mountPath: /var/run/secrets/SALT
+          subPath: {{ .Values.redcap.config.database.salt.secretKeyRef.key }}
+        {{- end }}
+        {{- if .Values.redcap.config.tls.curlCA.secretKeyRef.key }}
+        - name: php-curl-capath
+          mountPath: /var/run/secrets/php-curl-ca.crt
+          subPath: {{ .Values.redcap.config.tls.curlCA.secretKeyRef.key }}
+        {{- end }}
+        - name: php-conf
+          mountPath: /usr/local/etc/php-fpm.conf
+          subPath: php-fpm.conf
+        - name: php-conf
+          mountPath: /usr/local/etc/php/php.ini
+          subPath: php.ini
+        - name: php-conf
+          mountPath: /usr/local/etc/php-fpm.d/zz-docker.conf
+          subPath: zz-docker.conf
+        - name: php-conf
+          mountPath: /etc/ImageMagick-6/policy.xml
+          subPath: imagick-policy.xml
+        - name: mail-conf
+          mountPath: /etc/aliases
+          subPath: aliases
+        - name: msmtp-conf-dir
+          mountPath: /msmtp
+        {{- if .Values.redcap.config.mail.auth.password.existingSecret }}
+        - name: msmtp-passwd
+          mountPath: /var/run/secrets/MAIL_PASSWD
+          subPath: MAIL_PASSWORD
+        {{- end }}
+
+      {{- with .Values.redcap.extraContainers }}
+        {{- . | toYaml | nindent 6 }}
+      {{- end }}
+
+      volumes:
+      {{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
+      - name: init-install-script
+        configMap:
+          name: {{ .Release.Name }}-init-install-script
+          defaultMode: 0777
+      {{- end }}
+      - name: redcap-code
+        persistentVolumeClaim:
+          claimName: {{ default (include "redcap.persistence.code.pvc.name" .) .Values.persistence.redcap_code.existingClaim.name }}
+      - name: edocs 
+        persistentVolumeClaim:
+          claimName: {{ default (include "redcap.persistence.edocs.pvc.name" .) .Values.persistence.edocs.existingClaim.name }}
+      - name: mail-conf
+        configMap:
+          name: {{ .Release.Name }}-mail-conf
+      - name: database-conf
+        configMap:
+          name: {{ .Release.Name }}-database-conf
+      - name: database-creds
+        secret:
+          secretName: {{ include "redcap.secrets.database.creds.name" . }}
+      {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+      - name: database-password
+        secret:
+          secretName: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+      {{- end }}
+      {{- if .Values.redcap.config.database.salt.secretKeyRef.name }}
+      - name: database-salt
+        secret:
+          secretName: {{ .Values.redcap.config.database.salt.secretKeyRef.name }}
+      {{- end }}
+      {{- if .Values.redcap.config.tls.curlCA.secretKeyRef.name  }}
+      - name: php-curl-capath
+        secret:
+          secretName: {{ .Values.redcap.config.tls.curlCA.secretKeyRef.name }}
+      {{- end }}
+      - name: php-conf
+        configMap:
+          name: {{ .Release.Name }}-php-conf
+      - name: msmtp-conf-dir
+        emptyDir:
+          sizeLimit: 5Mi
+      - name: msmtp-conf
+        secret:
+          secretName: {{ include "redcap.secrets.msmtprc.conf.name" . }}
+          defaultMode: 0600
+      {{- if .Values.redcap.config.mail.auth.password.existingSecret }}
+      - name: msmtp-passwd
+        secret:
+          secretName: {{ .Values.redcap.config.mail.auth.password.existingSecret }}
+      {{- end }}
+      {{- with .Values.redcap.extraVolumes }}
+        {{- . | toYaml | nindent 6 }}
+      {{- end }}
+
+
+      {{- with .Values.redcap.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.redcap.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      {{- with .Values.redcap.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

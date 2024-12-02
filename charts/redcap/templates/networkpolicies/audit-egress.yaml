@@ -1,0 +1,49 @@
+{{- if and (.Values.networkPolicies.enabled) (.Values.audit.enabled ) }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-audit-egress
+spec:
+  podSelector:
+    matchLabels:
+    {{- range $labelKey, $labelValue := .Values.audit.podLabels }}
+      {{ $labelKey | nindent 6 }}: {{ $labelValue }}
+    {{- end }}
+  policyTypes:
+    - Egress
+    
+  egress:
+    # allow egress to HTTPS in order to download the JDBC driver for Logstash, and export metrics external platforms
+    - to:
+      ports:
+        - protocol: TCP
+          port: 443
+        {{- if .Values.audit.logsApi.config.port }}
+        - protocol: TCP
+          port: {{ .Values.audit.logsApi.config.port }}
+        {{- end }}
+
+    - to:
+      - podSelector:
+          matchLabels:
+            {{- range $labelKey, $labelValue := .Values.mysql.primary.podLabels }}
+              {{ $labelKey | nindent 12 }}: {{ $labelValue }}
+            {{- end }}
+      ports:
+        - protocol: TCP
+          port: {{ default 3306 .Values.mysql.primary.service.ports.mysql }}
+
+    # allow DNS resolution
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: kube-system
+        podSelector:
+          matchLabels:
+            k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+{{- end }}

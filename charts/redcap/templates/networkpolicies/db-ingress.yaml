@@ -1,0 +1,43 @@
+{{- if .Values.networkPolicies.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-db-ingress
+spec:
+  podSelector:
+    matchLabels:
+    {{- range $labelKey, $labelValue := .Values.mysql.primary.podLabels }}
+      {{ $labelKey | nindent 6 }}: {{ $labelValue }}
+    {{- end }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            {{ include "redcap.networkPolicy.selectorLabels" . | nindent 12 }}
+
+      {{- if .Values.backupJob.enabled }}
+      - podSelector:
+          matchLabels:
+            {{ include "redcap.backupJob.networkPolicy.selectorLabels" . | nindent 12 }}
+      {{- end }}
+
+      {{- if .Values.restoreJob.enabled }}
+      - podSelector:
+          matchLabels:
+            {{ include "redcap.restoreJob.networkPolicy.selectorLabels" . | nindent 12 }}
+      {{- end }}
+
+      {{- if .Values.audit.enabled }}
+      - podSelector:
+          matchLabels:
+          {{- range $labelKey, $labelValue := .Values.audit.podLabels }}
+            {{ $labelKey | nindent 12 }}: {{ $labelValue }}
+          {{- end }}
+      {{- end }}
+
+      ports:
+        - protocol: TCP
+          port: {{ default 3306 .Values.mysql.primary.service.ports.mysql }}
+{{- end }}

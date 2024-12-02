@@ -1,0 +1,171 @@
+{{- if .Values.backupJob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "redcap.backupJob.fullname" . }}
+  labels:
+    {{- include "redcap.backupJob.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.backupJob.schedule }}
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 7200
+      backoffLimit: 1
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          name: {{ include "redcap.backupJob.fullname" . }}
+          labels:
+            {{- include "redcap.backupJob.labels" . | nindent 12 }}
+
+        spec:
+          securityContext:
+            runAsUser: 2000
+            runAsGroup: 2000
+            fsGroup: 2000
+            fsGroupChangePolicy: "OnRootMismatch"
+            runAsNonRoot: true
+
+          {{- with .Values.backupJob.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+
+          initContainers:
+          - name: files-backup
+            image: "{{ .Values.backupJob.redcap.image.repository }}:{{ .Values.backupJob.redcap.image.tag }}"
+            imagePullPolicy: {{ .Values.backupJob.redcap.image.pullPolicy }}
+
+            command: 
+            - "sh"
+            - "-c"
+            - "cp -r -v /edocs /backup-data/redcap-edocs && \
+               cp -r -v /redcap /backup-data/redcap-app"
+
+            securityContext:
+              allowPrivilegeEscalation: false
+
+            volumeMounts:
+            - name: edocs
+              mountPath: /edocs
+            - name: redcap-code
+              mountPath: /redcap
+            - name: backup-data
+              mountPath: /backup-data
+
+          - name: db-backup
+            image: "{{ .Values.backupJob.database.image.repository }}:{{ .Values.backupJob.database.image.tag }}"
+            imagePullPolicy: {{ .Values.backupJob.database.image.pullPolicy }}
+
+            env:
+            - name: DB_PASSWD
+              {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+                  key: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
+              {{- else }}
+              value: {{ .Values.redcap.config.database.auth.password.value }}
+              {{- end }}
+
+            command: 
+            - "sh"
+            - "-c"
+            - "mkdir -v /backup-data/redcap-db && \
+               mysqldump \
+                  --host={{ .Values.redcap.config.database.auth.hostname }} \
+                  --user={{ .Values.redcap.config.database.auth.username }} \
+                  --password=${DB_PASSWD} \  
+                  --databases {{ .Values.redcap.config.database.auth.databaseName }} \
+                  --add-drop-database \
+                  --column-statistics \
+                  -y \
+                  -v \
+                > /backup-data/redcap-db/redcap-db-backup.sql"
+
+            securityContext:
+              allowPrivilegeEscalation: false
+
+            volumeMounts:
+            - name: backup-data
+              mountPath: /backup-data
+
+          containers:
+          - name: backup-upload
+            image: "{{ .Values.backupJob.uploader.image.repository }}:{{ .Values.backupJob.uploader.image.tag }}"
+            imagePullPolicy: {{ .Values.backupJob.redcap.image.pullPolicy }}
+
+            {{- if .Values.backupJob.uploader.s3.config.auth.existingSecret }}
+            env:
+            - name: RCLONE_CONFIG_REDCAP_BACKUP_BUCKET_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.backupJob.uploader.s3.config.auth.existingSecret }}
+                  key: ACCESS_KEY_ID
+            - name: RCLONE_CONFIG_REDCAP_BACKUP_BUCKET_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.backupJob.uploader.s3.config.auth.existingSecret }}
+                  key: SECRET_ACCESS_KEY
+            {{- end }}
+
+            resources:
+              {{- toYaml .Values.backupJob.resources | nindent 14 }}
+
+            command: 
+            - "sh"
+            - "-c"
+            - "/tmp/backup-upload.sh"
+
+            securityContext:
+              allowPrivilegeEscalation: false
+
+            volumeMounts:
+            - mountPath: /backup-data
+              name: backup-data
+            - name: rclone-conf
+              mountPath: /.rclone.conf
+              subPath: rclone.conf
+            - name: upload-script
+              mountPath: /tmp/backup-upload.sh
+              subPath: backup-upload.sh
+
+          volumes: 
+          - name: redcap-code
+            persistentVolumeClaim:
+              claimName: {{ .Release.Name }}-code-pvc
+          - name: edocs 
+            persistentVolumeClaim:
+              claimName: {{ .Release.Name }}-edocs-pvc
+          - name: backup-data
+            emptyDir: {}
+          - name: upload-script
+            configMap:
+              name: {{ .Release.Name }}-backup-upload-script
+              defaultMode: 0777
+          - name: rclone-conf
+            secret:
+              secretName: {{ include "redcap.secrets.backup.rclone.conf.name" . }}
+
+
+          {{- with .Values.redcap.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.redcap.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          
+          {{- with .Values.redcap.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          restartPolicy: Never
+
+{{- end }}

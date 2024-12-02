@@ -1,0 +1,8 @@
+{{- if .Values.httpd.shibboleth.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-shibboleth
+data: 
+{{ tpl (.Files.Glob "configuration/httpd/shibboleth/*").AsConfig . | nindent 2 }}
+{{- end }}

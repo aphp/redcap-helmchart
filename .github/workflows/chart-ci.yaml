@@ -1,0 +1,156 @@
+name: Chart CI
+
+on:
+  push:
+    branches:
+      - "dev"
+    tags:
+      - "v*.*.*"
+
+jobs: 
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: v3.14.4
+
+      - name: Add Helm repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
+      - name: Setup Helm plugins
+        run: |
+          helm plugin install https://github.com/jtyr/kubeconform-helm
+
+      - name: Setup Polaris
+        run: |
+          mkdir -p .local/bin
+          curl -s https://api.github.com/repos/FairwindsOps/polaris/releases/latest | \
+            jq '.assets[] | select(.name=="polaris_linux_amd64.tar.gz")'.browser_download_url | \
+            xargs curl -s -L | \
+          tar xvz -C .local/bin polaris
+          echo "$PWD/.local/bin" >> $GITHUB_PATH
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          check-latest: true
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run chart-testing (lint)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          ct lint --target-branch ${{ github.event.repository.default_branch }}
+
+      - name: Run chart-testing (kubeconform)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          helm kubeconform ./charts/redcap --output json --kubernetes-version "1.24.0" --strict --summary
+
+      - name: Run chart-testing (polaris)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          polaris audit \
+            --only-show-failed-tests \
+            --set-exit-code-below-score=80 \
+            --set-exit-code-on-danger=true \
+            --helm-chart ./charts/redcap \
+            --helm-values ./charts/redcap/tests/values.yaml \
+            --format=pretty \
+            --color=true
+
+      - name: Create kind cluster
+        if: steps.list-changed.outputs.changed == 'true'
+        uses: helm/kind-action@v1.10.0
+
+      - name: Run chart-testing (install)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct install --target-branch ${{ github.event.repository.default_branch }}
+      
+  generate-doc-schema:
+    needs: lint-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Cache chart dir
+      id: cache-dir
+      uses: actions/cache@v4
+      with:
+        path: charts
+        key: ${{ github.sha }}-redcap-chart
+
+    - name: Helm-docs
+      uses: losisin/helm-docs-github-action@v1.3.3
+      with:
+        chart-search-root: ./charts/redcap
+        values-file : ./values.yaml
+        output-file: ./README.md
+        template-files: ./README.md.gotpl
+        sort-values-order: file
+
+    - name: Generate values schema json
+      uses: losisin/helm-values-schema-json-action@v1.5.3
+      with:
+        input: ./charts/redcap/values.yaml
+        output: ./charts/redcap/values.schema.json
+
+
+  release:
+    needs: generate-doc-schema
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache chart dir
+        id: cache-dir
+        uses: actions/cache@v4
+        with:
+          path: charts
+          key: ${{ github.sha }}-redcap-chart
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          
+      - name: Add Helm repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+  
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          skip_existing: true

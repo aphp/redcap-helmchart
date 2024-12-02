@@ -1,0 +1,170 @@
+{{- if .Values.restoreJob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "redcap.restoreJob.fullname" . }}
+  labels:
+    {{- include "redcap.restoreJob.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.restoreJob.schedule }}
+  suspend: true # We don't want the restore Job to run on a scheduled basis, but we still want the convenience to have that job templated correctly, ready to be manually fired from the JobTemplate inside that Cronjob.
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 7200
+      backoffLimit: 1
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          name: {{ include "redcap.restoreJob.fullname" . }}
+          labels:
+            {{- include "redcap.restoreJob.labels" . | nindent 12 }}
+
+        spec:
+          securityContext:
+            runAsUser: 2000
+            runAsGroup: 2000
+            fsGroup: 2000
+            fsGroupChangePolicy: "OnRootMismatch"
+            runAsNonRoot: true
+
+          {{- with .Values.restoreJob.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+
+          initContainers:
+          - name: backup-download
+            image: "{{ .Values.restoreJob.downloader.image.repository }}:{{ .Values.restoreJob.downloader.image.tag }}"
+            imagePullPolicy: {{ .Values.restoreJob.redcap.image.pullPolicy }}
+
+            {{- if .Values.restoreJob.downloader.s3.config.auth.existingSecret }}
+            env:
+            - name: RCLONE_CONFIG_REDCAP_RESTORE_BUCKET_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.restoreJob.downloader.s3.config.auth.existingSecret }}
+                  key: ACCESS_KEY_ID
+            - name: RCLONE_CONFIG_REDCAP_RESTORE_BUCKET_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.restoreJob.downloader.s3.config.auth.existingSecret }}
+                  key: SECRET_ACCESS_KEY
+            {{- end }}
+
+            command: 
+            - "sh"
+            - "-c"
+            - "/tmp/backup-download.sh"
+
+            securityContext:
+              allowPrivilegeEscalation: false
+
+            volumeMounts:
+            - mountPath: /backup-data
+              name: backup-data
+            - name: rclone-conf
+              mountPath: /.rclone.conf
+              subPath: rclone.conf
+            - name: download-script
+              mountPath: /tmp/backup-download.sh
+              subPath: backup-download.sh
+
+          - name: files-restore
+            image: "{{ .Values.restoreJob.redcap.image.repository }}:{{ .Values.restoreJob.redcap.image.tag }}"
+            imagePullPolicy: {{ .Values.restoreJob.redcap.image.pullPolicy }}
+            command: 
+            - "sh"
+            - "-c"
+            # Purging the edocs (user's uploaded files) and redcap (application codebase, except database.php which is a custom mount from a secret) befre restoring them, to have idempotent backups 
+            - "rm -f -r -v /edocs/* && \
+               cp -f -r -v /backup-data/redcap-edocs/* /edocs && \
+               find /redcap -mindepth 1 -name \"*\" -not \\( -name \"database.php\" \\) -prune -exec rm -r -f -v {} \\; && \
+               cp -f -r -v /backup-data/redcap-app/* /redcap"
+
+            securityContext:
+              allowPrivilegeEscalation: false
+
+            volumeMounts:
+            - name: edocs
+              mountPath: /edocs
+            - name: redcap-code
+              mountPath: /redcap
+            - name: backup-data
+              mountPath: /backup-data
+
+          containers:
+          - name: db-restore
+            image: "{{ .Values.restoreJob.database.image.repository }}:{{ .Values.restoreJob.database.image.tag }}"
+            imagePullPolicy: {{ .Values.restoreJob.database.image.pullPolicy }}
+
+            env:
+            - name: DB_PASSWD
+              {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+                  key: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
+              {{- else }}
+              value: {{ .Values.redcap.config.database.auth.password.value }}
+              {{- end }}
+
+            command: 
+            - "sh"
+            - "-c"
+            - "mysql \
+                  --host={{ .Values.redcap.config.database.auth.hostname }} \
+                  --database={{ .Values.redcap.config.database.auth.databaseName }} \
+                  --user={{ .Values.redcap.config.database.auth.username }} \
+                  --password=${DB_PASSWD} \
+                  -v \
+               < /backup-data/redcap-db/redcap-db-backup.sql"
+
+            securityContext:
+              allowPrivilegeEscalation: false
+
+            resources:
+              {{- toYaml .Values.restoreJob.resources | nindent 14 }}
+
+            volumeMounts:
+            - name: backup-data
+              mountPath: /backup-data
+
+          volumes: 
+          - name: redcap-code
+            persistentVolumeClaim:
+              claimName: {{ .Release.Name }}-code-pvc
+          - name: edocs 
+            persistentVolumeClaim:
+              claimName: {{ .Release.Name }}-edocs-pvc
+          - name: backup-data
+            emptyDir: {}
+          - name: download-script
+            configMap:
+              name: {{ .Release.Name }}-backup-download-script
+              defaultMode: 0777
+          - name: rclone-conf
+            secret:
+              secretName: {{ include "redcap.secrets.restore.rclone.conf.name" . }}
+
+
+          {{- with .Values.redcap.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.redcap.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          
+          {{- with .Values.redcap.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          restartPolicy: Never
+
+{{- end }}

@@ -1,0 +1,46 @@
+httpd:
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "1Gi"
+      cpu: "0.5"
+
+redcap:
+  adminJob:
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "0.25"
+      limits:
+        memory: "1Gi"
+        cpu: "0.5"
+
+mysql:
+  primary:
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "0.5"
+      limits:
+        memory: "4Gi"
+        cpu: "2"
+
+backupJob:
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "1Gi"
+      cpu: "0.5"
+
+restoreJob:
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "1Gi"
+      cpu: "0.5"

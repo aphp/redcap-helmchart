@@ -1,0 +1,8 @@
+{{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-init-install-script
+data: 
+{{ tpl (.Files.Glob "configuration/redcap/init/redcap-install.sh").AsConfig . | nindent 2 }}
+{{- end }}

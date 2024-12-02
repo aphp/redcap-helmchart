@@ -1,0 +1,229 @@
+# Default values for redcaploc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+fullnameOverride: "redcap-ext-qual"
+
+httpd:
+  enabled: true
+  tls:  
+    enabled: false
+
+
+  shibboleth:
+    enabled: false
+
+  replicaCount: 1
+  resources: 
+    requests:
+      memory: "8Gi"
+      cpu: "3"
+    limits:
+      memory: "16Gi"
+      cpu: "6"
+  tolerations: 
+  - key: "environment"
+    operator: "Equal"
+    value: "cpu"
+    effect: "NoSchedule"
+  affinity: {}
+
+
+redcap:
+  install:
+    enabled: true
+    communityAuth:
+      username: test
+      password: test
+
+  config: 
+    logAllErrors: "TRUE"
+    externalURL: "https://test.com"
+    adminMail: "test@test.com"
+
+
+    mail: 
+      auth:
+        server: "test.net"
+        port: 465
+        tls: true
+        starttls: false
+        from: "noreply@test.com"
+        username: "noreply@test.com"
+        password:
+          existingSecret: "test"
+
+  replicaCount: 1
+  resources: 
+    requests:
+      memory: "20Gi"
+      cpu: "5"
+    limits:
+      memory: "46Gi"
+      cpu: "10"
+  nodeSelector: 
+    nodepool: redcap-ext-qual-app
+  tolerations: 
+    - key: "environment"
+      operator: "Equal"
+      value: "cpu"
+      effect: "NoSchedule"
+  affinity: {}
+
+  adminJob: 
+    schedule: "0 * * * *"  
+    resources: 
+      requests:
+        memory: "512Mi"
+        cpu: "0.25"
+      limits:
+        memory: "1Gi"
+        cpu: "0.5"
+
+mysql:
+  enabled: true
+  primary:
+    existingConfigmap: "redcap-ext-qual-mysql-config"
+    persistence: 
+      annotations:
+        helm.sh/resource-policy: keep
+      storageClass: "csi-cinder-high-speed"
+      accessModes: 
+      - "ReadWriteOnce"
+      size: "50G"
+      tolerations: 
+      - key: "environment"
+        operator: "Equal"
+        value: "cpu"
+        effect: "NoSchedule"
+    nodeSelector: 
+      nodepool: redcap-ext-qual-db
+    resources:
+      requests:
+        memory: "16Gi"
+        cpu: "8"
+      limits:
+        memory: "60Gi"
+        cpu: "16"
+
+
+backupJob:
+  enabled: true
+  imagePullSecrets: []
+  schedule: "0 */8 * * *" 
+  archiveName: test.tar.gz
+
+
+  uploader:
+    s3:
+      backupPath: "test"
+      config:
+        region: "test"
+        locationConstraint: "test"
+        endpoint: "https://test/"
+
+        auth:
+          existingSecret: "test"
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "1Gi"
+      cpu: "0.5"
+
+      
+restoreJob:
+  enabled: true
+  imagePullSecrets: []
+  schedule: "0 0 1 1 *" # CronJob resources needs a valide schedule, but this one will never be used, since that CronJob will be suspended (see spec.suspend field)  jobTemplate:
+  archiveName: test.tgz
+
+  downloader:
+    s3:
+      backupPath: "test"
+      config:
+        region: "test"
+        locationConstraint: "test"
+        endpoint: "https://test.net/"
+
+        auth:
+          existingSecret: "test"
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "1Gi"
+      cpu: "0.5"
+
+
+audit:
+  enabled: true
+
+  enableMultiplePipelines: true
+  existingConfiguration: "test"
+
+  extraEnvVars:
+  - name: LS_JAVA_OPTS
+    value: "-Xmx8G -Xss40M"
+  - name: MYSQL_PASSWD
+    valueFrom:
+      secretKeyRef:
+        name: "test"
+        key: "mysql-password"
+  - name: AUDIT_TOKEN
+    valueFrom:
+      secretKeyRef:
+          name: "test"
+          key: "TOKEN"
+
+
+      
+  resources:
+    requests:
+      memory: "10Gi"
+      cpu: "4"
+    limits:
+      memory: "20Gi"
+      cpu: "8"
+
+
+networkPolicies: 
+  enabled: true 
+
+
+ingress:
+  enabled: true
+  
+  hosts:
+    - host: test.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+
+service:
+  httpd:
+    enabled: true
+    annotations: {}
+    type: ClusterIP 
+    protocol: TCP
+    portName: httpd-service-port
+
+  redcap:
+    enabled: true
+    annotations: {}
+    type: ClusterIP 
+    protocol: TCP
+    portName: redcap-service-port
+
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
