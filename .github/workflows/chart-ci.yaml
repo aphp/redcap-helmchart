@@ -98,7 +98,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: charts
-        key: ${{ runner.os }}-redcap-chart
+        key: ${{ github.sha }}-redcap-chart
 
     - name: Helm-docs
       uses: losisin/helm-docs-github-action@v1.3.3
@@ -132,7 +132,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: charts
-          key: ${{ runner.os }}-redcap-chart
+          key: ${{ github.sha }}-redcap-chart
 
       - name: Configure Git
         run: |
