@@ -176,11 +176,11 @@ redcap:
     tls:
       curlCA:
         secretKeyRef:
-          # -- The name of the secret containing the CA Certificate ued by the curl library of the application to reach external services, like an OIDC provider. 
+          # -- The name of the secret containing the CA Certificate ued by the curl library of the application to reach external services, like an OIDC provider.
           #    Useful some of those services are not signed by known CAs.
           # @section -- REDCap settings
           name: ""
-          # -- The key of the secret containing the CA Certificate ued by the curl library of the application to reach external services, like an OIDC provider. 
+          # -- The key of the secret containing the CA Certificate ued by the curl library of the application to reach external services, like an OIDC provider.
           #    Useful some of those services are not signed by known CAs.
           # @section -- REDCap settings
           key: ""
@@ -215,11 +215,11 @@ redcap:
           # @section -- REDCap settings
           value: "Redc@p*!"
           secretKeyRef:
-            # -- The name of the secret holding the password used to connect to REDCAP's database. 
+            # -- The name of the secret holding the password used to connect to REDCAP's database.
             #    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
             # @section -- REDCap settings
             name: ""
-            # -- The key of the secret holding the password used to connect to REDCAP's database. 
+            # -- The key of the secret holding the password used to connect to REDCAP's database.
             #    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
             # @section -- REDCap settings
             key: ""
@@ -294,11 +294,11 @@ redcap:
 
 
 # REDCap MySQL Database settings
-# @default -- Settings for a standalone MySQL deployment compatible with REDCap. 
+# @default -- Settings for a standalone MySQL deployment compatible with REDCap.
 #             See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/mysql
 # @section -- REDCap MySQL DDatabase settings
 mysql:
-    # -- Override og the full name of the MySQL Database deployment. 
+    # -- Override og the full name of the MySQL Database deployment.
     #    Impacts the name of the services REDCap will use to connect to the Database.
   # @section -- REDCap MySQL DDatabase settings
   fullnameOverride: "redcap-mysql"
@@ -533,7 +533,7 @@ restoreJob:
 
 
 # REDCap Audit Log Shipper settings
-# @default -- A configuration made for OVH's Log Data Platform (Logstah + Graylog + OpenSearch). 
+# @default -- A configuration made for OVH's Log Data Platform (Logstah + Graylog + OpenSearch).
 #             See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/logstash
 # @section -- REDCap Audit Log Shipper settings
 audit:
@@ -794,7 +794,7 @@ persistence:
     # @section -- Persistence settings
     accessMode: "ReadWriteOnce"
     existingClaim:
-      # -- Name of an existing PVC used to persist REDCap code. 
+      # -- Name of an existing PVC used to persist REDCap code.
       #    If set, overrides the previous settings, as no PVC will be created for that purpose.
       # @section -- Persistence settings
       name: ""
@@ -812,7 +812,7 @@ persistence:
     # @section -- Persistence settings
     accessMode: "ReadWriteOnce"
     existingClaim:
-      # -- Name of an existing PVC used to persist documents uplpoaded by REDCap users. 
+      # -- Name of an existing PVC used to persist documents uplpoaded by REDCap users.
       #    If set, overrides the previous settings, as no PVC will be created for that purpose.
       # @section -- Persistence settings
       name: ""
