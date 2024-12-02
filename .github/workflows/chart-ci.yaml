@@ -76,6 +76,22 @@ jobs:
             --format=pretty \
             --color=true
 
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'config'
+          hide-progress: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          severity: 'CRITICAL'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1.10.0
@@ -154,12 +170,12 @@ jobs:
         run: |
           CHART_VERSION=$(yq -r '.version' ${CHART_PATH}/Chart.yaml)
 
-          if $CI_COMMIT_BRANCH == "dev"; then
+          if ${GITHUB_REF} == "refs/heads/dev"; then
             CHART_VERSION+="-dev.git.$(git rev-parse --short HEAD)"
           fi
   
           mkdir $PWD/.cr
-          helm package ${CHART_PATH} --version=${CHART_VERSION} --destination=$PWD/.cr
+          helm package ${CHART_PATH} --version=${CHART_VERSION} --destination=$PWD/.cr-release-packages
   
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
