@@ -37,18 +37,29 @@ In the [example directory](./examples/), there several subdirectories containing
 
 ## General questions
 
-- Is this installation compatible with OIDC/SAML?
+- *Is this installation compatible with OIDC/SAML?*
+
   Yes, you can configure OIDC directly in REDCap settings, whilst you'll need to configure and activate SAML2 in the chart's settings [see the chart's documentation](./charts/redcap/README.md). Other authentication methods like LDAP should also work, but haven't been tested properly.
-- What REDCap feature can I use?
+
+- *What REDCap feature can I use?*
+
   This Chart aims to deploy REDCap in an evironment that looks 'familiar' for the application, so you should be able to use any feature you'd use in a more traditional context.
   At the Greater Paris University Hospitals, we use this chart in production for a yeat on several projet. It is possible though that with time, new versions of REDCap will need extra dependencies to be available on the PHP FPM server. If it's the case, the corresponding container image will be released.
-- How secure is it?
+
+- *How secure is it?*
+
   With its many parameters, and the exposition of several admin pages like cronjob ot install, this installation will be as secure as its configuration. This chart offers many security feature (containerisation, rootless processes, traffic isolation with network policies), so be sure to check them, and to have a comprehensive view of your installation!
-- How can I update it?
+
+- *How can I update it?*
+
   We recommend to setup your REDCap installtion using the default method stated [in the examples](./examples/), that is to provide the chart with your REDCap Community credentials via a Secret. You can then simply use the REDCap "one click update" feature to update your installation via the Control Center. 
-- How can I manage backups?
+
+- *How can I manage backups?*
+
   If you're going with the backup/restore feature of this Chart, every backup will contain the redcap application directory, the edocs directory, and a database dump, so you'll be able to restore everything in one go. You're of course free to use any other method!
-- I can't get the REDCap application via the community website because my admins won't whitelist the URL/whatever other reasons!
+
+- *I can't get the REDCap application via the community website because my admins won't whitelist the URL/whatever other reasons!*
+
   You can override the init container in charge of retrieving the REDCap application, and add as many other initContainers you like to build your own retrieval logic. I might take some time to get into the logic, but you can help yourself with the few snippets presents [in the exmaple directory](./examples/snippets/).
 
 ## Continous Integration / Continous Delivery
