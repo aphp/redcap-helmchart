@@ -73,7 +73,7 @@ To install REDCap, follow those steps :
   ```
 - Install this chart using this values file : 
   ```sh
-  helm upgrade --install -n redcap redcap aphp-redcap/redcap -f ./examples/production/values.yaml --wait
+  helm upgrade --install -n redcap redcap aphp-redcap/redcap -f ./examples/production/values.yaml --wait --wait-for-jobs
   ```
 
 ## Post-installation

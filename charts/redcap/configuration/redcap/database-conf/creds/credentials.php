@@ -9,7 +9,7 @@ $hostname 	= '{{ .Values.redcap.config.database.auth.hostname }}';
 $db 		= '{{ .Values.redcap.config.database.auth.databaseName }}';
 $username 	= '{{ .Values.redcap.config.database.auth.username }}';
 
-$password 	= '{{ ternary (printf "%s" .Values.redcap.config.database.auth.password.value) (printf "%s" "file_get_contents(\"/var/run/secrets/DB_PASSWD\")") (not .Values.redcap.config.database.auth.password.secretKeyRef.name) }}';
+$password 	= {{ ternary (printf "%s" .Values.redcap.config.database.auth.password.value | quote) (printf "%s" "file_get_contents(\"/var/run/secrets/DB_PASSWD\")") (not .Values.redcap.config.database.auth.password.secretKeyRef.name) }};
 
 // You may optionally utilize a database connection over SSL/TLS for improved security. To do so, at minimum
 // you must provide the path of the key file, the certificate file, and certificate authority file.
@@ -26,7 +26,7 @@ $db_ssl_verify_server_cert = false; // Set to TRUE to force the database connect
 // Add a random value for the $salt variable below, preferably alpha-numeric with 8 characters or more. This value wll be 
 // used for data de-identification hashing for data exports. Do NOT change this value once it has been initially set.
 
-$salt = '{{ ternary (printf "%s" .Values.redcap.config.database.salt.value) (printf "%s" "file_get_contents(\"/var/run/secrets/SALT\")") (not .Values.redcap.config.database.salt.secretKeyRef.name) }}';
+$salt = {{ ternary (printf "%s" .Values.redcap.config.database.salt.value | squote) (printf "%s" "file_get_contents(\"/var/run/secrets/SALT\")") (not .Values.redcap.config.database.salt.secretKeyRef.name) }};
 
 //********************************************************************************************************************
 // DATA TRANSFER SERVICES (DTS):
