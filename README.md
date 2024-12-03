@@ -37,8 +37,70 @@ In the [example directory](./examples/), there several subdirectories containing
 
 ## Lifecycle management
 
-- backup, restore, s3...
-- how to launch admin job...
+Here are a few important notions to keep in mind to efficiently manage a REDCap installation on a day-to-day basis.
+
+### Init Job
+
+If you choose to automatically install REDCap using your community credentials whith this chart, an Kubernetes Job called `init-job` will be automatically fired during the chart's installatuon process, in order to call the `/install.php` script, with the `auto=1` parameter. This is a convenience script allows a fresh REDCap installation be readily available one the chart is installed.
+
+**Note** : The auto-install feature doesn't configure the REDCap installation, hence you'll need to do those post-installation actions in the REDCap Control Center as soon as possible : 
+- Set the `REDCap base URL`
+- Set the `Local Server File Storage` path to `edocs`
+- Set an authentication method
+- Checks that the CronJobs were called (you can manually lauch one if the Kubernetes CronJob dedicated to this task hasn't run yet)
+- Launch the `Configuration Check`
+
+### CronJob tasks
+
+REDCap needs its `/cronjob.php` script to be called once an hour, in order to run diverse maintenance tasks. A dedicated Kubernetes CronJob has been created to this end, called `admin-cronjob`. It runs by default every hour, using the following schedule : `0 * * * *` (you can modify this scheduling pattern in the chart's parameters).
+
+If, for any reasons, you need to manually fire a instance of this CronJob, you can juste use `kubectl` to create spawn a job manually using this command :
+
+```sh
+kubectl -n redcap create job manual-admin-job --from cronjob/redcap-admin-job
+```
+
+The name of your namespace as well as the name of the jobs can vary depending to your installation and the name you gave to your Helm release.
+
+### Backup Cronjob
+
+This chart allows to backup your REDCap installation automatically. The backup process creates and uploads on an S3 bucket an archive containing the following elements :
+- A dump of the `edocs` dir, which contains user-uploaded data
+- A dump of the  `redcap` directory, which contains the application
+- A dump of the database
+
+A dedicated Kubernetes CronJob has been created to this end, called `backup-cronjob`. It runs by default every 8 hours, using the following schedule : `0 */8 * * *` (you can modify this scheduling pattern in the chart's parameters).
+
+You'll need to enable and configure the CronJob in the chart's parameters in order to use it (see the [chart's documentation](./charts/redcap/README.md)).
+
+If, for any reasons, you need to manually fire a instance of this CronJob, you can juste use `kubectl` to create spawn a job manually using this command :
+
+```sh
+kubectl -n redcap create job manual-backup-job --from cronjob/redcap-backup-job
+```
+
+The name of your namespace as well as the name of the jobs can vary depending to your installation and the name you gave to your Helm release.
+
+**Note** : This backup process is not validated by the developers of REDCap. Now that this chart is wildly available, we would be glad to work with them to enhance this process. Until then, kepe in mind that this process is not official and may contains flaws or limitations, alhough it has been battle-tested on our end several times.
+
+### Restoration Job
+
+With the backup process, a restoration job has also been set up. It does the reverse of the backup job, and retrieves the backup archive to :
+- Restores the `edocs` dir, which contains user-uploaded data
+- Restores the  `redcap` directory, which contains the application
+- Restores the database dump
+
+In order to have a job template ready to be fired on-demand, a dedicated Kubernetes CronJob has been created to this end, called `restore-cronjob`. It never runs (you woudn't want to have your data periodically erased by a restore process ;)), but it allows to run a restore process from the latest backup at any time, just with the `kubectl` command : 
+
+```sh
+kubectl -n redcap create job manual-restore-job --from cronjob/redcap-restore-job
+```
+
+The name of your namespace as well as the name of the jobs can vary depending to your installation and the name you gave to your Helm release.
+
+You'll need to enable and configure the CronJob in the chart's parameters in order to use it (see the [chart's documentation](./charts/redcap/README.md)).
+
+**Note** : This restore process is not validated by the developers of REDCap. Now that this chart is wildly available, we would be glad to work with them to enhance this process. Until then, kepe in mind that this process is not official and may contains flaws or limitations, alhough it has been battle-tested on our end several times.
 
 ## General questions
 
