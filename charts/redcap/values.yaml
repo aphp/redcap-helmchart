@@ -670,7 +670,7 @@ audit:
       # @section -- REDCap Audit Log Shipper settings
       host: ""
       # @section -- REDCap Audit Log Shipper settings
-      port: ""
+      port: 6514
 
 # Service Account settings
 # @section -- Service Account settings
