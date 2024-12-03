@@ -112,7 +112,7 @@ You'll need to enable and configure the CronJob in the chart's parameters in ord
 - *What REDCap feature can I use?*
 
   This Chart aims to deploy REDCap in an evironment that looks 'familiar' for the application, so you should be able to use any feature you'd use in a more traditional context.
-  At the Greater Paris University Hospitals, we use this chart in production for a year on several projects. It is possible though that with time, new versions of REDCap will need extra dependencies to be available on the PHP FPM server. If it's the case, the corresponding container image will be released.
+  At the Greater Paris University Hospitals, we're using this chart in production for more than a year on several projects. It is possible though that with time, new versions of REDCap will need extra dependencies to be available on the PHP FPM server. If it's the case, the corresponding container image will be released.
 
 - *How secure is it?*
 
