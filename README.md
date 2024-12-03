@@ -41,18 +41,18 @@ Here are a few important notions to keep in mind to efficiently manage a REDCap 
 
 ### Init Job
 
-If you choose to automatically install REDCap using your community credentials whith this chart, an Kubernetes Job called `init-job` will be automatically fired during the chart's installatuon process, in order to call the `/install.php` script, with the `auto=1` parameter. This is a convenience script allows a fresh REDCap installation be readily available one the chart is installed.
+If you choose to automatically install REDCap using your community credentials whith this chart, an Kubernetes Job called `init-job` will be automatically fired during the chart's installation process, in order to call the `/install.php` script, with the `auto=1` parameter. This is a convenience script allowing a fresh REDCap installation to be readily available once the chart is installed.
 
-**Note** : The auto-install feature doesn't configure the REDCap installation, hence you'll need to do those post-installation actions in the REDCap Control Center as soon as possible : 
+**Note** : The auto-install feature doesn't fully configure the REDCap installation, hence you'll need to do those post-installation actions in the REDCap Control Center as soon as possible : 
 - Set the `REDCap base URL`
-- Set the `Local Server File Storage` path to `edocs`
+- Set the `Local Server File Storage` path to `/edocs`
 - Set an authentication method
 - Checks that the CronJobs were called (you can manually lauch one if the Kubernetes CronJob dedicated to this task hasn't run yet)
 - Launch the `Configuration Check`
 
-### CronJob tasks
+### Administration Cronjob
 
-REDCap needs its `/cronjob.php` script to be called once an hour, in order to run diverse maintenance tasks. A dedicated Kubernetes CronJob has been created to this end, called `admin-cronjob`. It runs by default every hour, using the following schedule : `0 * * * *` (you can modify this scheduling pattern in the chart's parameters).
+REDCap needs its `/cronjob.php` script to be called once an hour, in order to run diverse maintenance tasks. A dedicated Kubernetes CronJob has been created to this end, called `admin-cronjob`. It runs by default every hour, using the following schedule : `0 * * * *` . You can modify this scheduling pattern in the chart's parameters (see the [chart's documentation](./charts/redcap/README.md)).
 
 If, for any reasons, you need to manually fire a instance of this CronJob, you can juste use `kubectl` to create spawn a job manually using this command :
 
@@ -60,7 +60,7 @@ If, for any reasons, you need to manually fire a instance of this CronJob, you c
 kubectl -n redcap create job manual-admin-job --from cronjob/redcap-admin-job
 ```
 
-The name of your namespace as well as the name of the jobs can vary depending to your installation and the name you gave to your Helm release.
+The name of your namespace as well as the name of the jobs may vary depending your installation's configuration and the name you gave to your Helm release.
 
 ### Backup Cronjob
 
@@ -69,9 +69,10 @@ This chart allows to backup your REDCap installation automatically. The backup p
 - A dump of the  `redcap` directory, which contains the application
 - A dump of the database
 
-A dedicated Kubernetes CronJob has been created to this end, called `backup-cronjob`. It runs by default every 8 hours, using the following schedule : `0 */8 * * *` (you can modify this scheduling pattern in the chart's parameters).
+A dedicated Kubernetes CronJob has been created to this end, called `backup-cronjob`. It runs by default every 8 hours, using the following schedule : `0 */8 * * *`. You can modify this scheduling pattern in the chart's parameters (see the [chart's documentation](./charts/redcap/README.md)).
 
-You'll need to enable and configure the CronJob in the chart's parameters in order to use it (see the [chart's documentation](./charts/redcap/README.md)).
+
+You'll need to enable and configure the CronJob in the chart's parameters in order to use it.
 
 If, for any reasons, you need to manually fire a instance of this CronJob, you can juste use `kubectl` to create spawn a job manually using this command :
 
@@ -79,9 +80,9 @@ If, for any reasons, you need to manually fire a instance of this CronJob, you c
 kubectl -n redcap create job manual-backup-job --from cronjob/redcap-backup-job
 ```
 
-The name of your namespace as well as the name of the jobs can vary depending to your installation and the name you gave to your Helm release.
+The name of your namespace as well as the name of the jobs may vary depending your installation's configuration and the name you gave to your Helm release.
 
-**Note** : This backup process is not validated by the developers of REDCap. Now that this chart is wildly available, we would be glad to work with them to enhance this process. Until then, kepe in mind that this process is not official and may contains flaws or limitations, alhough it has been battle-tested on our end several times.
+**Note** : The backup process has not been validated by the maintainers of REDCap. Now that this chart is wildly available, we would be glad to work with them to enhance this process. Until then, kepe in mind that this process is not official and may contains flaws or limitations, alhough it has been battle-tested on our end several times.
 
 ### Restoration Job
 
@@ -96,11 +97,11 @@ In order to have a job template ready to be fired on-demand, a dedicated Kuberne
 kubectl -n redcap create job manual-restore-job --from cronjob/redcap-restore-job
 ```
 
-The name of your namespace as well as the name of the jobs can vary depending to your installation and the name you gave to your Helm release.
+The name of your namespace as well as the name of the jobs may vary depending your installation's configuration and the name you gave to your Helm release.
 
 You'll need to enable and configure the CronJob in the chart's parameters in order to use it (see the [chart's documentation](./charts/redcap/README.md)).
 
-**Note** : This restore process is not validated by the developers of REDCap. Now that this chart is wildly available, we would be glad to work with them to enhance this process. Until then, kepe in mind that this process is not official and may contains flaws or limitations, alhough it has been battle-tested on our end several times.
+**Note** : The restore process has not been validated by the maintainers of REDCap. Now that this chart is wildly available, we would be glad to work with them to enhance this process. Until then, kepe in mind that this process is not official and may contains flaws or limitations, alhough it has been battle-tested on our end several times.
 
 ## General questions
 
