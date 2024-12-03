@@ -49,7 +49,7 @@ kubectl -n redcap create secret generic redcap-prod-audit-token--from-literal TO
 
 ## Configuration review
 Take the `values.yaml` file in this directory as an example, and review it according to your needs.
-After ensuring that everythong is OK, proceed with the next step.
+After ensuring that everything is OK, proceed with the next step.
 
 **Note** : If you're not using the features tagged as [OPTIONAL] in this documentation, you can disble them by marking `enbaled: false` :
 - Line 113 for the Backup Cronjob
