@@ -1,0 +1,54 @@
+redcap:
+  install:
+    enabled: true
+
+  extraInitContainers: 
+    - name: init-redcap-retriever-translation
+      image: "bitnami/rclone:latest"
+      imagePullPolicy: Always
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsUser: 2000
+        runAsGroup: 2000
+
+      env:
+      - name: REDCAP_LOCALIZATION_PATH
+        value: "path/to/language/file.inmybucket"
+      - name : REDCAP_INSTALL_PATH
+        value: "/redcap"
+      - name: RCLONE_CONFIG_SOURCE_TYPE
+        value: "s3"
+      - name: RCLONE_CONFIG_SOURCE_PROVIDER
+        value: "Other"
+      - name: RCLONE_CONFIG_SOURCE_ENV_AUTH
+        value: "false"
+      - name: RCLONE_CONFIG_SOURCE_ACL
+        value: "private"
+      - name: RCLONE_CONFIG_SOURCE_REGION
+        value: "my-region"
+      - name: RCLONE_CONFIG_SOURCE_LOCATION_CONSTRAINT
+        value: "my-region"
+      - name: RCLONE_CONFIG_SOURCE_ENDPOINT
+        value: "https://my-s3-endpoint/"
+      - name: RCLONE_CONFIG_SOURCE_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: redcap-s3-creds
+            key: ACCESS_KEY_ID
+      - name: RCLONE_CONFIG_SOURCE_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: redcap-s3-creds
+            key: SECRET_ACCESS_KEY
+
+      command:
+      - "/bin/bash"
+      - "-c"
+      - |-
+        echo "[INFO] Downloading and installing localization file"
+        rclone -P --ignore-existing -v copy "source:$REDCAP_LOCALIZATION_PATH" /redcap/languages
+
+      volumeMounts:
+      - name: redcap-code
+        mountPath: /redcap

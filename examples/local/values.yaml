@@ -1,7 +1,7 @@
 ingress:
   enabled: true
   hosts:
-  - host: "<my-hostname>"
+  - host: "localhost"
     paths:
       - path: /
         pathType: "ImplementationSpecific"
@@ -20,6 +20,9 @@ redcap:
     enabled: true
     communityAuth:
       existingSecret: "redcap-community-credentials"
+
+  config:
+    logAllErrors: "TRUE"
 
     initJob:
       resources:

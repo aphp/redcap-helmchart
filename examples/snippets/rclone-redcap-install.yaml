@@ -1,0 +1,65 @@
+redcap:
+  install:
+  enabled: false
+  override: false
+  overrideInstallContainer:
+    - name: init-redcap-retriever-rclone
+      image: "bitnami/rclone:latest"
+      imagePullPolicy: Always
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsUser: 2000
+        runAsGroup: 2000
+
+      env:
+      - name: REDCAP_INIT
+        value: "TRUE"
+      - name: REDCAP_PACKAGE_PATH
+        value: "path/to/redcap/package.inmybucket"
+      - name: RCLONE_CONFIG_SOURCE_TYPE
+        value: "s3"
+      - name: RCLONE_CONFIG_SOURCE_PROVIDER
+        value: "Other"
+      - name: RCLONE_CONFIG_SOURCE_ENV_AUTH
+        value: "false"
+      - name: RCLONE_CONFIG_SOURCE_ACL
+        value: "private"
+      - name: RCLONE_CONFIG_SOURCE_REGION
+        value: "my-region"
+      - name: RCLONE_CONFIG_SOURCE_LOCATION_CONSTRAINT
+        value: "my-region"
+      - name: RCLONE_CONFIG_SOURCE_ENDPOINT
+        value: "https://my-s3-endpoint/"
+      - name: RCLONE_CONFIG_SOURCE_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: redcap-s3-creds
+            key: ACCESS_KEY_ID
+      - name: RCLONE_CONFIG_SOURCE_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: redcap-s3-creds
+            key: SECRET_ACCESS_KEY
+
+      command:
+      - "/bin/bash"
+      - "-c"
+      - |-
+        if  [ "$(echo "$OVERRIDE_INSTALL" | tr '[:upper:]' '[:lower:]')" = "true" ] || [ -z "$(find "$REDCAP_INSTALL_PATH" -mindepth 1 -maxdepth 1 -not -path "$REDCAP_INSTALL_PATH/lost+found")" ]
+        then
+          echo "Retrieving REDCap packages from source"
+          rclone -P -v copyto "source:$REDCAP_PACKAGE_PATH" /tmp/redcap.zip
+
+          echo "[INFO] Installing REDCap package"
+          unzip -o "/tmp/redcap.zip" -d /tmp
+          mv -f /tmp/redcap/* "${REDCAP_INSTALL_PATH}/"
+          echo "Done"
+        else
+            echo "[INFO] An already existing REDCap application package is present, and the OVERRIDE_INSTALL option has not been enabled. Skipping REDCap installation."
+            exit 0
+        fi
+
+      volumeMounts:
+      - name: redcap-code
+        mountPath: /redcap
