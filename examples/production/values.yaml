@@ -1,0 +1,279 @@
+# Default values for redcaploc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+fullnameOverride: "redcap-prod"
+
+httpd:
+  enabled: true
+  tls:  
+    enabled: true
+    certificate:
+      existingSecret: "redcap-prod-aphp-tls"
+
+  replicaCount: 1
+  resources: 
+    requests:
+      memory: "8Gi"
+      cpu: "3"
+    limits:
+      memory: "16Gi"
+      cpu: "6"
+
+
+redcap:
+  install:
+    enabled: true
+    communityAuth:
+      existingSecret: "redcap-prod-community-credentials"
+    
+  config: 
+    externalURL: "https://redcap-prod.com"
+    adminMail: "redcap-redcap@prod.com"
+
+    database:
+      salt:
+        secretKeyRef: 
+          name: "redcap-prod-database-salt"
+          key: "salt"
+        
+      auth:
+        hostname: "redcap-prod-mysql"
+        databaseName: "redcap"
+        username: "redcap"        
+        password: 
+          secretKeyRef: 
+            name: "redcap-prod-mysql-passwd"
+            key: "mysql-password"
+
+    mail: 
+      auth:
+        server: "mail.server.net"
+        port: 465
+        tls: true
+        starttls: false
+        from: "noreply@mail.server.net"
+        username: "noreply@mail.server.net"
+        password:
+          existingSecret: "redcap-prod-msmtp-passwd"
+
+  replicaCount: 1
+  resources: 
+    requests:
+      memory: "20Gi"
+      cpu: "5"
+    limits:
+      memory: "46Gi"
+      cpu: "10"
+
+
+  adminJob: 
+    schedule: "0 * * * *"  
+    resources: 
+      requests:
+        memory: "512Mi"
+        cpu: "0.25"
+      limits:
+        memory: "1Gi"
+        cpu: "0.5"
+
+
+mysql:
+  enabled: true
+  fullnameOverride: "redcap-prod-mysql"
+  architecture: "standalone"
+  auth:
+    createDatabase: true
+    database: redcap
+    username: redcap
+    existingSecret: "redcap-prod-mysql-passwd"
+  primary:
+    existingConfigmap: "redcap-prod-mysql-config"
+    persistence: 
+      annotations:
+        helm.sh/resource-policy: keep
+      storageClass: "csi-cinder-high-speed"
+      accessModes: 
+      - "ReadWriteOnce"
+      size: "50G"
+      tolerations: 
+      - key: "environment"
+        operator: "Equal"
+        value: "cpu"
+        effect: "NoSchedule"
+    resources:
+      requests:
+        memory: "16Gi"
+        cpu: "8"
+      limits:
+        memory: "60Gi"
+        cpu: "16"
+
+
+backupJob:
+  enabled: true
+  imagePullSecrets: []
+  schedule: "0 */8 * * *" 
+  archiveName: redcap-prod-backup.tar.gz
+
+  uploader:
+    s3:
+      backupPath: "redcap-prod-backup"
+      config:
+        region: "my-region"
+        locationConstraint: "my-region"
+        endpoint: "https://my-s3net/"
+        auth:
+          existingSecret: "redcap-prod-s3-creds"
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "1Gi"
+      cpu: "0.5"
+
+      
+restoreJob:
+  enabled: true
+  imagePullSecrets: []
+  schedule: "0 0 1 1 *" # CronJob resources needs a valide schedule, but this one will never be used, since that CronJob will be suspended (see spec.suspend field)  jobTemplate:
+  archiveName: redcap-prod-backup.tar-v2024-01-20-160949-000.gz
+
+  downloader:
+    s3:
+      backupPath: "redcap-prod-backup"
+      config:
+        region: "my-region"
+        locationConstraint: "my-region"
+        endpoint: "https://my-s3.net/"
+
+        auth:
+          existingSecret: "redcap-prod-s3-creds"
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "1Gi"
+      cpu: "0.5"
+
+
+audit:
+  enabled: true
+
+  enableMultiplePipelines: true
+  existingConfiguration: "redcap-prod-audit-logstash-pipeline"
+
+  extraEnvVars:
+  - name: LS_JAVA_OPTS
+    value: "-Xmx8G -Xss40M"
+  - name: MYSQL_PASSWD
+    valueFrom:
+      secretKeyRef:
+        name: "redcap-prod-mysql-passwd"
+        key: "mysql-password"
+  - name: AUDIT_TOKEN
+    valueFrom:
+      secretKeyRef:
+          name: "redcap-prod-audit-token"
+          key: "TOKEN"
+
+  persistence: 
+    enabled: true
+    annotations:
+      helm.sh/resource-policy: keep
+    storageClass: "csi-cinder-high-speed"
+    accessModes: 
+    - "ReadWriteOnce"
+    size: "20G"
+        
+  extraVolumeMounts:
+  - name: driver-dir
+    mountPath: /driver
+  - name: api-ca
+    mountPath: "/var/run/secret/api-ca.pem"
+    subPath: api-ca.pem
+
+  extraVolumes: 
+  - name: driver-dir
+    emptyDir:
+      sizeLimit: 50Mi
+  - name: api-ca
+    secret:
+      secretName: "redcap-prod-audit-ca"
+
+  logsApi:
+    config:
+      pollingSchedule: "* * * * *"
+      caPath: "path/to/the/ca/of-my-log-stack-api"
+      host: "my.logstack.api.com"
+      port: 6514
+      
+  resources:
+    requests:
+      memory: "10Gi"
+      cpu: "4"
+    limits:
+      memory: "20Gi"
+      cpu: "8"
+
+
+networkPolicies: 
+  enabled: true 
+
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: 
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
+  hosts:
+    - host: redcap-prod.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+   - secretName: redcap-prod-aphp-tls
+     hosts:
+       - redcap-prod.com
+
+
+service:
+  httpd:
+    enabled: true
+    annotations: {}
+    type: ClusterIP 
+    protocol: TCP
+    portName: httpd-service-port
+
+  redcap:
+    enabled: true
+    annotations: {}
+    type: ClusterIP 
+    protocol: TCP
+    portName: redcap-service-port
+
+
+persistence:
+  redcap_code:    
+    annotations:
+      helm.sh/resource-policy: "keep"
+    size: 2Gi
+    storageClass: "csi-cinder-high-speed"
+    accessMode: "ReadWriteOnce"
+    existingClaim: 
+      name: ""
+
+  edocs:
+    annotations:
+      helm.sh/resource-policy: "keep"
+    size: 10Gi
+    storageClass: "csi-cinder-high-speed"
+    accessMode: "ReadWriteOnce"
+    existingClaim: 
+      name: ""
+

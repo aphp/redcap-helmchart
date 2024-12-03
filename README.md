@@ -7,7 +7,7 @@ This repository hosts the REDCap Helm Chart developped by the Greater Paris Univ
 REDCap is devopped by the Vanderbilt University and **is not provided by this Chart or any of its dependencies.**
 If you wish to use REDCap and are not sure where to start, you may visit the dedicated [REDCap Community Site](https://projectredcap.org/resources/community/).
 
-This Chart aims to provide with an easy way to retrieve the REDcap application from the official server (using your consortium member's credentials), and deploying it in a standard Kubernetes encluster, be it on-premise or in a managed cloud environement.
+This Chart aims to provide with an easy way to retrieve the REDcap application from the official server (using your consortium member's credentials), and deploying it in a standard Kubernetes cluster, be it on-premise or in a managed cloud environment.
 
 ## How does it works?
 
@@ -15,7 +15,7 @@ The architecture of the REDCap stack deployed by this Chart is as follows :
 
 ![REDCap Architecture](./resources/redcap-arch.svg)
 
-A minimal setup of ths stack includes : 
+A minimal setup of this stack includes : 
 - The HTTPd component
 - The PHP FPM Server hosting the REDCap Application
 - The MySQL Database used by REDCap
@@ -35,6 +35,11 @@ In the [example directory](./examples/), there several subdirectories containing
 - If you want to quicly boot-up a local/test environement, you can start by looking at the [local example](./examples/local/)
 - If you want to start deploying a more stable and secure environment, you can have a look at the [production example](./examples/production/)
 
+## Lifecycle management
+
+- backup, restore, s3...
+- how to launch admin job...
+
 ## General questions
 
 - *Is this installation compatible with OIDC/SAML?*
@@ -44,11 +49,11 @@ In the [example directory](./examples/), there several subdirectories containing
 - *What REDCap feature can I use?*
 
   This Chart aims to deploy REDCap in an evironment that looks 'familiar' for the application, so you should be able to use any feature you'd use in a more traditional context.
-  At the Greater Paris University Hospitals, we use this chart in production for a yeat on several projet. It is possible though that with time, new versions of REDCap will need extra dependencies to be available on the PHP FPM server. If it's the case, the corresponding container image will be released.
+  At the Greater Paris University Hospitals, we use this chart in production for a year on several projects. It is possible though that with time, new versions of REDCap will need extra dependencies to be available on the PHP FPM server. If it's the case, the corresponding container image will be released.
 
 - *How secure is it?*
 
-  With its many parameters, and the exposition of several admin pages like cronjob ot install, this installation will be as secure as its configuration. This chart offers many security feature (containerisation, rootless processes, traffic isolation with network policies), so be sure to check them, and to have a comprehensive view of your installation!
+  With its many parameters, and the exposition of several admin pages like cronjob or install, this installation will be as secure as its configuration. This chart offers many security feature (containerisation, rootless processes, traffic isolation with network policies, etc.), so be sure to check them, and to have a comprehensive view of your installation!
 
 - *How can I update it?*
 
@@ -60,7 +65,7 @@ In the [example directory](./examples/), there several subdirectories containing
 
 - *I can't get the REDCap application via the community website because my admins won't whitelist the URL/whatever other reasons!*
 
-  You can override the init container in charge of retrieving the REDCap application, and add as many other initContainers you like to build your own retrieval logic. I might take some time to get into the logic, but you can help yourself with the few snippets presents [in the exmaple directory](./examples/snippets/).
+  You can override the initContainer in charge of retrieving the REDCap application, and add as many other initContainers you like to build your own retrieval logic. It might take some time to get into the logic, but you can help yourself with the few snippets presents [in the example directory](./examples/snippets/).
 
 ## Continous Integration / Continous Delivery
 

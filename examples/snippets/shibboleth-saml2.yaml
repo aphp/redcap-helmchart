@@ -1,0 +1,15 @@
+ httpd: 
+  shibboleth:
+    enabled: true
+    sp: 
+      entityID: https://my-redcap-install.comfr/sp/shibboleth
+      metadata:
+        certificate:
+          existingSecretRef:
+            name: "redcap-sp-metadata-cert"
+    idp: 
+      entityID: "my-idp"
+      metadata: 
+        existingSecretRef:
+          name: "redcap-sp-metadata"
+          key: "redcap-sp-metadata.xml"

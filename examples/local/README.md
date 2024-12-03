@@ -1,4 +1,4 @@
-# Loal Installation
+# Local Installation
 
 If you wish to quickly fire a REDCap installation with this chart, you may follow the following steps.
 
@@ -31,9 +31,9 @@ To install REDCap, follow those steps :
   ```sh
   helm repo update
   ```
-- Install this chart using the modified values file : 
+- Install this chart using this values file : 
   ```sh
-  helm upgrade --install -n redcap redcap aphp-redcap/redcap -f ./examples/basic-install.yaml --wait
+  helm upgrade --install -n redcap redcap aphp-redcap/redcap -f ./examples/local/values.yaml --wait
   ```
 
 ## Post-installation

@@ -1,9 +1,9 @@
 redcap:
   install:
-  enabled: false
-  override: false
-  overrideInstallContainer:
-    - name: init-redcap-retriever-rclone
+    enabled: true
+
+  extraInitContainers: 
+    - name: init-redcap-retriever-translation
       image: "bitnami/rclone:latest"
       imagePullPolicy: Always
 
@@ -13,10 +13,10 @@ redcap:
         runAsGroup: 2000
 
       env:
-      - name: REDCAP_INIT
-        value: "TRUE"
-      - name: REDCAP_PACKAGE_PATH
-        value: "path/to/redcap/package.inmybucket"
+      - name: REDCAP_LOCALIZATION_PATH
+        value: "path/to/language/file.inmybucket"
+      - name : REDCAP_INSTALL_PATH
+        value: "/redcap"
       - name: RCLONE_CONFIG_SOURCE_TYPE
         value: "s3"
       - name: RCLONE_CONFIG_SOURCE_PROVIDER
@@ -46,19 +46,8 @@ redcap:
       - "/bin/bash"
       - "-c"
       - |-
-        if  [ "$(echo "$OVERRIDE_INSTALL" | tr '[:upper:]' '[:lower:]')" = "true" ] || [ -z "$(find "$REDCAP_INSTALL_PATH" -mindepth 1 -maxdepth 1 -not -path "$REDCAP_INSTALL_PATH/lost+found")" ]
-        then
-          echo "Retrieving REDCap packages from source"
-          rclone -P -v copyto "source:$REDCAP_PACKAGE_PATH" /tmp/redcap.zip
-
-          echo "[INFO] Installing REDCap package"
-          unzip -o "/tmp/redcap.zip" -d /tmp
-          mv -f /tmp/redcap/* "${REDCAP_INSTALL_PATH}/"
-          echo "Done"
-        else
-            echo "[INFO] An already existing REDCap application package is present, and the OVERRIDE_INSTALL option has not been enabled. Skipping REDCap installation."
-            exit 0
-        fi
+        echo "[INFO] Downloading and installing localization file"
+        rclone -P --ignore-existing -v copy "source:$REDCAP_LOCALIZATION_PATH" /redcap/languages
 
       volumeMounts:
       - name: redcap-code
