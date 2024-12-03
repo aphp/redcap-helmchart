@@ -15,10 +15,6 @@ You must first ave a ready-to-use Kubernetes cluster on which you can deploy RED
 ## Installation
 To install REDCap, follow those steps :
 
-- Create the namespace that will contain the REDCap installation : 
-  ```
-  kubectl create namespace redcap
-  ```
 - Create a secret holding your REDCap Community Site credentials :
   ```sh
   kubectl -n redcap create secret generic redcap-community-credentials --from-literal USERNAME='my-username' --from-literal PASSWORD='my-password'
@@ -31,13 +27,17 @@ To install REDCap, follow those steps :
   ```sh
   helm repo update
   ```
+- Create the namespace that will contain the REDCap installation : 
+  ```
+  kubectl create namespace redcap
+  ```
 - Install this chart using this values file : 
   ```sh
   helm upgrade --install -n redcap redcap aphp-redcap/redcap -f ./examples/local/values.yaml --wait
   ```
 
 ## Post-installation
-You can access the installation by accessing http://localhost:80.
+You can access REDCap with the following URL : http://localhost:80.
 
 Make sure to take the following actions : 
 - In `Control Center` -> `General Configuration` -> REDCap base URL, set the field to `http://localhost/`
