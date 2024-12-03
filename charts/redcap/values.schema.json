@@ -165,7 +165,7 @@
                                     "type": "string"
                                 },
                                 "port": {
-                                    "type": "string"
+                                    "type": "integer"
                                 }
                             },
                             "type": "object"
@@ -274,30 +274,7 @@
                     "type": "object"
                 },
                 "resources": {
-                    "properties": {
-                        "limits": {
-                            "properties": {
-                                "cpu": {
-                                    "type": "string"
-                                },
-                                "memory": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "requests": {
-                            "properties": {
-                                "cpu": {
-                                    "type": "string"
-                                },
-                                "memory": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
+                    "properties": {},
                     "type": "object"
                 },
                 "schedule": {
@@ -392,30 +369,7 @@
                     "type": "integer"
                 },
                 "resources": {
-                    "properties": {
-                        "limits": {
-                            "properties": {
-                                "cpu": {
-                                    "type": "string"
-                                },
-                                "memory": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "requests": {
-                            "properties": {
-                                "cpu": {
-                                    "type": "string"
-                                },
-                                "memory": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
+                    "properties": {},
                     "type": "object"
                 },
                 "shibboleth": {
@@ -522,28 +476,6 @@
                     "type": "boolean"
                 },
                 "hosts": {
-                    "items": {
-                        "properties": {
-                            "host": {
-                                "type": "string"
-                            },
-                            "paths": {
-                                "items": {
-                                    "properties": {
-                                        "path": {
-                                            "type": "string"
-                                        },
-                                        "pathType": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            }
-                        },
-                        "type": "object"
-                    },
                     "type": "array"
                 },
                 "tls": {
@@ -617,33 +549,6 @@
                             "properties": {
                                 "app.kubernetes.io/role": {
                                     "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "resources": {
-                            "properties": {
-                                "limits": {
-                                    "properties": {
-                                        "cpu": {
-                                            "type": "string"
-                                        },
-                                        "memory": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "requests": {
-                                    "properties": {
-                                        "cpu": {
-                                            "type": "string"
-                                        },
-                                        "memory": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
                                 }
                             },
                             "type": "object"
@@ -762,30 +667,7 @@
                             "type": "object"
                         },
                         "resources": {
-                            "properties": {
-                                "limits": {
-                                    "properties": {
-                                        "cpu": {
-                                            "type": "string"
-                                        },
-                                        "memory": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "requests": {
-                                    "properties": {
-                                        "cpu": {
-                                            "type": "string"
-                                        },
-                                        "memory": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
+                            "properties": {},
                             "type": "object"
                         },
                         "schedule": {
@@ -1005,30 +887,7 @@
                                     "type": "object"
                                 },
                                 "resources": {
-                                    "properties": {
-                                        "limits": {
-                                            "properties": {
-                                                "cpu": {
-                                                    "type": "string"
-                                                },
-                                                "memory": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "requests": {
-                                            "properties": {
-                                                "cpu": {
-                                                    "type": "string"
-                                                },
-                                                "memory": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
+                                    "properties": {},
                                     "type": "object"
                                 }
                             },
