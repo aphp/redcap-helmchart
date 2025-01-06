@@ -1,4 +1,4 @@
-name: redcap-helmchart-ci 
+name: redcap-helmchart-c
 run-name: Helm Chart CI triggered by @${{ github.actor }}
 
 on:
