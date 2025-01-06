@@ -1,5 +1,5 @@
 name: redcap-helmchart-ci
-run-name: Helm Chart CI triggered by @${{ github.actor }} 
+run-name: Helm Chart CI triggered by @${{ github.actor }}
 
 on:
   push:
