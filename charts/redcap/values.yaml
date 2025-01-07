@@ -20,17 +20,12 @@ httpd:
     # -- If `true` activates TLS termination on the Apache HTTPd proxy.
     # @section -- HTTPd module settings
     enabled: false
-    # -- Configuration relating to the server TLS certificate.
-    # @section -- HTTPd module settings
     certificate:
       # -- Name of the existing Secret holding the certificate for the TLS termination. The secret must be of type `tls`.
       # @section -- HTTPd module settings
       existingSecret: ""
-    # -- Configuration relating to the certification chain certificate.
-    # @section -- HTTPd module settings
-    caChain:
-      # -- Reference of an existing Secret holding the certificate for the certification chain, if needed.
-      # @section -- HTTPd module settings
+    # Configuration relating to the certification chain certificate.
+    caChain:    
       secretKeyRef:
         # -- The name of the existing Secret holding the certificate for the certification chain, if needed.
         # @section -- HTTPd module settings
@@ -269,8 +264,7 @@ redcap:
   # @section -- REDCap settings
   affinity: {}
 
-  # -- REDCap Administration Job's settings
-  # @section -- REDCap Administration Job's settings
+  # REDCap Administration Job's settings
   adminJob:
     # -- Schedule of the Admin Job, which runs every minute by default. This job is needed to refresh REDCap administrative's data.
     # @section -- REDCap Administration Job's settings
@@ -296,67 +290,67 @@ redcap:
 # REDCap MySQL Database settings
 # @default -- Settings for a standalone MySQL deployment compatible with REDCap.
 #             See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/mysql
-# @section -- REDCap MySQL DDatabase settings
+# @section -- REDCap MySQL Database settings
 mysql:
     # -- Override og the full name of the MySQL Database deployment.
     #    Impacts the name of the services REDCap will use to connect to the Database.
-  # @section -- REDCap MySQL DDatabase settings
+  # @section -- REDCap MySQL Database settings
   fullnameOverride: "redcap-mysql"
   # -- If set to `true`, enables the deployment of MySQL as REDCap's database.
-  # @section -- REDCap MySQL DDatabase settings
+  # @section -- REDCap MySQL Database settings
   enabled: true
   # -- Deployment type for the database, standalone or replicated.
-  # @section -- REDCap MySQL DDatabase settings
+  # @section -- REDCap MySQL Database settings
   architecture: "standalone"
   # -- Name of a configmap holding an SQL script to initialize the database with.
-  # @section -- REDCap MySQL DDatabase settings
+  # @section -- REDCap MySQL Database settings
   initdbScriptsConfigMap: ""
   networkPolicy:
     # -- Enable creation of NetworkPolicy resources
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     enabled: true
 
   auth:
     # -- Automatically create a database at the first run.
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     createDatabase: true
     # -- Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     database: "redcap"
     # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     username: "redcap"
     # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
     #    Not secure in production, use secret reference instead!
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     password: "Redcap*!"
 
 
   primary:
     # -- Name of existing ConfigMap with MySQL Primary configuration.
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     existingConfigmap: "redcap-mysql-config"
     podLabels:
       # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
-      # @section -- REDCap MySQL DDatabase settings
+      # @section -- REDCap MySQL Database settings
       app.kubernetes.io/role: redcap-mysql
 
     service:
       port:
         # -- Port exposed by the MySQL service.
-        # @section -- REDCap MySQL DDatabase settings
+        # @section -- REDCap MySQL Database settings
         mysql: 3306
 
     persistence:
       # -- StorageClass used for database persistence.
-      # @section -- REDCap MySQL DDatabase settings
+      # @section -- REDCap MySQL Database settings
       storageClass: "standard"
       # -- AccessMode used for database persistence.
-      # @section -- REDCap MySQL DDatabase settings
+      # @section -- REDCap MySQL Database settings
       accessModes:
       - "ReadWriteOnce"
       # -- Size of the storage used for database persistence.
-      # @section -- REDCap MySQL DDatabase settings
+      # @section -- REDCap MySQL Database settings
       size: "10G"
 
 # REDCap Backup Job's settings
@@ -523,13 +517,7 @@ restoreJob:
 
   # -- Resources for backup job's pod.
   # @section -- REDCap Restore Job's settings
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "0.25"
-    limits:
-      memory: "1Gi"
-      cpu: "0.5"
+  resources: {}
 
 
 # REDCap Audit Log Shipper settings
@@ -561,6 +549,7 @@ audit:
     env:
     # -- Env var to set the URL of the JDBC driver to download.
     # @section -- REDCap Audit Log Shipper settings
+    # @default -- URL of the JDBC driver to download.
     - name: "JDBC_DRIVER_URL"
       # -- URL of the JDBC driver to download.
       # @section -- REDCap Audit Log Shipper settings
@@ -585,14 +574,11 @@ audit:
       runAsNonRoot: true
       allowPrivilegeEscalation: false
 
-    # -- Volume mount used to persist the JDBC driver.
-    # @section -- REDCap Audit Log Shipper settings
     volumeMounts:
-    # -- Name of the volume used to persist the JDBC driver.
+    # -- Definition of the volumeMount used to persist the JDBC driver.
     # @section -- REDCap Audit Log Shipper settings
+    # @default -- Mounted to `/driver`
     - name: "driver-dir"
-      # -- Mount path ofthe volume used to persist the JDBC driver.
-      # @section -- REDCap Audit Log Shipper settings
       mountPath: "/driver"
 
   # -- If set to `true`, allows the use of multiple pipelines. Needed for audit concurrent pipelines for performance reasons.
@@ -601,14 +587,18 @@ audit:
   # -- Name of an existing ConfigMap holding the pipeline(s)'s configuration.
   # @section -- REDCap Audit Log Shipper settings
   existingConfiguration: "redcap-mysql-audit-logstash-pipeline"
-  # -- Extra environment variables needed.
-  # @section -- REDCap Audit Log Shipper settings
   extraEnvVars:
+  # -- Extra environment variables related to REDCap MySQL DB's password.
+  # @section -- REDCap Audit Log Shipper settings
+  # @default -- Empty external secret reference to REDCap DB password
   - name: "MYSQL_PASSWD"
     valueFrom:
       secretKeyRef:
         name: ""
         key: ""
+  # -- Extra environment variables related to the API token to reach the audit stack API.
+  # @section -- REDCap Audit Log Shipper settings
+  # @default -- Empty external secret reference to the API token to reach the audit stack API
   - name: "AUDIT_TOKEN"
     valueFrom:
       secretKeyRef:
@@ -630,35 +620,34 @@ audit:
     # @section -- REDCap Audit Log Shipper settings
     size: "10G"
 
-  # -- Volumes required for Logstash's deployment.
-  # @section -- REDCap Audit Log Shipper settings
   extraVolumes:
   # -- JDBC Driver downloaded by the init container.
   # @section -- REDCap Audit Log Shipper settings
+  # @default -- 50Mi emptyDir volume
   - name: "driver-dir"
     emptyDir:
       sizeLimit: 50Mi
   # -- Volume handling the CA used to validate the HTTPS connexions to the audit stack the logs are send to.
   # @section -- REDCap Audit Log Shipper settings
+  # @default -- Empty secret reference to the CA.
   - name: "api-ca"
     secret:
       secretName: ""
 
-  # -- Volume mounts required for Logstash's deployment.
-  # @section -- REDCap Audit Log Shipper settings
   extraVolumeMounts:
   # -- JDBC Driver downloaded by the init container.
   # @section -- REDCap Audit Log Shipper settings
+  # @default -- Mounted on `/driver`
   - name: "driver-dir"
     mountPath: /driver
   # -- Volume handling the CA used to validate the HTTPS connexion to the audit stack the logs are send to.
   # @section -- REDCap Audit Log Shipper settings
+  # @default -- Mounted on `/var/run/secret/api-ca.pem`
   - name: "api-ca"
     mountPath: /var/run/secret/api-ca.pem
     subpath: ""
 
-  # -- Configuration of the endpoint of the audit stack the logs are send to.
-  # @section -- REDCap Audit Log Shipper settings
+  # Configuration of the endpoint of the audit stack the logs are send to.
   logsApi:
     config:
       # -- Scheduling of the rate at which Logstash will query REDCap database for nez event. Must be in `cron` format.
@@ -667,13 +656,14 @@ audit:
       # -- Path to the certificate used to validate the audit stack endpoint's certificate.
       # @section -- REDCap Audit Log Shipper settings
       caPath: ""
+      # -- Audit stack's endpoint hostname.
       # @section -- REDCap Audit Log Shipper settings
       host: ""
+      # -- Audit stack's endpoint port.
       # @section -- REDCap Audit Log Shipper settings
       port: 6514
 
 # Service Account settings
-# @section -- Service Account settings
 serviceAccount:
   # -- Specifies whether a service account should be created
   # @section -- Service Account settings
@@ -686,7 +676,6 @@ serviceAccount:
   name: ""
 
 # Network Policies settings
-# @section -- Network Policies settings
 networkPolicies:
   # -- If set to `true`, enables NetworkPolicies. Highly recommended for production!
   # @section -- Network Policies settings
@@ -714,8 +703,7 @@ ingress:
   # @section -- Ingress settings
   tls: []
 
-# -- Service settings
-# @section -- Service settings
+# Service settings
 service:
   httpd:
     # -- If set to `true`, enables the service for Apache HTTPd.
@@ -759,8 +747,7 @@ service:
     portName: "redcap-service-port"
 
 
-# -- Autoscaling settings
-# @section -- Autoscaling settings
+# Autoscaling settings
 autoscaling:
   # -- If set to `true`, enables autoscaling
   # @section -- Autoscaling settings
@@ -778,10 +765,12 @@ autoscaling:
   # @section -- Autoscaling settings
   targetMemoryUtilizationPercentage: 80
 
-# -- Persistence settings
-# @section -- Persistence settings
+# Persistence settings
 persistence:
   redcap_code:
+    # -- Annotations related to the volume handling the REDCap application.
+    # @section -- Persistence settings
+    # @default -- Keeping the volume after a Helm release deletion.
     annotations:
       helm.sh/resource-policy: "keep"
     # -- Size of the volume used to persist REDCap code.
@@ -800,13 +789,16 @@ persistence:
       name: ""
 
   edocs:
+    # -- Annotations related to the volume handling the REDCap users edocs.
+    # @section -- Persistence settings
+    # @default -- Keeping the volume after a Helm release deletion.
     annotations:
       helm.sh/resource-policy: "keep"
     # -- Size of the volume used to persist documents uploaded by REDCap users.
     # @section -- Persistence settings
     size: "8Gi"
     # -- StorageClass of the volume used to persist documents uploaded by REDCap users.
-    # @section -- Persistence uploaded
+    # @section -- Persistence settings
     storageClass: "standard"
     # -- AccessMode of the volume used to persist documents uploaded by REDCap users.
     # @section -- Persistence settings
