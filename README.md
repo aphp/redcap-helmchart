@@ -4,7 +4,7 @@
 
 This repository hosts the REDCap Helm Chart developped by the Greater Paris University Hospitals (`APHP` in French - Assistance Publique des Hôpitaux de Paris). This Chart allows for a cloud-natuve and cloud-agnostic deployment of REDCap, a secure web application for building and managing online surveys and databases.
 
-REDCap is devopped by the Vanderbilt University and **is not provided by this Chart or any of its dependencies.**
+REDCap is developped by the Vanderbilt University and **is not provided by this Chart or any of its dependencies.**
 If you wish to use REDCap and are not sure where to start, you may visit the dedicated [REDCap Community Site](https://projectredcap.org/resources/community/).
 
 This Chart aims to provide with an easy way to retrieve the REDcap application from the official server (using your consortium member's credentials), and deploying it in a standard Kubernetes cluster, be it on-premise or in a managed cloud environment.

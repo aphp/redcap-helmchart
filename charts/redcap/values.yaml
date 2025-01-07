@@ -272,9 +272,9 @@ redcap:
   # -- REDCap Administration Job's settings
   # @section -- REDCap Administration Job's settings
   adminJob:
-    # -- Schedule of the Admin Job, which runs every hours by default. This job is nedded to refresh REDCap administrative's data.
+    # -- Schedule of the Admin Job, which runs every minute by default. This job is nedded to refresh REDCap administrative's data.
     # @section -- REDCap Administration Job's settings
-    schedule: "0 * * * *"
+    schedule: "* * * * *"
     image:
       # -- Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s).
       # @section -- REDCap Administration Job's settings
