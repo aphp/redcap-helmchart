@@ -1,4 +1,7 @@
-# `aphp/redcap-helmchart`
+# APHP - REDCap Helm Chart
+
+[![redcap-helmchart-ci](https://github.com/aphp/redcap-helmchart/actions/workflows/chart-ci.yaml/badge.svg)](https://github.com/aphp/redcap-helmchart/actions/workflows/chart-ci.yaml)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/aphp-redcap)](https://artifacthub.io/packages/search?repo=aphp-redcap)
 
 ## Presentation
 
