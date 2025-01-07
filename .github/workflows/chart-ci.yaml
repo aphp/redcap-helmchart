@@ -12,3 +12,4 @@ jobs:
     uses: aphp/ci-workflows/.github/workflows/chart-ci.yml@dev
     with:
       chart-dir: "charts/redcap"
+      chart-values: "charts/redcap/values.yaml"
