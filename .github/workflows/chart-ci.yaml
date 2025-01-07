@@ -6,8 +6,6 @@ on:
     branches:
       - "dev"
       - "main"
-    tags:
-      - "redcap-*.*.*"
 
 jobs:
   aphp-chart-ci-workflow:
