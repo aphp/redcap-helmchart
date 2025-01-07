@@ -101,7 +101,7 @@ The name of your namespace as well as the name of the jobs may vary depending yo
 
 You'll need to enable and configure the CronJob in the chart's parameters in order to use it (see the [chart's documentation](./charts/redcap/README.md)).
 
-**Note** : The restore process has not been validated by the maintainers of REDCap. Now that this chart is wildly available, we would be glad to work with them to enhance this process. Until then, kepe in mind that this process is not official and may contains flaws or limitations, although it has been battle-tested on our end several times.
+**Note** : The restore process has not been validated by the maintainers of REDCap. Now that this chart is wildly available, we would be glad to work with them to enhance this process. Until then, keep in mind that this process is not official and may contains flaws or limitations, although it has been battle-tested on our end several times.
 
 ## General questions
 
