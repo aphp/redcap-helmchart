@@ -262,7 +262,7 @@ redcap:
   # -- The nodeSelector for REDCap's deployment.
   # @section -- REDCap settings
   nodeSelector: {}
-  # -- The toleraions for REDCap's deployment.
+  # -- The tolerations for REDCap's deployment.
   # @section -- REDCap settings
   tolerations: []
   # -- The affinities for REDCap's deployment.
@@ -272,9 +272,9 @@ redcap:
   # -- REDCap Administration Job's settings
   # @section -- REDCap Administration Job's settings
   adminJob:
-    # -- Schedule of the Admin Job, which runs every hours by default. This job is nedded to refresh REDCap administrative's data.
+    # -- Schedule of the Admin Job, which runs every minute by default. This job is needed to refresh REDCap administrative's data.
     # @section -- REDCap Administration Job's settings
-    schedule: "0 * * * *"
+    schedule: "* * * * *"
     image:
       # -- Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s).
       # @section -- REDCap Administration Job's settings
@@ -533,7 +533,7 @@ restoreJob:
 
 
 # REDCap Audit Log Shipper settings
-# @default -- A configuration made for OVH's Log Data Platform (Logstah + Graylog + OpenSearch).
+# @default -- A configuration made for OVH's Log Data Platform (Logstash + Graylog + OpenSearch).
 #             See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/logstash
 # @section -- REDCap Audit Log Shipper settings
 audit:
@@ -567,7 +567,7 @@ audit:
       value: "https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz"
 
     # -- Command to be run to download and extract the JDBC driver.
-    # @default -- Using `wget` do download the driver, and miving it to the shared persitent volume.
+    # @default -- Using `wget` do download the driver, and moving it to the shared persistent volume.
     # @section -- REDCap Audit Log Shipper settings
     command:
     - "sh"
@@ -638,7 +638,7 @@ audit:
   - name: "driver-dir"
     emptyDir:
       sizeLimit: 50Mi
-  # -- Volume handling the CA used to validate the HTTPS conenxion to the audit stack the logs are send to.
+  # -- Volume handling the CA used to validate the HTTPS connexions to the audit stack the logs are send to.
   # @section -- REDCap Audit Log Shipper settings
   - name: "api-ca"
     secret:
@@ -661,7 +661,7 @@ audit:
   # @section -- REDCap Audit Log Shipper settings
   logsApi:
     config:
-      # -- Scheduling of the rate at whichh Logstash will query REDCap database for nez event. Must be in `cron` format.
+      # -- Scheduling of the rate at which Logstash will query REDCap database for nez event. Must be in `cron` format.
       # @section -- REDCap Audit Log Shipper settings
       pollingSchedule: ""
       # -- Path to the certificate used to validate the audit stack endpoint's certificate.
@@ -802,17 +802,17 @@ persistence:
   edocs:
     annotations:
       helm.sh/resource-policy: "keep"
-    # -- Size of the volume used to persist documents uplpoaded by REDCap users.
+    # -- Size of the volume used to persist documents uploaded by REDCap users.
     # @section -- Persistence settings
     size: "8Gi"
-    # -- StorageClass of the volume used to persist documents uplpoaded by REDCap users.
-    # @section -- Persistence settings
+    # -- StorageClass of the volume used to persist documents uploaded by REDCap users.
+    # @section -- Persistence uploaded
     storageClass: "standard"
-    # -- AccessMode of the volume used to persist documents uplpoaded by REDCap users.
+    # -- AccessMode of the volume used to persist documents uploaded by REDCap users.
     # @section -- Persistence settings
     accessMode: "ReadWriteOnce"
     existingClaim:
-      # -- Name of an existing PVC used to persist documents uplpoaded by REDCap users.
+      # -- Name of an existing PVC used to persist documents uploaded by REDCap users.
       #    If set, overrides the previous settings, as no PVC will be created for that purpose.
       # @section -- Persistence settings
       name: ""

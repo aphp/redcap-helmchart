@@ -128,7 +128,7 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | redcap.adminJob | object | `{"image":{"imagePullSecrets":[],"pullPolicy":"Always","repository":"ghcr.io/aphp/redcap-fastcgi-client","tag":"1.1.0"},"resources":{},"schedule":"0 * * * *"}` | REDCap Administration Job's settings |
-| redcap.adminJob.schedule | string | `"0 * * * *"` | Schedule of the Admin Job, which runs every hours by default. This job is nedded to refresh REDCap administrative's data. |
+| redcap.adminJob.schedule | string | `"* * * * *"` | Schedule of the Admin Job, which runs every minute by default. This job is nedded to refresh REDCap administrative's data. |
 | redcap.adminJob.image.repository | string | `"ghcr.io/aphp/redcap-fastcgi-client"` | Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s). |
 | redcap.adminJob.image.tag | string | `"1.1.0"` | Tag of the Admin Job's image. |
 | redcap.adminJob.image.pullPolicy | string | `"Always"` | PullPolicy of the Admin Job's image. |
