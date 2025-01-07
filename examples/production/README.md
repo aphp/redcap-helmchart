@@ -51,7 +51,7 @@ kubectl -n redcap create secret generic redcap-prod-audit-token--from-literal TO
 Take the `values.yaml` file in this directory as an example, and review it according to your needs.
 After ensuring that everything is OK, proceed with the next step.
 
-**Note** : If you're not using the features tagged as [OPTIONAL] in this documentation, you can disable them by marking `enbaled: false` :
+**Note** : If you're not using the features tagged as [OPTIONAL] in this documentation, you can disable them by marking `enabled: false` :
 - Line 113 for the Backup Cronjob
 - Line 137 for the Restore Job
 - Line 164 for the Audit component
@@ -83,7 +83,7 @@ The auto-install feature doesn't fully configure the REDCap installation, hence 
 - Set the `REDCap base URL`
 - Set the `Local Server File Storage` path to `/edocs`
 - Set an authentication method
-- Checks that the CronJobs were called (you can manually lauch one if the Kubernetes CronJob dedicated to this task hasn't run yet)
+- Checks that the CronJobs were called (you can manually launch one if the Kubernetes CronJob dedicated to this task hasn't run yet)
 - Launch the `Configuration Check`
 
 Then, finish the configuration of your REDCap installation according to your needs.

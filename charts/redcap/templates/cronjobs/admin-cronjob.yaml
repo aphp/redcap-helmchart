@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "redcap.adminJob.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.redcap.adminJob.schedule }}
+  schedule: {{ .Values.redcap.adminJob.schedule | quote }}
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
   jobTemplate:

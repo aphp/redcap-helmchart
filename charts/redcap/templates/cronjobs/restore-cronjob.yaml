@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "redcap.restoreJob.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.restoreJob.schedule }}
+  schedule: {{ .Values.restoreJob.schedule | quote }}
   suspend: true # We don't want the restore Job to run on a scheduled basis, but we still want the convenience to have that job templated correctly, ready to be manually fired from the JobTemplate inside that Cronjob.
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
