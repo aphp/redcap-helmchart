@@ -1,7 +1,7 @@
 # HTTPd module settings
 # @section -- HTTPd module settings
 httpd:
-  # -- If `true`, activates the deploment of the Apache HTTPd proxy.
+  # -- If `true`, activates the deployment of the Apache HTTPd proxy.
   # @section -- HTTPd module settings
   enabled: true
 
@@ -150,15 +150,15 @@ redcap:
     # @section -- REDCap settings
     tag: "1.1.0"
 
-  # -- Add additional init containers to the PHP-FPM container hostin the REDCap application.
+  # -- Add additional init containers to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
   extraInitContainers: []
 
-  # -- Add additional containers to the PHP-FPM container hostin the REDCap application.
+  # -- Add additional containers to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
   extraContainers: []
 
-  # -- Add additional volumes to the PHP-FPM container hostin the REDCap application.
+  # -- Add additional volumes to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
   extraVolumes: []
 
@@ -166,14 +166,14 @@ redcap:
     # -- If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION).
     # @section -- REDCap settings
     logAllErrors: "FALSE"
-    # -- The URL on which the application is exposed (useful if the application is behind a reverse-proy).
+    # -- The URL on which the application is exposed (useful if the application is behind a reverse-proxy).
     # @section -- REDCap settings
     externalURL: "localhost"
     # -- The email of the administrator that is presented to the users.
     # @section -- REDCap settings
     adminMail: "redcap-admin@local.com"
     # -- Prevents modifications on REDCap application directory for security reasons. Not compatible with the 
-    #    `Easy Upgrade` feature, that shoud be disabled from the Control Center if this option is enabled.
+    #    `Easy Upgrade` feature, that should be disabled from the Control Center if this option is enabled.
     # @section -- REDCap settings
     readOnlyAppDir: true
 
@@ -456,7 +456,7 @@ restoreJob:
   # @section -- REDCap Restore Job's settings
   imagePullSecrets: []
   # @section -- REDCap Restore Job's settings
-  # -- Schedule for the restore Cronjob. CronJob resources needs a valide schedule, but this one will never be used since it will always be suspended (see spec.suspend field).
+  # -- Schedule for the restore Cronjob. CronJob resources needs a valid schedule, but this one will never be used since it will always be suspended (see spec.suspend field).
   # @section -- REDCap Restore Job's settings
   schedule: "0 0 1 1 *"
   # -- Name of the backup archive to restore.
@@ -595,7 +595,7 @@ audit:
     # -- Name of the volume used to persist the JDBC driver.
     # @section -- REDCap Audit Log Shipper settings
     - name: "driver-dir"
-      # -- Mount path ofthe volume used to persist the JDBC driver.
+      # -- Mount path of the volume used to persist the JDBC driver.
       # @section -- REDCap Audit Log Shipper settings
       mountPath: "/driver"
 
@@ -642,7 +642,7 @@ audit:
   - name: "driver-dir"
     emptyDir:
       sizeLimit: 50Mi
-  # -- Volume handling the CA used to validate the HTTPS connexions to the audit stack the logs are send to.
+  # -- Volume handling the CA used to validate the HTTPS connections to the audit stack the logs are send to.
   # @section -- REDCap Audit Log Shipper settings
   - name: "api-ca"
     secret:
@@ -655,7 +655,7 @@ audit:
   # @section -- REDCap Audit Log Shipper settings
   - name: "driver-dir"
     mountPath: /driver
-  # -- Volume handling the CA used to validate the HTTPS connexion to the audit stack the logs are send to.
+  # -- Volume handling the CA used to validate the HTTPS connection to the audit stack the logs are send to.
   # @section -- REDCap Audit Log Shipper settings
   - name: "api-ca"
     mountPath: /var/run/secret/api-ca.pem

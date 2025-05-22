@@ -1,1132 +1,2793 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "properties": {
-        "audit": {
-            "properties": {
-                "enableMultiplePipelines": {
-                    "type": "boolean"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "existingConfiguration": {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "audit": {
+      "additionalProperties": false,
+      "description": "REDCap Audit Log Shipper settings\n            See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/logstash",
+      "properties": {
+        "enableMultiplePipelines": {
+          "default": true,
+          "description": "If set to `true`, allows the use of multiple pipelines. Needed for audit concurrent pipelines for performance reasons.",
+          "required": [],
+          "title": "enableMultiplePipelines",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "description": "If set to `true`, enables the audit log-shipping solution.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "existingConfiguration": {
+          "default": "redcap-mysql-audit-logstash-pipeline",
+          "description": "Name of an existing ConfigMap holding the pipeline(s)'s configuration.",
+          "required": [],
+          "title": "existingConfiguration",
+          "type": "string"
+        },
+        "extraEnvVars": {
+          "description": "Extra environment variables needed.",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "default": "MYSQL_PASSWD",
+                    "required": [],
+                    "title": "name",
                     "type": "string"
-                },
-                "extraEnvVars": {
-                    "items": {
+                  },
+                  "valueFrom": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "secretKeyRef": {
+                        "additionalProperties": false,
                         "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "valueFrom": {
-                                "properties": {
-                                    "secretKeyRef": {
-                                        "properties": {
-                                            "key": {
-                                                "type": "string"
-                                            },
-                                            "name": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            }
+                          "key": {
+                            "default": "",
+                            "required": [],
+                            "title": "key",
+                            "type": "string"
+                          },
+                          "name": {
+                            "default": "",
+                            "required": [],
+                            "title": "name",
+                            "type": "string"
+                          }
                         },
+                        "required": [
+                          "name",
+                          "key"
+                        ],
+                        "title": "secretKeyRef",
                         "type": "object"
+                      }
                     },
-                    "type": "array"
+                    "required": [
+                      "secretKeyRef"
+                    ],
+                    "title": "valueFrom",
+                    "type": "object"
+                  }
                 },
-                "extraVolumeMounts": {
-                    "items": {
+                "required": [
+                  "name",
+                  "valueFrom"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "default": "AUDIT_TOKEN",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "valueFrom": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "secretKeyRef": {
+                        "additionalProperties": false,
                         "properties": {
+                          "key": {
+                            "default": "",
+                            "required": [],
+                            "title": "key",
+                            "type": "string"
+                          },
+                          "name": {
+                            "default": "",
+                            "required": [],
+                            "title": "name",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "key"
+                        ],
+                        "title": "secretKeyRef",
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "secretKeyRef"
+                    ],
+                    "title": "valueFrom",
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "name",
+                  "valueFrom"
+                ],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnvVars",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "Volume mounts required for Logstash's deployment.",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "mountPath": {
+                    "default": "/driver",
+                    "required": [],
+                    "title": "mountPath",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "driver-dir",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "mountPath"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "mountPath": {
+                    "default": "/var/run/secret/api-ca.pem",
+                    "required": [],
+                    "title": "mountPath",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "api-ca",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "subpath": {
+                    "default": "",
+                    "required": [],
+                    "title": "subpath",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "mountPath",
+                  "subpath"
+                ],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Volumes required for Logstash's deployment.",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "emptyDir": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "sizeLimit": {
+                        "default": "50Mi",
+                        "required": [],
+                        "title": "sizeLimit",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "sizeLimit"
+                    ],
+                    "title": "emptyDir",
+                    "type": "object"
+                  },
+                  "name": {
+                    "default": "driver-dir",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "emptyDir"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "default": "api-ca",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "secret": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "secretName": {
+                        "default": "",
+                        "required": [],
+                        "title": "secretName",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "secretName"
+                    ],
+                    "title": "secret",
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "name",
+                  "secret"
+                ],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "initContainers": {
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "command": {
+                    "description": "Command to be run to download and extract the JDBC driver.",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "required": [],
+                          "type": "string"
+                        },
+                        {
+                          "required": [],
+                          "type": "string"
+                        },
+                        {
+                          "required": [],
+                          "type": "string"
+                        }
+                      ],
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "command",
+                    "type": "array"
+                  },
+                  "env": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "name": {
+                              "default": "JDBC_DRIVER_URL",
+                              "required": [],
+                              "title": "name",
+                              "type": "string"
+                            },
+                            "value": {
+                              "default": "https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz",
+                              "description": "URL of the JDBC driver to download.",
+                              "required": [],
+                              "title": "value",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "value"
+                          ],
+                          "type": "object"
+                        }
+                      ],
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "env",
+                    "type": "array"
+                  },
+                  "image": {
+                    "default": "alpine:3.18",
+                    "description": "Image used for the pod downloading the driver.",
+                    "required": [],
+                    "title": "image",
+                    "type": "string"
+                  },
+                  "imagePullPolicy": {
+                    "default": "Always",
+                    "description": "Image pullPolicy used for the pod downloading the driver.",
+                    "required": [],
+                    "title": "imagePullPolicy",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "init-driver-download",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "securityContext": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "allowPrivilegeEscalation": {
+                        "default": false,
+                        "required": [],
+                        "title": "allowPrivilegeEscalation",
+                        "type": "boolean"
+                      },
+                      "runAsGroup": {
+                        "default": 1001,
+                        "required": [],
+                        "title": "runAsGroup",
+                        "type": "integer"
+                      },
+                      "runAsNonRoot": {
+                        "default": true,
+                        "required": [],
+                        "title": "runAsNonRoot",
+                        "type": "boolean"
+                      },
+                      "runAsUser": {
+                        "default": 1001,
+                        "required": [],
+                        "title": "runAsUser",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "runAsUser",
+                      "runAsGroup",
+                      "runAsNonRoot",
+                      "allowPrivilegeEscalation"
+                    ],
+                    "title": "securityContext",
+                    "type": "object"
+                  },
+                  "volumeMounts": {
+                    "description": "Volume mount used to persist the JDBC driver.",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
                             "mountPath": {
-                                "type": "string"
+                              "default": "/driver",
+                              "description": "Mount path ofthe volume used to persist the JDBC driver.",
+                              "required": [],
+                              "title": "mountPath",
+                              "type": "string"
                             },
                             "name": {
-                                "type": "string"
-                            },
-                            "subpath": {
-                                "type": "string"
+                              "default": "driver-dir",
+                              "required": [],
+                              "title": "name",
+                              "type": "string"
                             }
-                        },
-                        "type": "object"
-                    },
-                    "type": "array"
-                },
-                "extraVolumes": {
-                    "items": {
-                        "properties": {
-                            "emptyDir": {
-                                "properties": {
-                                    "sizeLimit": {
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "secret": {
-                                "properties": {
-                                    "secretName": {
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    "type": "array"
-                },
-                "initContainers": {
-                    "items": {
-                        "properties": {
-                            "command": {
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "env": {
-                                "items": {
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "value": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            },
-                            "image": {
-                                "type": "string"
-                            },
-                            "imagePullPolicy": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "securityContext": {
-                                "properties": {
-                                    "allowPrivilegeEscalation": {
-                                        "type": "boolean"
-                                    },
-                                    "runAsGroup": {
-                                        "type": "integer"
-                                    },
-                                    "runAsNonRoot": {
-                                        "type": "boolean"
-                                    },
-                                    "runAsUser": {
-                                        "type": "integer"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "volumeMounts": {
-                                "items": {
-                                    "properties": {
-                                        "mountPath": {
-                                            "type": "string"
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    "type": "array"
-                },
-                "logsApi": {
-                    "properties": {
-                        "config": {
-                            "properties": {
-                                "caPath": {
-                                    "type": "string"
-                                },
-                                "host": {
-                                    "type": "string"
-                                },
-                                "pollingSchedule": {
-                                    "type": "string"
-                                },
-                                "port": {
-                                    "type": "integer"
-                                }
-                            },
-                            "type": "object"
+                          },
+                          "required": [
+                            "name",
+                            "mountPath"
+                          ],
+                          "type": "object"
                         }
+                      ],
+                      "required": []
                     },
-                    "type": "object"
+                    "required": [],
+                    "title": "volumeMounts",
+                    "type": "array"
+                  }
                 },
-                "persistence": {
-                    "properties": {
-                        "accessModes": {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "size": {
-                            "type": "string"
-                        },
-                        "storageClass": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "podLabels": {
-                    "properties": {
-                        "app.kubernetes.io/role": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "type": "object"
+                "required": [
+                  "name",
+                  "image",
+                  "imagePullPolicy",
+                  "env",
+                  "command",
+                  "securityContext",
+                  "volumeMounts"
+                ],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
         },
-        "autoscaling": {
-            "properties": {
-                "enabled": {
-                    "type": "boolean"
+        "logsApi": {
+          "additionalProperties": false,
+          "description": "Configuration of the endpoint of the audit stack the logs are send to.",
+          "properties": {
+            "config": {
+              "additionalProperties": false,
+              "properties": {
+                "caPath": {
+                  "default": "",
+                  "description": "Path to the certificate used to validate the audit stack endpoint's certificate.",
+                  "required": [],
+                  "title": "caPath",
+                  "type": "string"
                 },
-                "maxReplicas": {
-                    "type": "integer"
+                "host": {
+                  "default": "",
+                  "required": [],
+                  "title": "host",
+                  "type": "string"
                 },
-                "minReplicas": {
-                    "type": "integer"
+                "pollingSchedule": {
+                  "default": "",
+                  "description": "Scheduling of the rate at which Logstash will query REDCap database for nez event. Must be in `cron` format.",
+                  "required": [],
+                  "title": "pollingSchedule",
+                  "type": "string"
                 },
-                "targetCPUUtilizationPercentage": {
-                    "type": "integer"
-                },
-                "targetMemoryUtilizationPercentage": {
-                    "type": "integer"
+                "port": {
+                  "default": 6514,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
                 }
-            },
-            "type": "object"
-        },
-        "backupJob": {
-            "properties": {
-                "archiveName": {
-                    "type": "string"
-                },
-                "database": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "imagePullSecrets": {
-                    "type": "array"
-                },
-                "redcap": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "resources": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "schedule": {
-                    "type": "string"
-                },
-                "uploader": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "s3": {
-                            "properties": {
-                                "backupPath": {
-                                    "type": "string"
-                                },
-                                "config": {
-                                    "properties": {
-                                        "auth": {
-                                            "properties": {
-                                                "accessKeyID": {
-                                                    "type": "string"
-                                                },
-                                                "existingSecret": {
-                                                    "type": "string"
-                                                },
-                                                "secretAccessKey": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "endpoint": {
-                                            "type": "string"
-                                        },
-                                        "locationConstraint": {
-                                            "type": "string"
-                                        },
-                                        "region": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "type": "object"
-        },
-        "httpd": {
-            "properties": {
-                "affinity": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "image": {
-                    "properties": {
-                        "pullPolicy": {
-                            "type": "string"
-                        },
-                        "repository": {
-                            "type": "string"
-                        },
-                        "tag": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "nodeSelector": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "replicaCount": {
-                    "type": "integer"
-                },
-                "resources": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "shibboleth": {
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "idp": {
-                            "properties": {
-                                "entityID": {
-                                    "type": "string"
-                                },
-                                "metadata": {
-                                    "properties": {
-                                        "secretKeyRef": {
-                                            "properties": {
-                                                "key": {
-                                                    "type": "string"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "sp": {
-                            "properties": {
-                                "entityID": {
-                                    "type": "string"
-                                },
-                                "metadata": {
-                                    "properties": {
-                                        "certificate": {
-                                            "properties": {
-                                                "existingSecret": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "tls": {
-                    "properties": {
-                        "caChain": {
-                            "properties": {
-                                "secretKeyRef": {
-                                    "properties": {
-                                        "key": {
-                                            "type": "string"
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "certificate": {
-                            "properties": {
-                                "existingSecret": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "enabled": {
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "tolerations": {
-                    "type": "array"
-                }
-            },
-            "type": "object"
-        },
-        "ingress": {
-            "properties": {
-                "annotations": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "className": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "hosts": {
-                    "type": "array"
-                },
-                "tls": {
-                    "type": "array"
-                }
-            },
-            "type": "object"
-        },
-        "mysql": {
-            "properties": {
-                "architecture": {
-                    "type": "string"
-                },
-                "auth": {
-                    "properties": {
-                        "createDatabase": {
-                            "type": "boolean"
-                        },
-                        "database": {
-                            "type": "string"
-                        },
-                        "password": {
-                            "type": "string"
-                        },
-                        "username": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "fullnameOverride": {
-                    "type": "string"
-                },
-                "initdbScriptsConfigMap": {
-                    "type": "string"
-                },
-                "networkPolicy": {
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "primary": {
-                    "properties": {
-                        "existingConfigmap": {
-                            "type": "string"
-                        },
-                        "persistence": {
-                            "properties": {
-                                "accessModes": {
-                                    "items": {
-                                        "type": "string"
-                                    },
-                                    "type": "array"
-                                },
-                                "size": {
-                                    "type": "string"
-                                },
-                                "storageClass": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "podLabels": {
-                            "properties": {
-                                "app.kubernetes.io/role": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "service": {
-                            "properties": {
-                                "port": {
-                                    "properties": {
-                                        "mysql": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "type": "object"
-        },
-        "networkPolicies": {
-            "properties": {
-                "enabled": {
-                    "type": "boolean"
-                }
-            },
-            "type": "object"
+              },
+              "required": [
+                "pollingSchedule",
+                "caPath",
+                "host",
+                "port"
+              ],
+              "title": "config",
+              "type": "object"
+            }
+          },
+          "required": [
+            "config"
+          ],
+          "title": "logsApi",
+          "type": "object"
         },
         "persistence": {
-            "properties": {
-                "edocs": {
-                    "properties": {
-                        "accessMode": {
-                            "type": "string"
-                        },
-                        "annotations": {
-                            "properties": {
-                                "helm.sh/resource-policy": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "existingClaim": {
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "size": {
-                            "type": "string"
-                        },
-                        "storageClass": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "redcap_code": {
-                    "properties": {
-                        "accessMode": {
-                            "type": "string"
-                        },
-                        "annotations": {
-                            "properties": {
-                                "helm.sh/resource-policy": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "existingClaim": {
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "size": {
-                            "type": "string"
-                        },
-                        "storageClass": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
+          "additionalProperties": false,
+          "properties": {
+            "accessModes": {
+              "description": "Access Mode used for Logstash's persistence.",
+              "items": {
+                "anyOf": [
+                  {
+                    "required": [],
+                    "type": "string"
+                  }
+                ],
+                "required": []
+              },
+              "required": [],
+              "title": "accessModes",
+              "type": "array"
             },
-            "type": "object"
+            "enabled": {
+              "default": true,
+              "description": "If set to `true`, enables persistence for Logstash. Useful for disaster recovery purposes, as the pipeline(s)'s cache is stored persisted by Logstash.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "size": {
+              "default": "10G",
+              "description": "Size requested for Logstash's persistence.",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "standard",
+              "description": "Storage class used for Logstash's persistence.",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "storageClass",
+            "accessModes",
+            "size"
+          ],
+          "title": "persistence",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": false,
+          "properties": {
+            "app.kubernetes.io/role": {
+              "default": "redcap-audit",
+              "description": "Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!",
+              "required": [],
+              "title": "app.kubernetes.io/role",
+              "type": "string"
+            }
+          },
+          "required": [
+            "app.kubernetes.io/role"
+          ],
+          "title": "podLabels",
+          "type": "object"
+        }
+      },
+      "required": [
+        "enabled",
+        "podLabels",
+        "initContainers",
+        "enableMultiplePipelines",
+        "existingConfiguration",
+        "extraEnvVars",
+        "persistence",
+        "extraVolumes",
+        "extraVolumeMounts",
+        "logsApi"
+      ],
+      "title": "audit",
+      "type": "object"
+    },
+    "autoscaling": {
+      "additionalProperties": false,
+      "description": "Autoscaling settings",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "If set to `true`, enables autoscaling",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "maxReplicas": {
+          "default": 3,
+          "description": "Maximum replicas target",
+          "required": [],
+          "title": "maxReplicas",
+          "type": "integer"
+        },
+        "minReplicas": {
+          "default": 1,
+          "description": "Minimum replicas instances.",
+          "required": [],
+          "title": "minReplicas",
+          "type": "integer"
+        },
+        "targetCPUUtilizationPercentage": {
+          "default": 80,
+          "description": "CPU usage threshold for autoscaling.",
+          "required": [],
+          "title": "targetCPUUtilizationPercentage",
+          "type": "integer"
+        },
+        "targetMemoryUtilizationPercentage": {
+          "default": 80,
+          "description": "Memory usage threshold for autoscaling.",
+          "required": [],
+          "title": "targetMemoryUtilizationPercentage",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "minReplicas",
+        "maxReplicas",
+        "targetCPUUtilizationPercentage",
+        "targetMemoryUtilizationPercentage"
+      ],
+      "title": "autoscaling",
+      "type": "object"
+    },
+    "backupJob": {
+      "additionalProperties": false,
+      "description": "REDCap Backup Job's settings",
+      "properties": {
+        "archiveName": {
+          "default": "redcap-backup.tar.gz",
+          "description": "Name of the archive holding the backup of REDCap.",
+          "required": [],
+          "title": "archiveName",
+          "type": "string"
+        },
+        "database": {
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "additionalProperties": false,
+              "properties": {
+                "pullPolicy": {
+                  "default": "Always",
+                  "description": "Image pullPolicy for the REDCap database backup container.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "bitnami/mysql",
+                  "description": "Image repository for the REDCap database backup container.",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "8.4.3-debian-12-r4",
+                  "description": "Image tag for the REDCap database backup container.",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "tag",
+                "pullPolicy"
+              ],
+              "title": "image",
+              "type": "object"
+            }
+          },
+          "required": [
+            "image"
+          ],
+          "title": "database",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "description": "If set to `true`, enables the backup CronJob.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "imagePullSecrets": {
+          "description": "ImagePllSecret for the REDCap backup CronJob.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "imagePullSecrets",
+          "type": "array"
         },
         "redcap": {
-            "properties": {
-                "adminJob": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "imagePullSecrets": {
-                                    "type": "array"
-                                },
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "resources": {
-                            "properties": {},
-                            "type": "object"
-                        },
-                        "schedule": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "additionalProperties": false,
+              "properties": {
+                "pullPolicy": {
+                  "default": "Always",
+                  "description": "Image pullPolicy for the REDCap application backup container.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
                 },
-                "affinity": {
-                    "properties": {},
-                    "type": "object"
+                "repository": {
+                  "default": "busybox",
+                  "description": "Image repository for the REDCap application backup container.",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "1",
+                  "description": "Image tag for the REDCap application backup container.",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "tag",
+                "pullPolicy"
+              ],
+              "title": "image",
+              "type": "object"
+            }
+          },
+          "required": [
+            "image"
+          ],
+          "title": "redcap",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Resources for backup job's pod.",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "schedule": {
+          "default": "0 */8 * * *",
+          "description": "Schedule of the Backup Job, which runs every 8 hours by default.",
+          "required": [],
+          "title": "schedule",
+          "type": "string"
+        },
+        "uploader": {
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "additionalProperties": false,
+              "properties": {
+                "pullPolicy": {
+                  "default": "Always",
+                  "description": "Image pullPolicy for the REDCap backup uploader container.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "bitnami/rclone",
+                  "description": "Image repository for the REDCap backup uploader container.",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "1.68.2",
+                  "description": "Image tag for the REDCap backup uploader container.",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "tag",
+                "pullPolicy"
+              ],
+              "title": "image",
+              "type": "object"
+            },
+            "s3": {
+              "additionalProperties": false,
+              "properties": {
+                "backupPath": {
+                  "default": "redcap-backup",
+                  "description": "Path of the REDcap backup archive on the S3 bucket.",
+                  "required": [],
+                  "title": "backupPath",
+                  "type": "string"
                 },
                 "config": {
-                    "properties": {
-                        "adminMail": {
-                            "type": "string"
+                  "additionalProperties": false,
+                  "properties": {
+                    "auth": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "accessKeyID": {
+                          "default": "",
+                          "description": "AccessKeyID needed for authentication on the S3 bucket.",
+                          "required": [],
+                          "title": "accessKeyID",
+                          "type": "string"
                         },
-                        "database": {
-                            "properties": {
-                                "auth": {
-                                    "properties": {
-                                        "databaseName": {
-                                            "type": "string"
-                                        },
-                                        "hostname": {
-                                            "type": "string"
-                                        },
-                                        "password": {
-                                            "properties": {
-                                                "secretKeyRef": {
-                                                    "properties": {
-                                                        "key": {
-                                                            "type": "string"
-                                                        },
-                                                        "name": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "value": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "username": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "salt": {
-                                    "properties": {
-                                        "secretKeyRef": {
-                                            "properties": {
-                                                "key": {
-                                                    "type": "string"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "value": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
+                        "existingSecret": {
+                          "default": "",
+                          "description": "Reference to an existing secret holding the AccessKeyID and SecretAccessKey needed for authentication on the S3 bucket.\n   If set, overrides the AccessKeyID and SecretAccessKey values.",
+                          "required": [],
+                          "title": "existingSecret",
+                          "type": "string"
                         },
-                        "externalURL": {
-                            "type": "string"
-                        },
-                        "logAllErrors": {
-                            "type": "string"
-                        },
-                        "mail": {
-                            "properties": {
-                                "auth": {
-                                    "properties": {
-                                        "from": {
-                                            "type": "string"
-                                        },
-                                        "password": {
-                                            "properties": {
-                                                "existingSecret": {
-                                                    "type": "string"
-                                                },
-                                                "value": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "port": {
-                                            "type": "integer"
-                                        },
-                                        "server": {
-                                            "type": "string"
-                                        },
-                                        "starttls": {
-                                            "type": "boolean"
-                                        },
-                                        "tls": {
-                                            "type": "boolean"
-                                        },
-                                        "username": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "tls": {
-                            "properties": {
-                                "curlCA": {
-                                    "properties": {
-                                        "secretKeyRef": {
-                                            "properties": {
-                                                "key": {
-                                                    "type": "string"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
+                        "secretAccessKey": {
+                          "default": "",
+                          "description": "SecretAccessKey needed for authentication on the S3 bucket.",
+                          "required": [],
+                          "title": "secretAccessKey",
+                          "type": "string"
                         }
+                      },
+                      "required": [
+                        "accessKeyID",
+                        "secretAccessKey",
+                        "existingSecret"
+                      ],
+                      "title": "auth",
+                      "type": "object"
                     },
-                    "type": "object"
-                },
-                "extraContainers": {
-                    "type": "array"
-                },
-                "extraInitContainers": {
-                    "type": "array"
-                },
-                "extraVolumes": {
-                    "type": "array"
-                },
-                "image": {
-                    "properties": {
-                        "pullPolicy": {
-                            "type": "string"
-                        },
-                        "repository": {
-                            "type": "string"
-                        },
-                        "tag": {
-                            "type": "string"
-                        }
+                    "endpoint": {
+                      "default": "",
+                      "description": "Endpoint of the S3 bucket.",
+                      "required": [],
+                      "title": "endpoint",
+                      "type": "string"
                     },
-                    "type": "object"
-                },
-                "install": {
-                    "properties": {
-                        "communityAuth": {
-                            "properties": {
-                                "existingSecret": {
-                                    "type": "string"
-                                },
-                                "password": {
-                                    "type": "string"
-                                },
-                                "username": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "image": {
-                            "properties": {
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "initJob": {
-                            "properties": {
-                                "image": {
-                                    "properties": {
-                                        "imagePullSecrets": {
-                                            "type": "array"
-                                        },
-                                        "pullPolicy": {
-                                            "type": "string"
-                                        },
-                                        "repository": {
-                                            "type": "string"
-                                        },
-                                        "tag": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "resources": {
-                                    "properties": {},
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "override": {
-                            "type": "boolean"
-                        },
-                        "overrideInstallContainer": {
-                            "type": "array"
-                        },
-                        "version": {
-                            "type": "string"
-                        }
+                    "locationConstraint": {
+                      "default": "",
+                      "description": "LocalizationConstraint of the S3 bucket.",
+                      "required": [],
+                      "title": "locationConstraint",
+                      "type": "string"
                     },
-                    "type": "object"
-                },
-                "nodeSelector": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "replicaCount": {
-                    "type": "integer"
-                },
-                "resources": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "tolerations": {
-                    "type": "array"
+                    "region": {
+                      "default": "",
+                      "description": "Region of the S3 bucket.",
+                      "required": [],
+                      "title": "region",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "region",
+                    "locationConstraint",
+                    "endpoint",
+                    "auth"
+                  ],
+                  "title": "config",
+                  "type": "object"
                 }
-            },
-            "type": "object"
-        },
-        "restoreJob": {
-            "properties": {
-                "archiveName": {
-                    "type": "string"
-                },
-                "database": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "downloader": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "s3": {
-                            "properties": {
-                                "backupPath": {
-                                    "type": "string"
-                                },
-                                "config": {
-                                    "properties": {
-                                        "auth": {
-                                            "properties": {
-                                                "accessKeyID": {
-                                                    "type": "string"
-                                                },
-                                                "existingSecret": {
-                                                    "type": "string"
-                                                },
-                                                "secretAccessKey": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "endpoint": {
-                                            "type": "string"
-                                        },
-                                        "locationConstraint": {
-                                            "type": "string"
-                                        },
-                                        "region": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "imagePullSecrets": {
-                    "type": "array"
-                },
-                "redcap": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "resources": {
-                    "properties": {
-                        "limits": {
-                            "properties": {
-                                "cpu": {
-                                    "type": "string"
-                                },
-                                "memory": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "requests": {
-                            "properties": {
-                                "cpu": {
-                                    "type": "string"
-                                },
-                                "memory": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "schedule": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "service": {
-            "properties": {
-                "httpd": {
-                    "properties": {
-                        "annotations": {
-                            "properties": {},
-                            "type": "object"
-                        },
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "portName": {
-                            "type": "string"
-                        },
-                        "protocol": {
-                            "type": "string"
-                        },
-                        "type": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "redcap": {
-                    "properties": {
-                        "annotations": {
-                            "properties": {},
-                            "type": "object"
-                        },
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "port": {
-                            "type": "integer"
-                        },
-                        "portName": {
-                            "type": "string"
-                        },
-                        "protocol": {
-                            "type": "string"
-                        },
-                        "targetPort": {
-                            "type": "integer"
-                        },
-                        "type": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "type": "object"
-        },
-        "serviceAccount": {
-            "properties": {
-                "annotations": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "create": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
+              },
+              "required": [
+                "backupPath",
+                "config"
+              ],
+              "title": "s3",
+              "type": "object"
+            }
+          },
+          "required": [
+            "image",
+            "s3"
+          ],
+          "title": "uploader",
+          "type": "object"
         }
+      },
+      "required": [
+        "enabled",
+        "imagePullSecrets",
+        "schedule",
+        "archiveName",
+        "redcap",
+        "database",
+        "uploader",
+        "resources"
+      ],
+      "title": "backupJob",
+      "type": "object"
     },
-    "type": "object"
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpd": {
+      "additionalProperties": false,
+      "description": "HTTPd module settings",
+      "properties": {
+        "affinity": {
+          "additionalProperties": false,
+          "description": "Affinity for the the Apache HTTPD pod(s).",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "description": "If `true`, activates the deploment of the Apache HTTPd proxy.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": false,
+          "properties": {
+            "pullPolicy": {
+              "default": "Always",
+              "description": "PullPolicy for Apache HTTPd's image.",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "ghcr.io/aphp/redcap-httpd-shibd",
+              "description": "Image repository for Apache HTTPd.",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "1.1.0",
+              "description": "Image tag for Apache HTTPd.",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag",
+            "pullPolicy"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": false,
+          "description": "Node Selector for the the Apache HTTPD pod(s).",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "replicaCount": {
+          "default": 1,
+          "description": "Number of replicas wanted for the Apache",
+          "required": [],
+          "title": "replicaCount",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Resources for the Apache HTTPd pod(s).",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "shibboleth": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "If `true`, activates the Shibboleth daemon, which enables is needed for enabling SAMLv2 authentication with REDCap.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "idp": {
+              "additionalProperties": false,
+              "properties": {
+                "entityID": {
+                  "default": "",
+                  "description": "EntityID of the SAMLv2 Identity Provider (IdP).",
+                  "required": [],
+                  "title": "entityID",
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "secretKeyRef": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "default": "",
+                          "description": "Key of the secret holding the metadata file for the Identity Provider.",
+                          "required": [],
+                          "title": "key",
+                          "type": "string"
+                        },
+                        "name": {
+                          "default": "",
+                          "description": "Name of the secret holding the metadata file for the Identity Provider.",
+                          "required": [],
+                          "title": "name",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "key"
+                      ],
+                      "title": "secretKeyRef",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "secretKeyRef"
+                  ],
+                  "title": "metadata",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "entityID",
+                "metadata"
+              ],
+              "title": "idp",
+              "type": "object"
+            },
+            "sp": {
+              "additionalProperties": false,
+              "properties": {
+                "entityID": {
+                  "default": "",
+                  "description": "EntityID of the SAMLv2 Service Provider (SP).",
+                  "required": [],
+                  "title": "entityID",
+                  "type": "string"
+                },
+                "metadata": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "certificate": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "existingSecret": {
+                          "default": "",
+                          "description": "Reference to the secret holding the metadata file for the Service Provider.",
+                          "required": [],
+                          "title": "existingSecret",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "existingSecret"
+                      ],
+                      "title": "certificate",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "certificate"
+                  ],
+                  "title": "metadata",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "entityID",
+                "metadata"
+              ],
+              "title": "sp",
+              "type": "object"
+            }
+          },
+          "required": [
+            "enabled",
+            "sp",
+            "idp"
+          ],
+          "title": "shibboleth",
+          "type": "object"
+        },
+        "tls": {
+          "additionalProperties": false,
+          "properties": {
+            "caChain": {
+              "additionalProperties": false,
+              "description": "Configuration relating to the certification chain certificate.",
+              "properties": {
+                "secretKeyRef": {
+                  "additionalProperties": false,
+                  "description": "Reference of an existing Secret holding the certificate for the certification chain, if needed.",
+                  "properties": {
+                    "key": {
+                      "default": "",
+                      "description": "The key inside the existing Secret holding the certificate for the certification chain, if needed.",
+                      "required": [],
+                      "title": "key",
+                      "type": "string"
+                    },
+                    "name": {
+                      "default": "",
+                      "description": "The name of the existing Secret holding the certificate for the certification chain, if needed.",
+                      "required": [],
+                      "title": "name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "key"
+                  ],
+                  "title": "secretKeyRef",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "secretKeyRef"
+              ],
+              "title": "caChain",
+              "type": "object"
+            },
+            "certificate": {
+              "additionalProperties": false,
+              "description": "Configuration relating to the server TLS certificate.",
+              "properties": {
+                "existingSecret": {
+                  "default": "",
+                  "description": "Name of the existing Secret holding the certificate for the TLS termination. The secret must be of type `tls`.",
+                  "required": [],
+                  "title": "existingSecret",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "existingSecret"
+              ],
+              "title": "certificate",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "If `true` activates TLS termination on the Apache HTTPd proxy.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled",
+            "certificate",
+            "caChain"
+          ],
+          "title": "tls",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "Toleration for the the Apache HTTPD pod(s).",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "enabled",
+        "image",
+        "tls",
+        "shibboleth",
+        "replicaCount",
+        "resources",
+        "nodeSelector",
+        "tolerations",
+        "affinity"
+      ],
+      "title": "httpd",
+      "type": "object"
+    },
+    "ingress": {
+      "additionalProperties": false,
+      "description": "Ingress settings",
+      "properties": {
+        "annotations": {
+          "additionalProperties": false,
+          "description": "Ingress' annotations",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "className": {
+          "default": "nginx",
+          "description": "Ingress' class name",
+          "required": [],
+          "title": "className",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "description": "If set to `true`, enables ingress.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "hosts": {
+          "description": "Ingress' hosts",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "hosts",
+          "type": "array"
+        },
+        "tls": {
+          "description": "Ingress TLS configuration",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tls",
+          "type": "array"
+        }
+      },
+      "required": [
+        "enabled",
+        "className",
+        "annotations",
+        "hosts",
+        "tls"
+      ],
+      "title": "ingress",
+      "type": "object"
+    },
+    "mysql": {
+      "additionalProperties": false,
+      "description": "REDCap MySQL Database settings\n            See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/mysql",
+      "properties": {
+        "architecture": {
+          "default": "standalone",
+          "description": "Deployment type for the database, standalone or replicated.",
+          "required": [],
+          "title": "architecture",
+          "type": "string"
+        },
+        "auth": {
+          "additionalProperties": false,
+          "properties": {
+            "createDatabase": {
+              "default": true,
+              "description": "Automatically create a database at the first run.",
+              "required": [],
+              "title": "createDatabase",
+              "type": "boolean"
+            },
+            "database": {
+              "default": "redcap",
+              "description": "Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`",
+              "required": [],
+              "title": "database",
+              "type": "string"
+            },
+            "password": {
+              "default": "Redcap*!",
+              "description": "Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`\n   Not secure in production, use secret reference instead!",
+              "required": [],
+              "title": "password",
+              "type": "string"
+            },
+            "username": {
+              "default": "redcap",
+              "description": "Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`",
+              "required": [],
+              "title": "username",
+              "type": "string"
+            }
+          },
+          "required": [
+            "createDatabase",
+            "database",
+            "username",
+            "password"
+          ],
+          "title": "auth",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "description": "If set to `true`, enables the deployment of MySQL as REDCap's database.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "fullnameOverride": {
+          "default": "redcap-mysql",
+          "description": "Override og the full name of the MySQL Database deployment.\n   Impacts the name of the services REDCap will use to connect to the Database.",
+          "required": [],
+          "title": "fullnameOverride",
+          "type": "string"
+        },
+        "initdbScriptsConfigMap": {
+          "default": "",
+          "description": "Name of a configmap holding an SQL script to initialize the database with.",
+          "required": [],
+          "title": "initdbScriptsConfigMap",
+          "type": "string"
+        },
+        "networkPolicy": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable creation of NetworkPolicy resources",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "networkPolicy",
+          "type": "object"
+        },
+        "primary": {
+          "additionalProperties": false,
+          "properties": {
+            "existingConfigmap": {
+              "default": "redcap-mysql-config",
+              "description": "Name of existing ConfigMap with MySQL Primary configuration.",
+              "required": [],
+              "title": "existingConfigmap",
+              "type": "string"
+            },
+            "persistence": {
+              "additionalProperties": false,
+              "properties": {
+                "accessModes": {
+                  "description": "AccessMode used for database persistence.",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "required": [],
+                        "type": "string"
+                      }
+                    ],
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "accessModes",
+                  "type": "array"
+                },
+                "size": {
+                  "default": "10G",
+                  "description": "Size of the storage used for database persistence.",
+                  "required": [],
+                  "title": "size",
+                  "type": "string"
+                },
+                "storageClass": {
+                  "default": "standard",
+                  "description": "StorageClass used for database persistence.",
+                  "required": [],
+                  "title": "storageClass",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "storageClass",
+                "accessModes",
+                "size"
+              ],
+              "title": "persistence",
+              "type": "object"
+            },
+            "podLabels": {
+              "additionalProperties": false,
+              "properties": {
+                "app.kubernetes.io/role": {
+                  "default": "redcap-mysql",
+                  "description": "Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!",
+                  "required": [],
+                  "title": "app.kubernetes.io/role",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "app.kubernetes.io/role"
+              ],
+              "title": "podLabels",
+              "type": "object"
+            },
+            "service": {
+              "additionalProperties": false,
+              "properties": {
+                "port": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "mysql": {
+                      "default": 3306,
+                      "description": "Port exposed by the MySQL service.",
+                      "required": [],
+                      "title": "mysql",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "mysql"
+                  ],
+                  "title": "port",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "port"
+              ],
+              "title": "service",
+              "type": "object"
+            }
+          },
+          "required": [
+            "existingConfigmap",
+            "podLabels",
+            "service",
+            "persistence"
+          ],
+          "title": "primary",
+          "type": "object"
+        }
+      },
+      "required": [
+        "fullnameOverride",
+        "enabled",
+        "architecture",
+        "initdbScriptsConfigMap",
+        "networkPolicy",
+        "auth",
+        "primary"
+      ],
+      "title": "mysql",
+      "type": "object"
+    },
+    "networkPolicies": {
+      "additionalProperties": false,
+      "description": "Network Policies settings",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "If set to `true`, enables NetworkPolicies. Highly recommended for production!",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "title": "networkPolicies",
+      "type": "object"
+    },
+    "persistence": {
+      "additionalProperties": false,
+      "description": "Persistence settings",
+      "properties": {
+        "edocs": {
+          "additionalProperties": false,
+          "properties": {
+            "accessMode": {
+              "default": "ReadWriteOnce",
+              "description": "AccessMode of the volume used to persist documents uploaded by REDCap users.",
+              "required": [],
+              "title": "accessMode",
+              "type": "string"
+            },
+            "annotations": {
+              "additionalProperties": false,
+              "properties": {
+                "helm.sh/resource-policy": {
+                  "default": "keep",
+                  "required": [],
+                  "title": "helm.sh/resource-policy",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "helm.sh/resource-policy"
+              ],
+              "title": "annotations",
+              "type": "object"
+            },
+            "existingClaim": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "default": "",
+                  "description": "Name of an existing PVC used to persist documents uploaded by REDCap users.\n   If set, overrides the previous settings, as no PVC will be created for that purpose.",
+                  "required": [],
+                  "title": "name",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "title": "existingClaim",
+              "type": "object"
+            },
+            "size": {
+              "default": "8Gi",
+              "description": "Size of the volume used to persist documents uploaded by REDCap users.",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "standard",
+              "description": "StorageClass of the volume used to persist documents uploaded by REDCap users.",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            }
+          },
+          "required": [
+            "annotations",
+            "size",
+            "storageClass",
+            "accessMode",
+            "existingClaim"
+          ],
+          "title": "edocs",
+          "type": "object"
+        },
+        "redcap_code": {
+          "additionalProperties": false,
+          "properties": {
+            "accessMode": {
+              "default": "ReadWriteOnce",
+              "description": "AccessMode of the volume used to persist REDCap code.",
+              "required": [],
+              "title": "accessMode",
+              "type": "string"
+            },
+            "annotations": {
+              "additionalProperties": false,
+              "properties": {
+                "helm.sh/resource-policy": {
+                  "default": "keep",
+                  "required": [],
+                  "title": "helm.sh/resource-policy",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "helm.sh/resource-policy"
+              ],
+              "title": "annotations",
+              "type": "object"
+            },
+            "existingClaim": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "default": "",
+                  "description": "Name of an existing PVC used to persist REDCap code.\n   If set, overrides the previous settings, as no PVC will be created for that purpose.",
+                  "required": [],
+                  "title": "name",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "title": "existingClaim",
+              "type": "object"
+            },
+            "size": {
+              "default": "1Gi",
+              "description": "Size of the volume used to persist REDCap code.",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "standard",
+              "description": "Storage Class of the volume used to persist REDCap code.",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            }
+          },
+          "required": [
+            "annotations",
+            "size",
+            "storageClass",
+            "accessMode",
+            "existingClaim"
+          ],
+          "title": "redcap_code",
+          "type": "object"
+        }
+      },
+      "required": [
+        "redcap_code",
+        "edocs"
+      ],
+      "title": "persistence",
+      "type": "object"
+    },
+    "redcap": {
+      "additionalProperties": false,
+      "description": "REDCap settings.",
+      "properties": {
+        "adminJob": {
+          "additionalProperties": false,
+          "description": "REDCap Administration Job's settings",
+          "properties": {
+            "image": {
+              "additionalProperties": false,
+              "properties": {
+                "imagePullSecrets": {
+                  "description": "ImagePullSecret of the Admin Job's image.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "imagePullSecrets",
+                  "type": "array"
+                },
+                "pullPolicy": {
+                  "default": "Always",
+                  "description": "PullPolicy of the Admin Job's image.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "ghcr.io/aphp/redcap-fastcgi-client",
+                  "description": "Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s).",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "1.1.0",
+                  "description": "Tag of the Admin Job's image.",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "tag",
+                "pullPolicy",
+                "imagePullSecrets"
+              ],
+              "title": "image",
+              "type": "object"
+            },
+            "resources": {
+              "additionalProperties": false,
+              "description": "Resources for the admin job's pod.",
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "schedule": {
+              "default": "* * * * *",
+              "description": "Schedule of the Admin Job, which runs every minute by default. This job is needed to refresh REDCap administrative's data.",
+              "required": [],
+              "title": "schedule",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schedule",
+            "image",
+            "resources"
+          ],
+          "title": "adminJob",
+          "type": "object"
+        },
+        "affinity": {
+          "additionalProperties": false,
+          "description": "The affinities for REDCap's deployment.",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "config": {
+          "additionalProperties": false,
+          "properties": {
+            "adminMail": {
+              "default": "redcap-admin@local.com",
+              "description": "The email of the administrator that is presented to the users.",
+              "required": [],
+              "title": "adminMail",
+              "type": "string"
+            },
+            "database": {
+              "additionalProperties": false,
+              "properties": {
+                "auth": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "databaseName": {
+                      "default": "redcap",
+                      "description": "The name of REDCAP's database.",
+                      "required": [],
+                      "title": "databaseName",
+                      "type": "string"
+                    },
+                    "hostname": {
+                      "default": "redcap-mysql",
+                      "description": "The hostname of REDCap's database instance.",
+                      "required": [],
+                      "title": "hostname",
+                      "type": "string"
+                    },
+                    "password": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "secretKeyRef": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "default": "",
+                              "description": "The key of the secret holding the password used to connect to REDCAP's database.\n   If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.",
+                              "required": [],
+                              "title": "key",
+                              "type": "string"
+                            },
+                            "name": {
+                              "default": "",
+                              "description": "The name of the secret holding the password used to connect to REDCAP's database.\n   If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.",
+                              "required": [],
+                              "title": "name",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "key"
+                          ],
+                          "title": "secretKeyRef",
+                          "type": "object"
+                        },
+                        "value": {
+                          "default": "Redcap*!",
+                          "description": "The password used to connect to REDCAP's database.",
+                          "required": [],
+                          "title": "value",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value",
+                        "secretKeyRef"
+                      ],
+                      "title": "password",
+                      "type": "object"
+                    },
+                    "username": {
+                      "default": "redcap",
+                      "description": "The username used to connect to REDCAP's database.",
+                      "required": [],
+                      "title": "username",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "hostname",
+                    "databaseName",
+                    "username",
+                    "password"
+                  ],
+                  "title": "auth",
+                  "type": "object"
+                },
+                "salt": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "secretKeyRef": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "default": "",
+                          "description": "The key of the secret holding the value of the salt used by the application to cypher sensitive data.\n   If set, the value of that secret will override the `redcap.config.database.salt.value` value.",
+                          "required": [],
+                          "title": "key",
+                          "type": "string"
+                        },
+                        "name": {
+                          "default": "",
+                          "description": "The name of the secret holding the value of the salt used by the application to cypher sensitive data.\n   If set, the value of that secret will override the `redcap.config.database.salt.value` value.",
+                          "required": [],
+                          "title": "name",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "key"
+                      ],
+                      "title": "secretKeyRef",
+                      "type": "object"
+                    },
+                    "value": {
+                      "default": "UjtNfDs2ELs2v6p",
+                      "description": "The value of the salt used by the application to cypher sensitive data.",
+                      "required": [],
+                      "title": "value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "secretKeyRef"
+                  ],
+                  "title": "salt",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "salt",
+                "auth"
+              ],
+              "title": "database",
+              "type": "object"
+            },
+            "externalURL": {
+              "default": "localhost",
+              "description": "The URL on which the application is exposed (useful if the application is behind a reverse-proy).",
+              "required": [],
+              "title": "externalURL",
+              "type": "string"
+            },
+            "logAllErrors": {
+              "default": "FALSE",
+              "description": "If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION).",
+              "required": [],
+              "title": "logAllErrors",
+              "type": "string"
+            },
+            "mail": {
+              "additionalProperties": false,
+              "properties": {
+                "auth": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "from": {
+                      "default": "",
+                      "description": "The sender name that will display on mails send by REDCap.",
+                      "required": [],
+                      "title": "from",
+                      "type": "string"
+                    },
+                    "password": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "existingSecret": {
+                          "default": "",
+                          "description": "Reference to an existing secret holding the password used to connect to the mail server.\n   If set, the value of that secret will override the `redcap.config.mail.auth.password.value` value.",
+                          "required": [],
+                          "title": "existingSecret",
+                          "type": "string"
+                        },
+                        "value": {
+                          "default": "",
+                          "description": "The password used to connect to the mail server.",
+                          "required": [],
+                          "title": "value",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value",
+                        "existingSecret"
+                      ],
+                      "title": "password",
+                      "type": "object"
+                    },
+                    "port": {
+                      "default": 465,
+                      "description": "The port of the mail server used by REDCap.",
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    },
+                    "server": {
+                      "default": "",
+                      "description": "The hostname or IP of the mail server used by REDCap.",
+                      "required": [],
+                      "title": "server",
+                      "type": "string"
+                    },
+                    "starttls": {
+                      "default": false,
+                      "description": "If `true`, will use StartTLS for the connection to the mail server.",
+                      "required": [],
+                      "title": "starttls",
+                      "type": "boolean"
+                    },
+                    "tls": {
+                      "default": true,
+                      "description": "If set to `true`, will secure the communication with the mail server with TLS.",
+                      "required": [],
+                      "title": "tls",
+                      "type": "boolean"
+                    },
+                    "username": {
+                      "default": "",
+                      "description": "The username used to connect to the mail server.",
+                      "required": [],
+                      "title": "username",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "server",
+                    "port",
+                    "tls",
+                    "starttls",
+                    "from",
+                    "username",
+                    "password"
+                  ],
+                  "title": "auth",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "auth"
+              ],
+              "title": "mail",
+              "type": "object"
+            },
+            "readOnlyAppDir": {
+              "default": true,
+              "description": "Prevents modifications on REDCap application directory for security reasons. Not compatible with the \n   `Easy Upgrade` feature, that shoud be disabled from the Control Center if this option is enabled.",
+              "required": [],
+              "title": "readOnlyAppDir",
+              "type": "boolean"
+            },
+            "tls": {
+              "additionalProperties": false,
+              "properties": {
+                "curlCA": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "secretKeyRef": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "default": "",
+                          "description": "The key of the secret containing the CA Certificate ued by the curl library of the application to reach external services, like an OIDC provider.\n   Useful some of those services are not signed by known CAs.",
+                          "required": [],
+                          "title": "key",
+                          "type": "string"
+                        },
+                        "name": {
+                          "default": "",
+                          "description": "The name of the secret containing the CA Certificate ued by the curl library of the application to reach external services, like an OIDC provider.\n   Useful some of those services are not signed by known CAs.",
+                          "required": [],
+                          "title": "name",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "key"
+                      ],
+                      "title": "secretKeyRef",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "secretKeyRef"
+                  ],
+                  "title": "curlCA",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "curlCA"
+              ],
+              "title": "tls",
+              "type": "object"
+            }
+          },
+          "required": [
+            "logAllErrors",
+            "externalURL",
+            "adminMail",
+            "readOnlyAppDir",
+            "tls",
+            "database",
+            "mail"
+          ],
+          "title": "config",
+          "type": "object"
+        },
+        "extraContainers": {
+          "description": "Add additional containers to the PHP-FPM container hostin the REDCap application.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraContainers",
+          "type": "array"
+        },
+        "extraInitContainers": {
+          "description": "Add additional init containers to the PHP-FPM container hostin the REDCap application.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraInitContainers",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Add additional volumes to the PHP-FPM container hostin the REDCap application.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "image": {
+          "additionalProperties": false,
+          "properties": {
+            "pullPolicy": {
+              "default": "Always",
+              "description": "PullPolicy for REDCap PHP-FPM Image.",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "ghcr.io/aphp/redcap-php-fpm",
+              "description": "Image repository for REDCap PHP-FPM Image.",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "1.1.0",
+              "description": "Tag for REDCap PHP-FPM Image.",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "pullPolicy",
+            "tag"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "install": {
+          "additionalProperties": false,
+          "properties": {
+            "communityAuth": {
+              "additionalProperties": false,
+              "properties": {
+                "existingSecret": {
+                  "default": "",
+                  "description": "Existing secret containing the credentials of the REDCap Community user with whom the installation package is downloaded.",
+                  "required": [],
+                  "title": "existingSecret",
+                  "type": "string"
+                },
+                "password": {
+                  "default": "",
+                  "description": "Password of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.",
+                  "required": [],
+                  "title": "password",
+                  "type": "string"
+                },
+                "username": {
+                  "default": "",
+                  "description": "Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.",
+                  "required": [],
+                  "title": "username",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "username",
+                "password",
+                "existingSecret"
+              ],
+              "title": "communityAuth",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "If `true`, enables REDCap installation process.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "additionalProperties": false,
+              "properties": {
+                "pullPolicy": {
+                  "default": "Always",
+                  "description": "PullPolicy for REDCap installation process.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "alpine/curl",
+                  "description": "Image repository for REDCap installation process.",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "8.9.1",
+                  "description": "Image tag for REDCap installation process.",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "tag",
+                "pullPolicy"
+              ],
+              "title": "image",
+              "type": "object"
+            },
+            "initJob": {
+              "additionalProperties": false,
+              "properties": {
+                "image": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "imagePullSecrets": {
+                      "description": "ImagePullSecret of the Init Job's image.",
+                      "items": {
+                        "required": []
+                      },
+                      "required": [],
+                      "title": "imagePullSecrets",
+                      "type": "array"
+                    },
+                    "pullPolicy": {
+                      "default": "Always",
+                      "description": "PullPolicy of the Init Job's image.",
+                      "required": [],
+                      "title": "pullPolicy",
+                      "type": "string"
+                    },
+                    "repository": {
+                      "default": "ghcr.io/aphp/redcap-fastcgi-client",
+                      "description": "Image of the Init Job. Must be and FCGI Client capable to query REDCap's pod(s).",
+                      "required": [],
+                      "title": "repository",
+                      "type": "string"
+                    },
+                    "tag": {
+                      "default": "1.1.0",
+                      "description": "Tag of the Admin Job's image.",
+                      "required": [],
+                      "title": "tag",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "repository",
+                    "tag",
+                    "pullPolicy",
+                    "imagePullSecrets"
+                  ],
+                  "title": "image",
+                  "type": "object"
+                },
+                "resources": {
+                  "additionalProperties": false,
+                  "description": "Resources for the Init Job's pod.",
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "image",
+                "resources"
+              ],
+              "title": "initJob",
+              "type": "object"
+            },
+            "override": {
+              "default": false,
+              "description": "If `true`, overwrite any existing installation with the new one.",
+              "required": [],
+              "title": "override",
+              "type": "boolean"
+            },
+            "overrideInstallContainer": {
+              "description": "Overrides the initContainers that downloads the REDCap application package.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "overrideInstallContainer",
+              "type": "array"
+            },
+            "version": {
+              "default": "14.5.26",
+              "description": "Version of the REDCap package to install",
+              "required": [],
+              "title": "version",
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "override",
+            "image",
+            "version",
+            "communityAuth",
+            "overrideInstallContainer",
+            "initJob"
+          ],
+          "title": "install",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": false,
+          "description": "The nodeSelector for REDCap's deployment.",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "replicaCount": {
+          "default": 1,
+          "description": "The number of replicas for REDCap's deployment.",
+          "required": [],
+          "title": "replicaCount",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "The resource request/limits for REDCap's deployment.",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "The tolerations for REDCap's deployment.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "install",
+        "image",
+        "extraInitContainers",
+        "extraContainers",
+        "extraVolumes",
+        "config",
+        "replicaCount",
+        "resources",
+        "nodeSelector",
+        "tolerations",
+        "affinity",
+        "adminJob"
+      ],
+      "title": "redcap",
+      "type": "object"
+    },
+    "restoreJob": {
+      "additionalProperties": false,
+      "description": "REDCap Restore Job's settings",
+      "properties": {
+        "archiveName": {
+          "default": "redcap-backup.tar.gz",
+          "description": "Name of the backup archive to restore.",
+          "required": [],
+          "title": "archiveName",
+          "type": "string"
+        },
+        "database": {
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "additionalProperties": false,
+              "properties": {
+                "pullPolicy": {
+                  "default": "Always",
+                  "description": "Image pullPolicy for the REDCap application restore container.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "bitnami/mysql",
+                  "description": "Image repository for the REDCap database restore container.",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "8.0.32-debian-11-r14",
+                  "description": "Image yag for the REDCap application restore container.",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "tag",
+                "pullPolicy"
+              ],
+              "title": "image",
+              "type": "object"
+            }
+          },
+          "required": [
+            "image"
+          ],
+          "title": "database",
+          "type": "object"
+        },
+        "downloader": {
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "additionalProperties": false,
+              "properties": {
+                "pullPolicy": {
+                  "default": "Always",
+                  "description": "Image pullPolicy for the REDCap downloader container.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "bitnami/rclone",
+                  "description": "Image repository for the REDCap downloader container.",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "1.68.2",
+                  "description": "Image tag for the REDCap downloader container.",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "tag",
+                "pullPolicy"
+              ],
+              "title": "image",
+              "type": "object"
+            },
+            "s3": {
+              "additionalProperties": false,
+              "properties": {
+                "backupPath": {
+                  "default": "redcap-backup",
+                  "description": "Path of the REDcap backup archive on the S3 bucket.",
+                  "required": [],
+                  "title": "backupPath",
+                  "type": "string"
+                },
+                "config": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "auth": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "accessKeyID": {
+                          "default": "",
+                          "description": "AccessKeyID needed for authentication on the S3 bucket.",
+                          "required": [],
+                          "title": "accessKeyID",
+                          "type": "string"
+                        },
+                        "existingSecret": {
+                          "default": "",
+                          "description": "Reference to an existing secret holding the AccessKeyID and SecretAccessKey needed for authentication on the S3 bucket.\n   If set, overrides the AccessKeyID and SecretAccessKey values.",
+                          "required": [],
+                          "title": "existingSecret",
+                          "type": "string"
+                        },
+                        "secretAccessKey": {
+                          "default": "",
+                          "description": "SecretAccessKey needed for authentication on the S3 bucket.",
+                          "required": [],
+                          "title": "secretAccessKey",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "accessKeyID",
+                        "secretAccessKey",
+                        "existingSecret"
+                      ],
+                      "title": "auth",
+                      "type": "object"
+                    },
+                    "endpoint": {
+                      "default": "",
+                      "description": "Endpoint of the S3 bucket.",
+                      "required": [],
+                      "title": "endpoint",
+                      "type": "string"
+                    },
+                    "locationConstraint": {
+                      "default": "",
+                      "description": "LocalizationConstraint of the S3 bucket.",
+                      "required": [],
+                      "title": "locationConstraint",
+                      "type": "string"
+                    },
+                    "region": {
+                      "default": "",
+                      "description": "Region of the S3 bucket.",
+                      "required": [],
+                      "title": "region",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "region",
+                    "locationConstraint",
+                    "endpoint",
+                    "auth"
+                  ],
+                  "title": "config",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "backupPath",
+                "config"
+              ],
+              "title": "s3",
+              "type": "object"
+            }
+          },
+          "required": [
+            "image",
+            "s3"
+          ],
+          "title": "downloader",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "description": "If set to `true`, enables the restore CronJob (used to easily trigger a job from its JobTemplate).",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "imagePullSecrets": {
+          "description": "ImagePullSecret used to pull the images for the restore pod's containers",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
+        "redcap": {
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "additionalProperties": false,
+              "properties": {
+                "pullPolicy": {
+                  "default": "Always",
+                  "description": "Image pullPolicy for the REDCap application restore container.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "busybox",
+                  "description": "Image repository for the REDCap application restore container.",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "1",
+                  "description": "Image tag for the REDCap application restore container.",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "tag",
+                "pullPolicy"
+              ],
+              "title": "image",
+              "type": "object"
+            }
+          },
+          "required": [
+            "image"
+          ],
+          "title": "redcap",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Resources for backup job's pod.",
+          "properties": {
+            "limits": {
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "default": "0.5",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "memory",
+                "cpu"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "default": "0.25",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "memory",
+                "cpu"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "schedule": {
+          "default": "0 0 1 1 *",
+          "description": "\nSchedule for the restore Cronjob. CronJob resources needs a valide schedule, but this one will never be used since it will always be suspended (see spec.suspend field).",
+          "required": [],
+          "title": "schedule",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "imagePullSecrets",
+        "schedule",
+        "archiveName",
+        "redcap",
+        "database",
+        "downloader",
+        "resources"
+      ],
+      "title": "restoreJob",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": false,
+      "description": "Service Account settings",
+      "properties": {
+        "annotations": {
+          "additionalProperties": false,
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": false,
+          "description": "Specifies whether a service account should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the service account to use. If not set and create is true, a name is generated using the fullname template",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "create",
+        "annotations",
+        "name"
+      ],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "services": {
+      "additionalProperties": false,
+      "description": "Service settings",
+      "properties": {
+        "httpd": {
+          "additionalProperties": false,
+          "properties": {
+            "annotations": {
+              "additionalProperties": false,
+              "description": "Annotations for the Apache HTTPd services.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": true,
+              "description": "If set to `true`, enables the service for Apache HTTPd.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "portName": {
+              "default": "httpd-service-port",
+              "description": "Name of the Apache HTTPd services.",
+              "required": [],
+              "title": "portName",
+              "type": "string"
+            },
+            "protocol": {
+              "default": "TCP",
+              "description": "Protocol of the Apache HTTPd services.",
+              "required": [],
+              "title": "protocol",
+              "type": "string"
+            },
+            "type": {
+              "default": "ClusterIP",
+              "description": "Type of the Apache HTTPd services.",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "annotations",
+            "type",
+            "protocol",
+            "portName"
+          ],
+          "title": "httpd",
+          "type": "object"
+        },
+        "redcap": {
+          "additionalProperties": false,
+          "properties": {
+            "annotations": {
+              "additionalProperties": false,
+              "description": "Annotations for the REDCap services.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": true,
+              "description": "If set to `true`, enables the service for REDCap.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "port": {
+              "default": 9000,
+              "description": "Port of the REDCap services.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "portName": {
+              "default": "redcap-service-port",
+              "description": "Name of the REDCap services.",
+              "required": [],
+              "title": "portName",
+              "type": "string"
+            },
+            "protocol": {
+              "default": "TCP",
+              "description": "Protocol of the REDCap services.",
+              "required": [],
+              "title": "protocol",
+              "type": "string"
+            },
+            "targetPort": {
+              "default": 9000,
+              "description": "Port of the REDCap services.",
+              "required": [],
+              "title": "targetPort",
+              "type": "integer"
+            },
+            "type": {
+              "default": "ClusterIP",
+              "description": "Type of the REDCap services.",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "annotations",
+            "type",
+            "port",
+            "protocol",
+            "targetPort",
+            "portName"
+          ],
+          "title": "redcap",
+          "type": "object"
+        }
+      },
+      "required": [
+        "httpd",
+        "redcap"
+      ],
+      "title": "services",
+      "type": "object"
+    }
+  },
+  "required": [
+    "httpd",
+    "redcap",
+    "mysql",
+    "backupJob",
+    "restoreJob",
+    "audit",
+    "serviceAccount",
+    "networkPolicies",
+    "ingress",
+    "services",
+    "autoscaling",
+    "persistence"
+  ],
+  "type": "object"
 }

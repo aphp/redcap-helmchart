@@ -1,9 +1,9 @@
 dependencies:
 - name: mysql
   repository: https://charts.bitnami.com/bitnami
-  version: 12.0.1
+  version: 13.0.0
 - name: logstash
   repository: https://charts.bitnami.com/bitnami
-  version: 6.3.9
-digest: sha256:54d706ed82715d6ade1bf97becd2cee3f8330f2ab9f6ffe579abb0dc7aec7517
-generated: "2024-11-25T16:18:28.685474634+01:00"
+  version: 7.0.2
+digest: sha256:230c9add448d8fcaac081511b31e7836b44297b51188b83816b096515203d1cd
+generated: "2025-05-22T15:39:01.297111411+02:00"

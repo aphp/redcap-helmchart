@@ -20,8 +20,6 @@ spec:
 
     spec:
       securityContext:
-        readOnlyRootFilesystem: true
-        allowPrivilegeEscalation: false
         runAsNonRoot: true
         fsGroup: 2000
         fsGroupChangePolicy: "OnRootMismatch"
@@ -73,6 +71,8 @@ spec:
         - "/home/curl_user/redcap-install.sh"
 
         volumeMounts:
+        - name: redcap-archive-cache
+          mountPath: /tmp/redcap
         - name: redcap-code
           mountPath: /redcap
         - name: init-install-script
@@ -163,7 +163,7 @@ spec:
           {{- toYaml .Values.redcap.resources | nindent 10 }}
 
         ports:
-        - name: phpfpmport
+        - name: phpfpm
           containerPort: 9000
           protocol: TCP
 
@@ -175,10 +175,8 @@ spec:
           mountPath: /edocs
         - name: database-conf
           mountPath: /app/redcap/database.php
-          subPath: database.php
         - name: database-creds
           mountPath: /var/run/secrets/credentials.php
-          subPath: credentials.php
         {{- if .Values.redcap.config.database.auth.password.secretKeyRef.key }}
         - name: database-password
           mountPath: /var/run/secrets/DB_PASSWD
@@ -222,6 +220,9 @@ spec:
       {{- end }}
 
       volumes:
+      - name: redcap-archive-cache
+        emptyDir:
+          sizeLimit: 100Mi
       {{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
       - name: init-install-script
         configMap:

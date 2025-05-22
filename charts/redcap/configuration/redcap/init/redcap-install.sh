@@ -22,10 +22,10 @@ install_redcap () {
         --data-urlencode "password=$REDCAP_COMMUNITY_PASSWORD" \
         --data-urlencode "version=$REDCAP_VERSION" \
         --data-urlencode "install=1" \
-        --output '/tmp/redcap.zip'
+        --output '/tmp/redcap/redcap.zip'
 
     echo "[INFO] Installing REDCap package"
-    unzip -o "/tmp/redcap.zip" -d /tmp
+    unzip -o "/tmp/redcap/redcap.zip" -d /tmp/redcap
     mv -f /tmp/redcap/* "${REDCAP_INSTALL_PATH}/"
 
     echo "[INFO] Applying CRLF EOF bugfix to installed REDCap package"
