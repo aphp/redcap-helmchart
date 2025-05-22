@@ -15,6 +15,10 @@ You must first ave a ready-to-use Kubernetes cluster on which you can deploy RED
 ## Installation
 To install REDCap, follow those steps :
 
+- Create the namespace that will contain the REDCap installation : 
+  ```
+  kubectl create namespace redcap
+  ```
 - Create a secret holding your REDCap Community Site credentials :
   ```sh
   kubectl -n redcap create secret generic redcap-community-credentials --from-literal USERNAME='my-username' --from-literal PASSWORD='my-password'
@@ -26,10 +30,6 @@ To install REDCap, follow those steps :
 - Update your Helm repositories :
   ```sh
   helm repo update
-  ```
-- Create the namespace that will contain the REDCap installation : 
-  ```
-  kubectl create namespace redcap
   ```
 - Install this chart using this values file : 
   ```sh

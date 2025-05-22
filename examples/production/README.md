@@ -59,6 +59,10 @@ After ensuring that everything is OK, proceed with the next step.
 ## Installation
 To install REDCap, follow those steps :
 
+- Create the namespace that will contain the REDCap installation : 
+  ```
+  kubectl create namespace redcap
+  ```
 - Add this Helm Repository to your Helm installation : 
   ```sh
   helm repo add aphp-redcap https://aphp.github.io/redcap-helmchart
@@ -66,10 +70,6 @@ To install REDCap, follow those steps :
 - Update your Helm repositories :
   ```sh
   helm repo update
-  ```
-- Create the namespace that will contain the REDCap installation : 
-  ```
-  kubectl create namespace redcap
   ```
 - Install this chart using this values file : 
   ```sh
