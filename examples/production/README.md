@@ -16,7 +16,7 @@ You'll need to fulfill the following points before deploying this chart:
 
 ## Secret creation
 
-You'll first need to create the Secret needed to hold all the sensitive informations REDCap will need :
+You'll first need to create the Secret needed to hold all the sensitive information REDCap will need :
 
 - HTTPS TLS certificate : 
 ```sh
