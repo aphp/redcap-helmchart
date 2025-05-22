@@ -123,7 +123,9 @@ You'll need to enable and configure the CronJob in the chart's parameters in ord
 
 - *How can I update it?*
 
-  We recommend to setup your REDCap installation using the default method stated [in the examples](./examples/), that is to provide the chart with your REDCap Community credentials via a Secret. You can then simply use the REDCap "one click update" feature to update your installation via the Control Center. 
+  We recommend to setup your REDCap installation using the default method stated [in the examples](./examples/), that is to provide the chart with your REDCap Community credentials via a Kubernetes Secret, as it will ease the update process. Regarding the update process, you can follow two routes :
+  - `Standard Update` : You can upgrade your REDCap version in the `values.yaml` of your Helm Release (`redcap.version` parameter), and then redeploy your release.
+  - `Easy Update` : You can use REDCap's `Easy Upgrade` feature, which allows you to update your installation directly from the Control Center, as an admin user. This method is disabled by default, as it allows the application to modify its own installation, which may be considered as a security breach. If you still wish to proceed, make sure you set the `redcap.config.readOnlyAppDir` parameter to `false` in the `values.yaml` file of your Helm Release.
 
 - *How can I manage backups?*
 
@@ -137,9 +139,9 @@ You'll need to enable and configure the CronJob in the chart's parameters in ord
 
 This project contains a Github Workflow, which will :
 - Lint the Chart using `helm ct`
-- Verify the generated Kubernetes resources using `Kubeconform`
-- Scan the Chart for anti-patterns and security issues using `Polaris`  
-- Validates the Chart deployment on `KinD` using `helm ct`
+- Verify the generated Kubernetes resources using `kubeconform`
+- Scan the Chart for anti-patterns and security issues using `polaris`  
+- Validates the Chart deployment on `kind` using `helm ct`
 - Package en release the chart on Github using `helm-cr`
 
 ## How can I contribute?

@@ -150,7 +150,7 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | mysql.auth.password | string | `"Redc@p*!"` | Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`    Not secure in production, use secret reference instead! |
 | mysql.primary.existingConfigmap | string | `"redcap-mysql-config"` | Name of existing ConfigMap with MySQL Primary configuration. |
 | mysql.primary.podLabels."app.kubernetes.io/role" | string | `"redcap-mysql"` | Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing! |
-| mysql.primary.services.port.mysql | int | `3306` | Port exposed by the MySQL services. |
+| mysql.primary.service.port.mysql | int | `3306` | Port exposed by the MySQL services. |
 | mysql.primary.persistence.storageClass | string | `"standard"` | StorageClass used for database persistence. |
 | mysql.primary.persistence.accessModes | list | `["ReadWriteOnce"]` | AccessMode used for database persistence. |
 | mysql.primary.persistence.size | string | `"10G"` | Size of the storage used for database persistence. |

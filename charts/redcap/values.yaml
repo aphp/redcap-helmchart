@@ -345,9 +345,9 @@ mysql:
       # @section -- REDCap MySQL Database settings
       app.kubernetes.io/role: redcap-mysql
 
-    services:
+    service:
       port:
-        # -- Port exposed by the MySQL services.
+        # -- Port exposed by the MySQL service.
         # @section -- REDCap MySQL Database settings
         mysql: 3306
 
