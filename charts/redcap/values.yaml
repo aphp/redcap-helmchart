@@ -172,6 +172,10 @@ redcap:
     # -- The email of the administrator that is presented to the users.
     # @section -- REDCap settings
     adminMail: "redcap-admin@local.com"
+    # -- Prevents modifications on REDCap application directory for security reasons. Not compatible with the 
+    #    `Easy Upgrade` feature, that shoud be disabled from the Control Center if this option is enabled.
+    # @section -- REDCap settings
+    readOnlyAppDir: true
 
     tls:
       curlCA:
@@ -296,67 +300,67 @@ redcap:
 # REDCap MySQL Database settings
 # @default -- Settings for a standalone MySQL deployment compatible with REDCap.
 #             See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/mysql
-# @section -- REDCap MySQL DDatabase settings
+# @section -- REDCap MySQL Database settings
 mysql:
     # -- Override og the full name of the MySQL Database deployment.
     #    Impacts the name of the services REDCap will use to connect to the Database.
-  # @section -- REDCap MySQL DDatabase settings
+  # @section -- REDCap MySQL Database settings
   fullnameOverride: "redcap-mysql"
   # -- If set to `true`, enables the deployment of MySQL as REDCap's database.
-  # @section -- REDCap MySQL DDatabase settings
+  # @section -- REDCap MySQL Database settings
   enabled: true
   # -- Deployment type for the database, standalone or replicated.
-  # @section -- REDCap MySQL DDatabase settings
+  # @section -- REDCap MySQL Database settings
   architecture: "standalone"
   # -- Name of a configmap holding an SQL script to initialize the database with.
-  # @section -- REDCap MySQL DDatabase settings
+  # @section -- REDCap MySQL Database settings
   initdbScriptsConfigMap: ""
   networkPolicy:
     # -- Enable creation of NetworkPolicy resources
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     enabled: true
 
   auth:
     # -- Automatically create a database at the first run.
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     createDatabase: true
     # -- Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     database: "redcap"
     # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     username: "redcap"
     # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
     #    Not secure in production, use secret reference instead!
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     password: "Redcap*!"
 
 
   primary:
     # -- Name of existing ConfigMap with MySQL Primary configuration.
-    # @section -- REDCap MySQL DDatabase settings
+    # @section -- REDCap MySQL Database settings
     existingConfigmap: "redcap-mysql-config"
     podLabels:
       # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
-      # @section -- REDCap MySQL DDatabase settings
+      # @section -- REDCap MySQL Database settings
       app.kubernetes.io/role: redcap-mysql
 
-    service:
+    services:
       port:
-        # -- Port exposed by the MySQL service.
-        # @section -- REDCap MySQL DDatabase settings
+        # -- Port exposed by the MySQL services.
+        # @section -- REDCap MySQL Database settings
         mysql: 3306
 
     persistence:
       # -- StorageClass used for database persistence.
-      # @section -- REDCap MySQL DDatabase settings
+      # @section -- REDCap MySQL Database settings
       storageClass: "standard"
       # -- AccessMode used for database persistence.
-      # @section -- REDCap MySQL DDatabase settings
+      # @section -- REDCap MySQL Database settings
       accessModes:
       - "ReadWriteOnce"
       # -- Size of the storage used for database persistence.
-      # @section -- REDCap MySQL DDatabase settings
+      # @section -- REDCap MySQL Database settings
       size: "10G"
 
 # REDCap Backup Job's settings
@@ -716,21 +720,21 @@ ingress:
 
 # -- Service settings
 # @section -- Service settings
-service:
+services:
   httpd:
     # -- If set to `true`, enables the service for Apache HTTPd.
     # @section -- Service settings
     enabled: true
-    # -- Annotations for the Apache HTTPd service.
+    # -- Annotations for the Apache HTTPd services.
     # @section -- Service settings
     annotations: {}
-    # -- Type of the Apache HTTPd service.
+    # -- Type of the Apache HTTPd services.
     # @section -- Service settings
     type: "ClusterIP"
-    # -- Protocol of the Apache HTTPd service.
+    # -- Protocol of the Apache HTTPd services.
     # @section -- Service settings
     protocol: "TCP"
-    # -- Name of the Apache HTTPd service.
+    # -- Name of the Apache HTTPd services.
     # @section -- Service settings
     portName: "httpd-service-port"
 
@@ -739,22 +743,22 @@ service:
     # -- If set to `true`, enables the service for REDCap.
     # @section -- Service settings
     enabled: true
-    # -- Annotations for the REDCap service.
+    # -- Annotations for the REDCap services.
     # @section -- Service settings
     annotations: {}
-    # -- Type of the REDCap service.
+    # -- Type of the REDCap services.
     # @section -- Service settings
     type: "ClusterIP"
-    # -- Port of the REDCap service.
+    # -- Port of the REDCap services.
     # @section -- Service settings
     port: 9000
-    # -- Protocol of the REDCap service.
+    # -- Protocol of the REDCap services.
     # @section -- Service settings
     protocol: "TCP"
-    # -- Port of the REDCap service.
+    # -- Port of the REDCap services.
     # @section -- Service settings
     targetPort: 9000
-    # -- Name of the REDCap service.
+    # -- Name of the REDCap services.
     # @section -- Service settings
     portName: "redcap-service-port"
 

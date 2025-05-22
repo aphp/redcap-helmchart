@@ -204,7 +204,7 @@ ingress:
           pathType: ImplementationSpecific
 
 
-service:
+services:
   httpd:
     enabled: true
     annotations: {}

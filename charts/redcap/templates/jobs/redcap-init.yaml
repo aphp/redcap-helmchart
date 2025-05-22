@@ -46,7 +46,7 @@ spec:
         args:
         - -bind
         - -connect
-        - "{{- include "redcap.serviceName" . }}:{{ .Values.service.redcap.port }}"
+        - "{{- include "redcap.serviceName" . }}:{{ .Values.services.redcap.port }}"
 
         securityContext:
           allowPrivilegeEscalation: false

@@ -1,4 +1,4 @@
-{{- if .Values.service.httpd.enabled }}
+{{- if .Values.services.httpd.enabled }}
 {{- $svcPort := ternary 1443 1080 .Values.httpd.tls.enabled -}}
 apiVersion: v1
 kind: Service
@@ -6,12 +6,12 @@ metadata:
   name: {{ include "httpd.serviceName" . }}
   labels:
     {{- include "httpd.labels" . | nindent 4 }}
-  {{- with .Values.service.httpd.annotations }}
+  {{- with .Values.services.httpd.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  type: {{ .Values.service.httpd.type }}
+  type: {{ .Values.services.httpd.type }}
   ports:
     - port: {{ $svcPort }}
       targetPort: {{ $svcPort }}

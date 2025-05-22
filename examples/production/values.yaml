@@ -242,7 +242,7 @@ ingress:
        - redcap-prod.com
 
 
-service:
+services:
   httpd:
     enabled: true
     annotations: {}

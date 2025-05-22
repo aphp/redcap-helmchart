@@ -135,7 +135,7 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | redcap.adminJob.image.imagePullSecrets | list | `[]` | ImagePullSecret of the Admin Job's image. |
 | redcap.adminJob.resources | object | `{}` | Resources for the admin job's pod. |
 
-### REDCap MySQL DDatabase settings
+### REDCap MySQL Database settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
@@ -150,7 +150,7 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | mysql.auth.password | string | `"Redc@p*!"` | Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`    Not secure in production, use secret reference instead! |
 | mysql.primary.existingConfigmap | string | `"redcap-mysql-config"` | Name of existing ConfigMap with MySQL Primary configuration. |
 | mysql.primary.podLabels."app.kubernetes.io/role" | string | `"redcap-mysql"` | Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing! |
-| mysql.primary.service.port.mysql | int | `3306` | Port exposed by the MySQL service. |
+| mysql.primary.services.port.mysql | int | `3306` | Port exposed by the MySQL services. |
 | mysql.primary.persistence.storageClass | string | `"standard"` | StorageClass used for database persistence. |
 | mysql.primary.persistence.accessModes | list | `["ReadWriteOnce"]` | AccessMode used for database persistence. |
 | mysql.primary.persistence.size | string | `"10G"` | Size of the storage used for database persistence. |
@@ -268,18 +268,18 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | service | object | `{"httpd":{"annotations":{},"enabled":true,"portName":"httpd-service-port","protocol":"TCP","type":"ClusterIP"},"redcap":{"annotations":{},"enabled":true,"port":9000,"portName":"redcap-service-port","protocol":"TCP","targetPort":9000,"type":"ClusterIP"}}` | Service settings |
-| service.httpd.enabled | bool | `true` | If set to `true`, enables the service for Apache HTTPd. |
-| service.httpd.annotations | object | `{}` | Annotations for the Apache HTTPd service. |
-| service.httpd.type | string | `"ClusterIP"` | Type of the Apache HTTPd service. |
-| service.httpd.protocol | string | `"TCP"` | Protocol of the Apache HTTPd service. |
-| service.httpd.portName | string | `"httpd-service-port"` | Name of the Apache HTTPd service. |
-| service.redcap.enabled | bool | `true` | If set to `true`, enables the service for REDCap. |
-| service.redcap.annotations | object | `{}` | Annotations for the REDCap service. |
-| service.redcap.type | string | `"ClusterIP"` | Type of the REDCap service. |
-| service.redcap.port | int | `9000` | Port of the REDCap service. |
-| service.redcap.protocol | string | `"TCP"` | Protocol of the REDCap service. |
-| service.redcap.targetPort | int | `9000` | Port of the REDCap service. |
-| service.redcap.portName | string | `"redcap-service-port"` | Name of the REDCap service. |
+| services.httpd.enabled | bool | `true` | If set to `true`, enables the service for Apache HTTPd. |
+| services.httpd.annotations | object | `{}` | Annotations for the Apache HTTPd services. |
+| services.httpd.type | string | `"ClusterIP"` | Type of the Apache HTTPd services. |
+| services.httpd.protocol | string | `"TCP"` | Protocol of the Apache HTTPd services. |
+| services.httpd.portName | string | `"httpd-service-port"` | Name of the Apache HTTPd services. |
+| services.redcap.enabled | bool | `true` | If set to `true`, enables the service for REDCap. |
+| services.redcap.annotations | object | `{}` | Annotations for the REDCap services. |
+| services.redcap.type | string | `"ClusterIP"` | Type of the REDCap services. |
+| services.redcap.port | int | `9000` | Port of the REDCap services. |
+| services.redcap.protocol | string | `"TCP"` | Protocol of the REDCap services. |
+| services.redcap.targetPort | int | `9000` | Port of the REDCap services. |
+| services.redcap.portName | string | `"redcap-service-port"` | Name of the REDCap services. |
 
 ### Autoscaling settings
 

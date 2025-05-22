@@ -16,7 +16,7 @@ spec:
           {{ include "redcap.networkPolicy.selectorLabels" . | nindent 12 }}
     ports:
       - protocol: TCP
-        port: {{ .Values.service.redcap.port }}
+        port: {{ .Values.services.redcap.port }}
 
   # allow DNS resolution
   - to:
