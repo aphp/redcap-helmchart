@@ -8,7 +8,7 @@
 echo "[INFO] Starting REDCap package installation script v1.0"
 set -e
 
-# Installs the REDCap Application package by retriving it directly from the Community Site API, using the user's credentials.
+# Installs the REDCap Application package by retrieving it directly from the Community Site API, using the user's credentials.
 install_redcap () {
     echo "[INFO] Cleaning destination dir"
     rm -rf "${REDCAP_INSTALL_PATH:?}/redcap"

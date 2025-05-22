@@ -97,14 +97,14 @@ redcap:
       repository: "alpine/curl"
       # -- Image tag for REDCap installation process.
       # @section -- REDCap settings
-      tag: "8.9.1"
+      tag: "8.12.1"
       # -- PullPolicy for REDCap installation process.
       # @section -- REDCap settings
       pullPolicy: Always
 
     # -- Version of the REDCap package to install
     # @section -- REDCap settings
-    version: "14.5.26"
+    version: "15.0.24"
 
     communityAuth:
       # -- Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.
@@ -398,7 +398,7 @@ backupJob:
       repository: "bitnami/mysql"
       # -- Image tag for the REDCap database backup container.
       # @section -- REDCap Backup Job's settings
-      tag: "8.4.3-debian-12-r4"
+      tag: "9.3.0-debian-12-r1"
       # -- Image pullPolicy for the REDCap database backup container.
       # @section -- REDCap Backup Job's settings
       pullPolicy: "Always"
@@ -410,7 +410,7 @@ backupJob:
       repository: "bitnami/rclone"
       # -- Image tag for the REDCap backup uploader container.
       # @section -- REDCap Backup Job's settings
-      tag: "1.68.2"
+      tag: "1.69.3"
       # -- Image pullPolicy for the REDCap backup uploader container.
       # @section -- REDCap Backup Job's settings
       pullPolicy: "Always"
@@ -481,7 +481,7 @@ restoreJob:
       repository: "bitnami/mysql"
       # -- Image yag for the REDCap application restore container.
       # @section -- REDCap Restore Job's settings
-      tag: "8.0.32-debian-11-r14"
+      tag: "9.3.0-debian-12-r1"
       # -- Image pullPolicy for the REDCap application restore container.
       # @section -- REDCap Restore Job's settings
       pullPolicy: "Always"
@@ -493,7 +493,7 @@ restoreJob:
       repository: "bitnami/rclone"
       # -- Image tag for the REDCap downloader container.
       # @section -- REDCap Restore Job's settings
-      tag: "1.68.2"
+      tag: "1.69.3"
       # -- Image pullPolicy for the REDCap downloader container.
       # @section -- REDCap Restore Job's settings
       pullPolicy: "Always"
@@ -557,7 +557,7 @@ audit:
   - name: "init-driver-download"
     # -- Image used for the pod downloading the driver.
     # @section -- REDCap Audit Log Shipper settings
-    image: "alpine:3.18"
+    image: "alpine:3.21.3"
     # -- Image pullPolicy used for the pod downloading the driver.
     # @section -- REDCap Audit Log Shipper settings
     imagePullPolicy: "Always"
