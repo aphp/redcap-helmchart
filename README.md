@@ -57,7 +57,7 @@ If you choose to automatically install REDCap using your community credentials w
 
 REDCap needs its `/cronjob.php` script to be called once an hour, in order to run diverse maintenance tasks. A dedicated Kubernetes CronJob has been created to this end, called `admin-cronjob`. It runs by default every hour, using the following schedule : `0 * * * *` . You can modify this scheduling pattern in the chart's parameters (see the [chart's documentation](./charts/redcap/README.md)).
 
-If, for any reasons, you need to manually fire a instance of this CronJob, you can juste use `kubectl` to create spawn a job manually using this command :
+If, for any reasons, you need to manually fire a instance of this CronJob, you can just use `kubectl` to create spawn a job manually using this command :
 
 ```sh
 kubectl -n redcap create job manual-admin-job --from cronjob/redcap-admin-job
@@ -77,7 +77,7 @@ A dedicated Kubernetes CronJob has been created to this end, called `backup-cron
 
 You'll need to enable and configure the CronJob in the chart's parameters in order to use it.
 
-If, for any reasons, you need to manually fire a instance of this CronJob, you can juste use `kubectl` to create spawn a job manually using this command :
+If, for any reasons, you need to manually fire a instance of this CronJob, you can just use `kubectl` to create spawn a job manually using this command :
 
 ```sh
 kubectl -n redcap create job manual-backup-job --from cronjob/redcap-backup-job
@@ -119,7 +119,7 @@ You'll need to enable and configure the CronJob in the chart's parameters in ord
 
 - *How secure is it?*
 
-  With its many parameters, and the exposition of several admin pages like cronjob or install, this installation will be as secure as its configuration. This chart offers many security feature (containerisation, rootless processes, traffic isolation with network policies, etc.), so be sure to check them, and to have a comprehensive view of your installation!
+  With its many parameters, and the exposition of several admin pages like cronjob or install, this installation will be as secure as its configuration. This chart offers many security feature (containerization, rootless processes, traffic isolation with network policies, etc.), so be sure to check them, and to have a comprehensive view of your installation!
 
 - *How can I update it?*
 
@@ -148,6 +148,6 @@ You're welcome to read the [contribution guidelines](./CONTRIBUTING.md).
 
 ## How is this project licensed?
 
-The informations about the licensing and the dependencies of this project can be found under : 
+The information about the licensing and the dependencies of this project can be found under : 
 - The [project's license file](./LICENSE)
 - The [legal notice](./NOTICE)
