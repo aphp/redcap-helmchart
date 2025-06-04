@@ -13,10 +13,11 @@ install_redcap () {
     echo "[INFO] Cleaning destination dir"
     rm -rf "${REDCAP_INSTALL_PATH:?}/redcap"
 
+    local LOCATION='https://redcap.vumc.org/plugins/redcap_consortium/versions.php'
 
-    echo "[INFO] Downloading and extracting REDCap package"
+    echo "[INFO] Downloading and extracting REDCap package from $LOCATION"
     curl -X POST \
-        --location 'https://redcap.vumc.org/plugins/redcap_consortium/versions.php' \
+        --location $LOCATION \
         --header 'Content-Type: application/x-www-form-urlencoded' \
         --data-urlencode "username=$REDCAP_COMMUNITY_USERNAME" \
         --data-urlencode "password=$REDCAP_COMMUNITY_PASSWORD" \
