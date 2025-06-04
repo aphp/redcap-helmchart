@@ -16,7 +16,7 @@ install_redcap () {
 
     echo "[INFO] Downloading and extracting REDCap package"
     curl -X POST \
-        --location 'https://redcap.vanderbilt.edu/plugins/redcap_consortium/versions.php' \
+        --location 'https://redcap.vumc.org/plugins/redcap_consortium/versions.php' \
         --header 'Content-Type: application/x-www-form-urlencoded' \
         --data-urlencode "username=$REDCAP_COMMUNITY_USERNAME" \
         --data-urlencode "password=$REDCAP_COMMUNITY_PASSWORD" \
