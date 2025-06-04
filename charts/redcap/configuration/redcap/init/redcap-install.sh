@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # Name: redcap_install
-# Version: 1.0
+# Version: 1.1
 # Author: APHP
 # Description : Retrieves and unpack REDCap and a translation package 
 
-echo "[INFO] Starting REDCap package installation script v1.0"
+echo "[INFO] Starting REDCap package installation script v1.1"
 set -e
 
 # Installs the REDCap Application package by retriving it directly from the Community Site API, using the user's credentials.
