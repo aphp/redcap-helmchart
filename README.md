@@ -55,7 +55,7 @@ If you choose to automatically install REDCap using your community credentials w
 
 ### Administration Cronjob
 
-REDCap needs its `/cronjob.php` script to be called once an hour, in order to run diverse maintenance tasks. A dedicated Kubernetes CronJob has been created to this end, called `admin-cronjob`. It runs by default every hour, using the following schedule : `0 * * * *` . You can modify this scheduling pattern in the chart's parameters (see the [chart's documentation](./charts/redcap/README.md)).
+REDCap needs its `/cron.php` script to be called once an hour, in order to run diverse maintenance tasks. A dedicated Kubernetes CronJob has been created to this end, called `admin-cronjob`. It runs by default every hour, using the following schedule : `0 * * * *` . You can modify this scheduling pattern in the chart's parameters (see the [chart's documentation](./charts/redcap/README.md)).
 
 If, for any reasons, you need to manually fire a instance of this CronJob, you can juste use `kubectl` to create spawn a job manually using this command :
 
