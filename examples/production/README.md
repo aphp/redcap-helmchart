@@ -1,6 +1,6 @@
 # Production-grade installation
 
-This example provides with a more robust qnd secure deployment of REDCap.
+This example provides with a more robust and secure deployment of REDCap.
 
 ## Pre-requisites
 

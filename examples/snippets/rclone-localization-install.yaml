@@ -50,5 +50,5 @@ redcap:
         rclone -P --ignore-existing -v copy "source:$REDCAP_LOCALIZATION_PATH" /redcap/languages
 
       volumeMounts:
-      - name: redcap-code
+      - name: redcap-app
         mountPath: /redcap

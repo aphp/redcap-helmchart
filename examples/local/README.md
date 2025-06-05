@@ -1,8 +1,8 @@
 # Local Installation
 
-If you wish to quickly fire a REDCap installation with this chart, you may follow the following steps.
+If you wish to quickly fire a REDCap installation with this chart, you may follow this example.
 
-**WARNING** : This installation is meant to be local-only or for test purposes, and is ni way stable, scalable and secure enough to host actual data and provide a service to end users!
+**WARNING** : This installation is meant to be local-only or for test purposes, and is no way stable, scalable and secure enough to host actual data and provide a service to end users!
 
 ## Prerequisites
 You must first ave a ready-to-use Kubernetes cluster on which you can deploy REDCap. You can quickly deploy one locally, or on a VM using KinD:
