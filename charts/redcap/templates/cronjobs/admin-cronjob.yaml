@@ -6,7 +6,7 @@ metadata:
     {{- include "redcap.adminJob.labels" . | nindent 4 }}
 spec:
   schedule: {{ .Values.redcap.adminJob.schedule | quote }}
-  successfulJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
@@ -55,6 +55,8 @@ spec:
             - "{{- include "redcap.serviceName" . }}:{{ .Values.services.redcap.port }}"
 
             securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false
 
           restartPolicy: Never

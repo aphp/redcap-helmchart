@@ -104,7 +104,7 @@ redcap:
 
     # -- Version of the REDCap package to install
     # @section -- REDCap settings
-    version: "15.0.24"
+    version: "15.0.26"
 
     communityAuth:
       # -- Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.
@@ -122,22 +122,37 @@ redcap:
     overrideInstallContainer: []
 
     initJob:
-      image:
-        # -- Image of the Init Job. Must be and FCGI Client capable to query REDCap's pod(s).
-        # @section -- REDCap settings
-        repository: "ghcr.io/aphp/redcap-fastcgi-client"
-        # -- Tag of the Admin Job's image.
-        # @section -- REDCap settings
-        tag: "1.1.0"
-        # -- PullPolicy of the Init Job's image.
-        # @section -- REDCap settings
-        pullPolicy: "Always"
-        # -- ImagePullSecret of the Init Job's image.
-        # @section -- REDCap settings
-        imagePullSecrets: []
-      # -- Resources for the Init Job's pod.
+      # -- ImagePullSecret of the Init Job.
       # @section -- REDCap settings
-      resources: {}
+      imagePullSecrets: []
+      php: 
+        image:
+          # -- Image of the Init Job's PHP container. Must be and FCGI Client capable to query REDCap's pod(s).
+          # @section -- REDCap settings
+          repository: "ghcr.io/aphp/redcap-fastcgi-client"
+          # -- Tag of the Init Job's PHP container image.
+          # @section -- REDCap settings
+          tag: "1.1.0"
+          # -- PullPolicy of the Init Job's PHP container image.
+          # @section -- REDCap settings
+          pullPolicy: "Always"
+        # -- Resources for the Init Job's PHP container.
+        # @section -- REDCap settings
+        resources: {}
+      mysql: 
+        image:
+          # -- Image of the Init Job's MySQL container. Must be and FCGI Client capable to query REDCap's pod(s).
+          # @section -- REDCap settings
+          repository: "bitnami/mysql"
+          # -- Tag of the Init Job's MySQL container image.
+          # @section -- REDCap settings
+          tag: "9.3.0-debian-12-r1"
+          # -- PullPolicy of the Init Job's MySQL container image.
+          # @section -- REDCap settings
+          pullPolicy: "Always"
+        # -- Resources for the Init Job's MySQL container.
+        # @section -- REDCap settings
+        resources: {}
 
   image:
     # -- Image repository for REDCap PHP-FPM Image.
@@ -168,7 +183,7 @@ redcap:
     logAllErrors: "FALSE"
     # -- The URL on which the application is exposed (useful if the application is behind a reverse-proxy).
     # @section -- REDCap settings
-    externalURL: "localhost"
+    externalURL: "http://localhost/"
     # -- The email of the administrator that is presented to the users.
     # @section -- REDCap settings
     adminMail: "redcap-admin@local.com"
@@ -339,7 +354,7 @@ mysql:
   primary:
     # -- Name of existing ConfigMap with MySQL Primary configuration.
     # @section -- REDCap MySQL Database settings
-    existingConfigmap: "redcap-mysql-config"
+    existingConfigmap: "redcap-database-config"
     podLabels:
       # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
       # @section -- REDCap MySQL Database settings
@@ -785,7 +800,7 @@ autoscaling:
 # -- Persistence settings
 # @section -- Persistence settings
 persistence:
-  redcap_code:
+  app:
     annotations:
       helm.sh/resource-policy: "keep"
     # -- Size of the volume used to persist REDCap code.
@@ -817,6 +832,24 @@ persistence:
     accessMode: "ReadWriteOnce"
     existingClaim:
       # -- Name of an existing PVC used to persist documents uploaded by REDCap users.
+      #    If set, overrides the previous settings, as no PVC will be created for that purpose.
+      # @section -- Persistence settings
+      name: ""
+
+  modules:
+    annotations:
+      helm.sh/resource-policy: "keep"
+    # -- Size of the volume used to persist REDCap modules.
+    # @section -- Persistence settings
+    size: "1Gi"
+    # -- StorageClass of the volume used to persist REDCap modules.
+    # @section -- Persistence uploaded
+    storageClass: "standard"
+    # -- AccessMode of the volume used to persist REDCap modules.
+    # @section -- Persistence settings
+    accessMode: "ReadWriteOnce"
+    existingClaim:
+      # -- Name of an existing PVC used to persist REDCap modules.
       #    If set, overrides the previous settings, as no PVC will be created for that purpose.
       # @section -- Persistence settings
       name: ""

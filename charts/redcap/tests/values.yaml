@@ -82,7 +82,7 @@ redcap:
 mysql:
   enabled: true
   primary:
-    existingConfigmap: "redcap-ext-qual-mysql-config"
+    existingConfigmap: "redcap-ext-qual-database-config"
     persistence: 
       annotations:
         helm.sh/resource-policy: keep

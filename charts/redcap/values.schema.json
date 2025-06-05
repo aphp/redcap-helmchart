@@ -582,6 +582,36 @@
         },
         "persistence": {
             "properties": {
+                "app": {
+                    "properties": {
+                        "accessMode": {
+                            "type": "string"
+                        },
+                        "annotations": {
+                            "properties": {
+                                "helm.sh/resource-policy": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "existingClaim": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "size": {
+                            "type": "string"
+                        },
+                        "storageClass": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
                 "edocs": {
                     "properties": {
                         "accessMode": {
@@ -612,7 +642,7 @@
                     },
                     "type": "object"
                 },
-                "redcap_code": {
+                "modules": {
                     "properties": {
                         "accessMode": {
                             "type": "string"
@@ -872,25 +902,53 @@
                         },
                         "initJob": {
                             "properties": {
-                                "image": {
+                                "imagePullSecrets": {
+                                    "type": "array"
+                                },
+                                "mysql": {
                                     "properties": {
-                                        "imagePullSecrets": {
-                                            "type": "array"
+                                        "image": {
+                                            "properties": {
+                                                "pullPolicy": {
+                                                    "type": "string"
+                                                },
+                                                "repository": {
+                                                    "type": "string"
+                                                },
+                                                "tag": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
                                         },
-                                        "pullPolicy": {
-                                            "type": "string"
-                                        },
-                                        "repository": {
-                                            "type": "string"
-                                        },
-                                        "tag": {
-                                            "type": "string"
+                                        "resources": {
+                                            "properties": {},
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
                                 },
-                                "resources": {
-                                    "properties": {},
+                                "php": {
+                                    "properties": {
+                                        "image": {
+                                            "properties": {
+                                                "pullPolicy": {
+                                                    "type": "string"
+                                                },
+                                                "repository": {
+                                                    "type": "string"
+                                                },
+                                                "tag": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "resources": {
+                                            "properties": {},
+                                            "type": "object"
+                                        }
+                                    },
                                     "type": "object"
                                 }
                             },

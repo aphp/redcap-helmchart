@@ -1,10 +1,10 @@
-{{- if not .Values.persistence.redcap_code.existingClaim.name }}
+{{- if not .Values.persistence.app.existingClaim.name }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "redcap.persistence.code.pvc.name" . }}
+  name: {{ include "redcap.persistence.app.pvc.name" . }}
   namespace: {{ .Release.Namespace }}
-{{- with .Values.persistence.redcap_code.annotations  }}
+{{- with .Values.persistence.app.annotations  }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
@@ -16,15 +16,15 @@ metadata:
 
 spec:
   accessModes:
-    - {{ .Values.persistence.redcap_code.accessMode | quote }}
+    - {{ .Values.persistence.app.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.persistence.redcap_code.size | quote }}
-{{- if .Values.persistence.redcap_code.storageClass }}
-{{- if (eq "-" .Values.persistence.redcap_code.storageClass) }}
+      storage: {{ .Values.persistence.app.size | quote }}
+{{- if .Values.persistence.app.storageClass }}
+{{- if (eq "-" .Values.persistence.app.storageClass) }}
   storageClassName: ""
 {{- else }}
-  storageClassName: "{{ .Values.persistence.redcap_code.storageClass }}"
+  storageClassName: "{{ .Values.persistence.app.storageClass }}"
 {{- end }}
 {{- end }}
 

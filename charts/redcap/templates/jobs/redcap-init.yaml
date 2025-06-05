@@ -25,31 +25,71 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
+      initContainers:
+        - name: redcap-install
+          image: "{{ .Values.redcap.install.initJob.php.image.repository }}:{{ .Values.redcap.install.initJob.php.image.tag }}"
+          imagePullPolicy: {{ .Values.redcap.install.initJob.php.image.pullPolicy }}
+
+          resources:
+            {{- toYaml .Values.redcap.install.initJob.php.resources | nindent 14 }}
+
+          env:
+            - name: SCRIPT_NAME
+              value: /var/www/redcap/install.php
+            - name: SCRIPT_FILENAME
+              value: /var/www/redcap/install.php
+            - name: QUERY_STRING
+              value: auto=1
+            - name: REQUEST_METHOD
+              value: GET
+
+          args:
+            - "-bind"
+            - "-connect"
+            - "{{- include "redcap.serviceName" . }}:{{ .Values.services.redcap.port }}"
+
+          securityContext:
+            allowPrivilegeEscalation: false
+
       containers:
-      - name: redcap-update-tasks
-        image: "{{ .Values.redcap.install.initJob.image.repository }}:{{ .Values.redcap.install.initJob.image.tag }}"
-        imagePullPolicy: {{ .Values.redcap.install.initJob.image.pullPolicy }}
+        - name: redcap-config
+          image: "{{ .Values.redcap.install.initJob.mysql.image.repository }}:{{ .Values.redcap.install.initJob.mysql.image.tag }}"
+          imagePullPolicy: {{ .Values.redcap.install.initJob.mysql.image.pullPolicy }}
 
-        resources:
-          {{- toYaml .Values.redcap.install.initJob.resources | nindent 14 }}
+          resources:
+            {{- toYaml .Values.redcap.install.initJob.mysqlresources | nindent 14 }}
 
-        env:
-        - name: SCRIPT_NAME
-          value: /var/www/redcap/install.php
-        - name: SCRIPT_FILENAME
-          value: /var/www/redcap/install.php
-        - name: QUERY_STRING
-          value: auto=1
-        - name: REQUEST_METHOD
-          value: GET
+          env:
+            - name: DB_PASSWD
+              {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+                  key: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
+              {{- else }}
+              value: {{ .Values.redcap.config.database.auth.password.value }}
+              {{- end }}
 
-        args:
-        - -bind
-        - -connect
-        - "{{- include "redcap.serviceName" . }}:{{ .Values.services.redcap.port }}"
+          command:
+            - "sh"
+            - "-c"
+            - "/tmp/redcap-config.sh"
 
-        securityContext:
-          allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: init-config-script
+              mountPath: /tmp/redcap-config.sh
+              subPath: redcap-config.sh
+
+          securityContext:
+            allowPrivilegeEscalation: false
 
       restartPolicy: OnFailure
+
+      volumes:
+      {{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
+      - name: init-config-script
+        configMap:
+          name: {{ .Release.Name }}-init-install-script
+          defaultMode: 0777
+      {{- end }}
 {{- end }}

@@ -49,7 +49,7 @@ spec:
 
         env:
         - name : REDCAP_INSTALL_PATH
-          value: "/redcap"
+          value: "/app/redcap"
         - name : OVERRIDE_INSTALL
           value: {{ .Values.redcap.install.override | toString | quote }}
         - name : REDCAP_VERSION
@@ -73,8 +73,11 @@ spec:
         volumeMounts:
         - name: redcap-archive-cache
           mountPath: /tmp/redcap
-        - name: redcap-code
-          mountPath: /redcap
+        - name: redcap-app
+          mountPath: /app/redcap
+        - name: database-conf
+          mountPath: /tmp/conf/database.php
+          subPath: database.php
         - name: init-install-script
           mountPath: /home/curl_user/redcap-install.sh
           subPath: redcap-install.sh
@@ -108,7 +111,7 @@ spec:
               --port={{ default 3306 .Values.mysql.primary.service.ports.mysql }}
               --user={{ .Values.redcap.config.database.auth.username }} \
               --password=${DB_PASSWD} \  
-              --database {{ .Values.redcap.config.database.auth.databaseName }} \
+              --database={{ .Values.redcap.config.database.auth.databaseName }} \
               --wait \
               --execute \"SHOW TABLES;\" \
               -v"
@@ -133,10 +136,6 @@ spec:
           runAsGroup: 2000
 
         volumeMounts:
-        - name: redcap-code
-          mountPath: /redcap
-        - name: edocs
-          mountPath: /edocs
         - name: msmtp-conf
           mountPath: /var/run/secrets/msmtp/config
           subPath: msmtprc
@@ -168,17 +167,22 @@ spec:
           protocol: TCP
 
         volumeMounts:
-        - name: redcap-code
+        - name: redcap-app
           mountPath: /app/redcap
           readOnly: {{ .Values.redcap.config.readOnlyAppDir }}
-        - name: edocs
+        - name: redcap-edocs
           mountPath: /edocs
-        - name: database-conf
-          mountPath: /app/redcap/database.php
-        - name: database-creds
+        - name: redcap-modules
+          mountPath: /app/redcap/modules
+        - name: redcap-temp
+          mountPath: /app/redcap/temp
+        - name: server-tmp
+          mountPath: /tmp
+        - name: redcap-mysql-creds
           mountPath: /var/run/secrets/credentials.php
+          subPath: credentials.php
         {{- if .Values.redcap.config.database.auth.password.secretKeyRef.key }}
-        - name: database-password
+        - name: mysql-password
           mountPath: /var/run/secrets/DB_PASSWD
           subPath: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
         {{- end }}
@@ -220,32 +224,41 @@ spec:
       {{- end }}
 
       volumes:
-      - name: redcap-archive-cache
-        emptyDir:
-          sizeLimit: 100Mi
       {{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
       - name: init-install-script
         configMap:
           name: {{ .Release.Name }}-init-install-script
           defaultMode: 0777
       {{- end }}
-      - name: redcap-code
+      - name: redcap-archive-cache
+        emptyDir:
+          sizeLimit: 100Mi
+      - name: server-tmp
+        emptyDir:
+          sizeLimit: 100Mi
+      - name: redcap-temp
+        emptyDir:
+          sizeLimit: 500Mi
+      - name: redcap-app
         persistentVolumeClaim:
-          claimName: {{ default (include "redcap.persistence.code.pvc.name" .) .Values.persistence.redcap_code.existingClaim.name }}
-      - name: edocs 
+          claimName: {{ default (include "redcap.persistence.app.pvc.name" .) .Values.persistence.app.existingClaim.name }}
+      - name: redcap-edocs 
         persistentVolumeClaim:
           claimName: {{ default (include "redcap.persistence.edocs.pvc.name" .) .Values.persistence.edocs.existingClaim.name }}
+      - name: redcap-modules
+        persistentVolumeClaim:
+          claimName: {{ default (include "redcap.persistence.modules.pvc.name" .) .Values.persistence.modules.existingClaim.name }}
       - name: mail-conf
         configMap:
           name: {{ .Release.Name }}-mail-conf
       - name: database-conf
         configMap:
           name: {{ .Release.Name }}-database-conf
-      - name: database-creds
+      - name: redcap-mysql-creds
         secret:
           secretName: {{ include "redcap.secrets.database.creds.name" . }}
       {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
-      - name: database-password
+      - name: mysql-password
         secret:
           secretName: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
       {{- end }}

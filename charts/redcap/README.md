@@ -1,6 +1,6 @@
 # redcap
 
-![Version: 1.4.4](https://img.shields.io/badge/Version-1.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 14.5.25](https://img.shields.io/badge/AppVersion-14.5.25-informational?style=flat-square)
+![Version: 1.4.5](https://img.shields.io/badge/Version-1.4.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 14.5.25](https://img.shields.io/badge/AppVersion-14.5.25-informational?style=flat-square)
 
 A Helm chart to deploy REDCap on a Kubernetes cluster.
 
@@ -77,18 +77,22 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | redcap.install.enabled | bool | `false` | If `true`, enables REDCap installation process. |
 | redcap.install.override | bool | `false` | If `true`, overwrite any existing installation with the new one. |
 | redcap.install.image.repository | string | `"alpine/curl"` | Image repository for REDCap installation process. |
-| redcap.install.image.tag | string | `"8.9.1"` | Image tag for REDCap installation process. |
+| redcap.install.image.tag | string | `"8.12.1"` | Image tag for REDCap installation process. |
 | redcap.install.image.pullPolicy | string | `"Always"` | PullPolicy for REDCap installation process. |
-| redcap.install.version | string | `"14.5.26"` | Version of the REDCap package to install |
+| redcap.install.version | string | `"15.0.26"` | Version of the REDCap package to install |
 | redcap.install.communityAuth.username | string | `""` | Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used. |
 | redcap.install.communityAuth.password | string | `""` | Password of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used. |
 | redcap.install.communityAuth.existingSecret | string | `""` | Existing secret containing the credentials of the REDCap Community user with whom the installation package is downloaded. |
 | redcap.install.overrideInstallContainer | list | `[]` | Overrides the initContainers that downloads the REDCap application package. |
-| redcap.install.initJob.image.repository | string | `"ghcr.io/aphp/redcap-fastcgi-client"` | Image of the Init Job. Must be and FCGI Client capable to query REDCap's pod(s). |
-| redcap.install.initJob.image.tag | string | `"1.1.0"` | Tag of the Admin Job's image. |
-| redcap.install.initJob.image.pullPolicy | string | `"Always"` | PullPolicy of the Init Job's image. |
-| redcap.install.initJob.image.imagePullSecrets | list | `[]` | ImagePullSecret of the Init Job's image. |
-| redcap.install.initJob.resources | object | `{}` | Resources for the Init Job's pod. |
+| redcap.install.initJob.imagePullSecrets | list | `[]` | ImagePullSecret of the Init Job. |
+| redcap.install.initJob.php.image.repository | string | `"ghcr.io/aphp/redcap-fastcgi-client"` | Image of the Init Job's PHP container. Must be and FCGI Client capable to query REDCap's pod(s). |
+| redcap.install.initJob.php.image.tag | string | `"1.1.0"` | Tag of the Init Job's PHP container image. |
+| redcap.install.initJob.php.image.pullPolicy | string | `"Always"` | PullPolicy of the Init Job's PHP container image. |
+| redcap.install.initJob.php.resources | object | `{}` | Resources for the Init Job's PHP container. |
+| redcap.install.initJob.mysql.image.repository | string | `"bitnami/mysql"` | Image of the Init Job's MySQL container. Must be and FCGI Client capable to query REDCap's pod(s). |
+| redcap.install.initJob.mysql.image.tag | string | `"9.3.0-debian-12-r1"` | Tag of the Init Job's MySQL container image. |
+| redcap.install.initJob.mysql.image.pullPolicy | string | `"Always"` | PullPolicy of the Init Job's MySQL container image. |
+| redcap.install.initJob.mysql.resources | object | `{}` | Resources for the Init Job's MySQL container. |
 | redcap.image.repository | string | `"ghcr.io/aphp/redcap-php-fpm"` | Image repository for REDCap PHP-FPM Image. |
 | redcap.image.pullPolicy | string | `"Always"` | PullPolicy for REDCap PHP-FPM Image. |
 | redcap.image.tag | string | `"1.1.0"` | Tag for REDCap PHP-FPM Image. |
@@ -96,7 +100,7 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | redcap.extraContainers | list | `[]` | Add additional containers to the PHP-FPM container hosting the REDCap application. |
 | redcap.extraVolumes | list | `[]` | Add additional volumes to the PHP-FPM container hosting the REDCap application. |
 | redcap.config.logAllErrors | string | `"FALSE"` | If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION). |
-| redcap.config.externalURL | string | `"localhost"` | The URL on which the application is exposed (useful if the application is behind a reverse-proxy). |
+| redcap.config.externalURL | string | `"http://localhost/"` | The URL on which the application is exposed (useful if the application is behind a reverse-proxy). |
 | redcap.config.adminMail | string | `"redcap-admin@local.com"` | The email of the administrator that is presented to the users. |
 | redcap.config.readOnlyAppDir | bool | `true` | Prevents modifications on REDCap application directory for security reasons. Not compatible with the     `Easy Upgrade` feature, that should be disabled from the Control Center if this option is enabled. |
 | redcap.config.tls.curlCA.secretKeyRef.name | string | `""` | The name of the secret containing the CA Certificate ued by the curl library of the application to reach external services, like an OIDC provider.    Useful some of those services are not signed by known CAs. |
@@ -149,7 +153,7 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | mysql.auth.database | string | `"redcap"` | Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true` |
 | mysql.auth.username | string | `"redcap"` | Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true` |
 | mysql.auth.password | string | `"Redcap*!"` | Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`    Not secure in production, use secret reference instead! |
-| mysql.primary.existingConfigmap | string | `"redcap-mysql-config"` | Name of existing ConfigMap with MySQL Primary configuration. |
+| mysql.primary.existingConfigmap | string | `"redcap-database-config"` | Name of existing ConfigMap with MySQL Primary configuration. |
 | mysql.primary.podLabels."app.kubernetes.io/role" | string | `"redcap-mysql"` | Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing! |
 | mysql.primary.service.port.mysql | int | `3306` | Port exposed by the MySQL service. |
 | mysql.primary.persistence.storageClass | string | `"standard"` | StorageClass used for database persistence. |
@@ -168,10 +172,10 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | backupJob.redcap.image.tag | string | `"1"` | Image tag for the REDCap application backup container. |
 | backupJob.redcap.image.pullPolicy | string | `"Always"` | Image pullPolicy for the REDCap application backup container. |
 | backupJob.database.image.repository | string | `"bitnami/mysql"` | Image repository for the REDCap database backup container. |
-| backupJob.database.image.tag | string | `"8.4.3-debian-12-r4"` | Image tag for the REDCap database backup container. |
+| backupJob.database.image.tag | string | `"9.3.0-debian-12-r1"` | Image tag for the REDCap database backup container. |
 | backupJob.database.image.pullPolicy | string | `"Always"` | Image pullPolicy for the REDCap database backup container. |
 | backupJob.uploader.image.repository | string | `"bitnami/rclone"` | Image repository for the REDCap backup uploader container. |
-| backupJob.uploader.image.tag | string | `"1.68.2"` | Image tag for the REDCap backup uploader container. |
+| backupJob.uploader.image.tag | string | `"1.69.3"` | Image tag for the REDCap backup uploader container. |
 | backupJob.uploader.image.pullPolicy | string | `"Always"` | Image pullPolicy for the REDCap backup uploader container. |
 | backupJob.uploader.s3.backupPath | string | `"redcap-backup"` | Path of the REDcap backup archive on the S3 bucket. |
 | backupJob.uploader.s3.config.region | string | `""` | Region of the S3 bucket. |
@@ -194,10 +198,10 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | restoreJob.redcap.image.tag | string | `"1"` | Image tag for the REDCap application restore container. |
 | restoreJob.redcap.image.pullPolicy | string | `"Always"` | Image pullPolicy for the REDCap application restore container. |
 | restoreJob.database.image.repository | string | `"bitnami/mysql"` | Image repository for the REDCap database restore container. |
-| restoreJob.database.image.tag | string | `"8.0.32-debian-11-r14"` | Image yag for the REDCap application restore container. |
+| restoreJob.database.image.tag | string | `"9.3.0-debian-12-r1"` | Image yag for the REDCap application restore container. |
 | restoreJob.database.image.pullPolicy | string | `"Always"` | Image pullPolicy for the REDCap application restore container. |
 | restoreJob.downloader.image.repository | string | `"bitnami/rclone"` | Image repository for the REDCap downloader container. |
-| restoreJob.downloader.image.tag | string | `"1.68.2"` | Image tag for the REDCap downloader container. |
+| restoreJob.downloader.image.tag | string | `"1.69.3"` | Image tag for the REDCap downloader container. |
 | restoreJob.downloader.image.pullPolicy | string | `"Always"` | Image pullPolicy for the REDCap downloader container. |
 | restoreJob.downloader.s3.backupPath | string | `"redcap-backup"` | Path of the REDcap backup archive on the S3 bucket. |
 | restoreJob.downloader.s3.config.region | string | `""` | Region of the S3 bucket. |
@@ -215,7 +219,7 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | audit.enabled | bool | `false` | If set to `true`, enables the audit log-shipping solution. |
 | audit.podLabels."app.kubernetes.io/role" | string | `"redcap-audit"` | Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing! |
 | audit.initContainers[0] | object | A simple container to download the jar JDBC driver on a volume shared with Logstash. | Init container in charge of downloading the JDBC driver needed to connect to the MySQL database. |
-| audit.initContainers[0].image | string | `"alpine:3.18"` | Image used for the pod downloading the driver. |
+| audit.initContainers[0].image | string | `"alpine:3.21.3"` | Image used for the pod downloading the driver. |
 | audit.initContainers[0].imagePullPolicy | string | `"Always"` | Image pullPolicy used for the pod downloading the driver. |
 | audit.initContainers[0].env[0] | object | `{"name":"JDBC_DRIVER_URL","value":"https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz"}` | Env var to set the URL of the JDBC driver to download. |
 | audit.initContainers[0].env[0].value | string | `"https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz"` | URL of the JDBC driver to download. |
@@ -297,18 +301,22 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| persistence | object | `{"edocs":{"accessMode":"ReadWriteOnce","annotations":{"helm.sh/resource-policy":"keep"},"existingClaim":{"name":""},"size":"8Gi","storageClass":"standard"},"redcap_code":{"accessMode":"ReadWriteOnce","annotations":{"helm.sh/resource-policy":"keep"},"existingClaim":{"name":""},"size":"1Gi","storageClass":"standard"}}` | Persistence settings |
-| persistence.redcap_code.size | string | `"1Gi"` | Size of the volume used to persist REDCap code. |
-| persistence.redcap_code.storageClass | string | `"standard"` | Storage Class of the volume used to persist REDCap code. |
-| persistence.redcap_code.accessMode | string | `"ReadWriteOnce"` | AccessMode of the volume used to persist REDCap code. |
-| persistence.redcap_code.existingClaim.name | string | `""` | Name of an existing PVC used to persist REDCap code.    If set, overrides the previous settings, as no PVC will be created for that purpose. |
+| persistence | object | `{"app":{"accessMode":"ReadWriteOnce","annotations":{"helm.sh/resource-policy":"keep"},"existingClaim":{"name":""},"size":"1Gi","storageClass":"standard"},"edocs":{"accessMode":"ReadWriteOnce","annotations":{"helm.sh/resource-policy":"keep"},"existingClaim":{"name":""},"size":"8Gi","storageClass":"standard"},"modules":{"accessMode":"ReadWriteOnce","annotations":{"helm.sh/resource-policy":"keep"},"existingClaim":{"name":""},"size":"1Gi","storageClass":"standard"}}` | Persistence settings |
+| persistence.app.size | string | `"1Gi"` | Size of the volume used to persist REDCap code. |
+| persistence.app.storageClass | string | `"standard"` | Storage Class of the volume used to persist REDCap code. |
+| persistence.app.accessMode | string | `"ReadWriteOnce"` | AccessMode of the volume used to persist REDCap code. |
+| persistence.app.existingClaim.name | string | `""` | Name of an existing PVC used to persist REDCap code.    If set, overrides the previous settings, as no PVC will be created for that purpose. |
 | persistence.edocs.size | string | `"8Gi"` | Size of the volume used to persist documents uploaded by REDCap users. |
 | persistence.edocs.accessMode | string | `"ReadWriteOnce"` | AccessMode of the volume used to persist documents uploaded by REDCap users. |
 | persistence.edocs.existingClaim.name | string | `""` | Name of an existing PVC used to persist documents uploaded by REDCap users.    If set, overrides the previous settings, as no PVC will be created for that purpose. |
+| persistence.modules.size | string | `"1Gi"` | Size of the volume used to persist REDCap modules. |
+| persistence.modules.accessMode | string | `"ReadWriteOnce"` | AccessMode of the volume used to persist REDCap modules. |
+| persistence.modules.existingClaim.name | string | `""` | Name of an existing PVC used to persist REDCap modules.    If set, overrides the previous settings, as no PVC will be created for that purpose. |
 
 ### Persistence uploaded
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | persistence.edocs.storageClass | string | `"standard"` | StorageClass of the volume used to persist documents uploaded by REDCap users. |
+| persistence.modules.storageClass | string | `"standard"` | StorageClass of the volume used to persist REDCap modules. |
 

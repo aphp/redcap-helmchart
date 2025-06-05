@@ -310,12 +310,16 @@ Secrets names
 {{/*
 Persistence volumes names
 */}}
-{{- define "redcap.persistence.code.pvc.name" -}}
+{{- define "redcap.persistence.app.pvc.name" -}}
 {{ .Release.Name }}-code-pvc
 {{- end }}
 
 {{- define "redcap.persistence.edocs.pvc.name" -}}
 {{ .Release.Name }}-edocs-pvc
+{{- end }}
+
+{{- define "redcap.persistence.modules.pvc.name" -}}
+{{ .Release.Name }}-modules-pvc
 {{- end }}
 
 {{/*
