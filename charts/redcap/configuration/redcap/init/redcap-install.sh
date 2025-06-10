@@ -38,6 +38,9 @@ install_redcap () {
         --data-urlencode "password=$REDCAP_COMMUNITY_PASSWORD" \
         --data-urlencode "version=$REDCAP_VERSION" \
         --data-urlencode "install=1" \
+        --write-out "File name : %{filename_effective}\nFetched from: %{url}\nStatistics:\n\tDownload Time : %{time_total}\n\tDownload Size : %{size_download}\n\tDownload Speed : %{speed_download}\n" \
+        --no-progress-meter \
+        --verbose \
         --output '/tmp/redcap/redcap.zip'
 
     echo "[INFO] Installing REDCap package"
