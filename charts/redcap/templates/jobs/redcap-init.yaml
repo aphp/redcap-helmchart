@@ -89,7 +89,7 @@ spec:
       {{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
       - name: init-config-script
         configMap:
-          name: {{ .Release.Name }}-init-install-script
+          name: {{ .Release.Name }}-init-config-script
           defaultMode: 0777
       {{- end }}
 {{- end }}
