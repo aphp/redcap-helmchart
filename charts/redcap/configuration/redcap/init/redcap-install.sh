@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # Name: redcap_install
-# Version: 1.0
+# Version: 1.1
 # Author: APHP
 # Description : Retrieves and unpack REDCap and a translation package 
 
-echo "[INFO] Starting REDCap package installation script v1.0"
+echo "[INFO] Starting REDCap package installation script v1.1"
 set -e
 
 # Installs the REDCap Application package by retriving it directly from the Community Site API, using the user's credentials.
@@ -13,10 +13,11 @@ install_redcap () {
     echo "[INFO] Cleaning destination dir"
     rm -rf "${REDCAP_INSTALL_PATH:?}/redcap"
 
+    local LOCATION='https://redcap.vumc.org/plugins/redcap_consortium/versions.php'
 
-    echo "[INFO] Downloading and extracting REDCap package"
+    echo "[INFO] Downloading and extracting REDCap package from $LOCATION"
     curl -X POST \
-        --location 'https://redcap.vanderbilt.edu/plugins/redcap_consortium/versions.php' \
+        --location $LOCATION \
         --header 'Content-Type: application/x-www-form-urlencoded' \
         --data-urlencode "username=$REDCAP_COMMUNITY_USERNAME" \
         --data-urlencode "password=$REDCAP_COMMUNITY_PASSWORD" \
