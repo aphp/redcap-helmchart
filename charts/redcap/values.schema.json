@@ -677,35 +677,6 @@
         },
         "redcap": {
             "properties": {
-                "adminJob": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "imagePullSecrets": {
-                                    "type": "array"
-                                },
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "resources": {
-                            "properties": {},
-                            "type": "object"
-                        },
-                        "schedule": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
                 "affinity": {
                     "properties": {},
                     "type": "object"
@@ -896,60 +867,6 @@
                                 },
                                 "tag": {
                                     "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "initJob": {
-                            "properties": {
-                                "imagePullSecrets": {
-                                    "type": "array"
-                                },
-                                "mysql": {
-                                    "properties": {
-                                        "image": {
-                                            "properties": {
-                                                "pullPolicy": {
-                                                    "type": "string"
-                                                },
-                                                "repository": {
-                                                    "type": "string"
-                                                },
-                                                "tag": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "resources": {
-                                            "properties": {},
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "php": {
-                                    "properties": {
-                                        "image": {
-                                            "properties": {
-                                                "pullPolicy": {
-                                                    "type": "string"
-                                                },
-                                                "repository": {
-                                                    "type": "string"
-                                                },
-                                                "tag": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "resources": {
-                                            "properties": {},
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
                                 }
                             },
                             "type": "object"

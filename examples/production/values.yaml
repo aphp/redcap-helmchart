@@ -25,6 +25,11 @@ redcap:
     enabled: true
     communityAuth:
       existingSecret: "redcap-prod-community-credentials"
+
+  image:
+    repository: "ghcr.io/aphp/redcap-php-fpm"
+    pullPolicy: "Always"
+    tag: "dev"
     
   config: 
     externalURL: "https://redcap-prod.com"
@@ -64,17 +69,6 @@ redcap:
     limits:
       memory: "46Gi"
       cpu: "10"
-
-
-  adminJob: 
-    schedule: "0 * * * *"  
-    resources: 
-      requests:
-        memory: "512Mi"
-        cpu: "0.25"
-      limits:
-        memory: "1Gi"
-        cpu: "0.5"
 
 
 mysql:

@@ -17,12 +17,6 @@ spec:
           matchLabels:
             {{ include "redcap.networkPolicy.selectorLabels" . | nindent 12 }}
 
-      {{- if .Values.redcap.install.enabled }}
-      - podSelector:
-          matchLabels:
-            {{ include "redcap.initJob.networkPolicy.selectorLabels" . | nindent 12 }}
-      {{- end }}
-
       {{- if .Values.backupJob.enabled }}
       - podSelector:
           matchLabels:

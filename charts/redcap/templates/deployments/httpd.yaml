@@ -49,7 +49,7 @@ spec:
           protocol: TCP
 
         volumeMounts: 
-        - name: redcap-code
+        - name: redcap-app
           mountPath: /var/www/redcap
           readOnly: true
         - name: supervisor-conf
@@ -107,9 +107,9 @@ spec:
           periodSeconds: 5
 
       volumes:
-      - name: redcap-code 
+      - name: redcap-app
         persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-code-pvc
+          claimName: {{ .Release.Name }}-app-pvc
       - name: httpd-conf
         configMap:
           name: {{ .Release.Name }}-httpd

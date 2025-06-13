@@ -84,15 +84,6 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | redcap.install.communityAuth.password | string | `""` | Password of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used. |
 | redcap.install.communityAuth.existingSecret | string | `""` | Existing secret containing the credentials of the REDCap Community user with whom the installation package is downloaded. |
 | redcap.install.overrideInstallContainer | list | `[]` | Overrides the initContainers that downloads the REDCap application package. |
-| redcap.install.initJob.imagePullSecrets | list | `[]` | ImagePullSecret of the Init Job. |
-| redcap.install.initJob.php.image.repository | string | `"ghcr.io/aphp/redcap-fastcgi-client"` | Image of the Init Job's PHP container. Must be and FCGI Client capable to query REDCap's pod(s). |
-| redcap.install.initJob.php.image.tag | string | `"1.1.0"` | Tag of the Init Job's PHP container image. |
-| redcap.install.initJob.php.image.pullPolicy | string | `"Always"` | PullPolicy of the Init Job's PHP container image. |
-| redcap.install.initJob.php.resources | object | `{}` | Resources for the Init Job's PHP container. |
-| redcap.install.initJob.mysql.image.repository | string | `"bitnami/mysql"` | Image of the Init Job's MySQL container. Must be and FCGI Client capable to query REDCap's pod(s). |
-| redcap.install.initJob.mysql.image.tag | string | `"9.3.0-debian-12-r1"` | Tag of the Init Job's MySQL container image. |
-| redcap.install.initJob.mysql.image.pullPolicy | string | `"Always"` | PullPolicy of the Init Job's MySQL container image. |
-| redcap.install.initJob.mysql.resources | object | `{}` | Resources for the Init Job's MySQL container. |
 | redcap.image.repository | string | `"ghcr.io/aphp/redcap-php-fpm"` | Image repository for REDCap PHP-FPM Image. |
 | redcap.image.pullPolicy | string | `"Always"` | PullPolicy for REDCap PHP-FPM Image. |
 | redcap.image.tag | string | `"1.1.0"` | Tag for REDCap PHP-FPM Image. |
@@ -127,18 +118,6 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | redcap.nodeSelector | object | `{}` | The nodeSelector for REDCap's deployment. |
 | redcap.tolerations | list | `[]` | The tolerations for REDCap's deployment. |
 | redcap.affinity | object | `{}` | The affinities for REDCap's deployment. |
-
-### REDCap Administration Job's settings
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| redcap.adminJob | object | `{"image":{"imagePullSecrets":[],"pullPolicy":"Always","repository":"ghcr.io/aphp/redcap-fastcgi-client","tag":"1.1.0"},"resources":{},"schedule":"* * * * *"}` | REDCap Administration Job's settings |
-| redcap.adminJob.schedule | string | `"* * * * *"` | Schedule of the Admin Job, which runs every minute by default. This job is needed to refresh REDCap administrative's data. |
-| redcap.adminJob.image.repository | string | `"ghcr.io/aphp/redcap-fastcgi-client"` | Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s). |
-| redcap.adminJob.image.tag | string | `"1.1.0"` | Tag of the Admin Job's image. |
-| redcap.adminJob.image.pullPolicy | string | `"Always"` | PullPolicy of the Admin Job's image. |
-| redcap.adminJob.image.imagePullSecrets | list | `[]` | ImagePullSecret of the Admin Job's image. |
-| redcap.adminJob.resources | object | `{}` | Resources for the admin job's pod. |
 
 ### REDCap MySQL Database settings
 

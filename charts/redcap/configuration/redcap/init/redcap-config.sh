@@ -27,8 +27,8 @@ mysql \
     --password=${DB_PASSWD} \
     --database={{ .Values.redcap.config.database.auth.databaseName }} <<EOF
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.externalURL }}' WHERE field_name = 'redcap_base_url';
-        UPDATE redcap_config SET value = '{{ .Values.redcap.config.mail.auth.from }}' WHERE field_name = 'from_email	';
+        UPDATE redcap_config SET value = '{{ .Values.redcap.config.mail.auth.from }}' WHERE field_name = 'from_email²';
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.adminMail }}' WHERE field_name = 'homepage_contact_email';
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.adminMail }}' WHERE field_name = 'project_contact_email';
         UPDATE redcap_config SET value = '/edocs' WHERE field_name = 'edoc_path';
-    EOF
+EOF

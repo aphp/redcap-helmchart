@@ -25,24 +25,6 @@ redcap:
   config:
     logAllErrors: "TRUE"
 
-    initJob:
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "0.25"
-        limits:
-          memory: "1Gi"
-          cpu: "0.5"
-
-    adminJob:
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "0.25"
-        limits:
-          memory: "1Gi"
-          cpu: "0.5"
-
   resources:
     requests:
       memory: "2Gi"
