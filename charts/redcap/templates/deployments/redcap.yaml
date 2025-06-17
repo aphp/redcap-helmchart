@@ -157,6 +157,15 @@ spec:
         env:
         - name: XDG_CONFIG_HOME
           value: "/var/run/secrets"
+        - name: DB_PASSWD
+          {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+              key: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
+          {{- else }}
+          value: {{ .Values.redcap.config.database.auth.password.value }}
+          {{- end }}
 
         startupProbe:
           exec:
@@ -166,12 +175,12 @@ spec:
             - |
               SCRIPT_NAME="/var/www/redcap/install.php" \
               SCRIPT_FILENAME="/var/www/redcap/install.php" \
-              QUERY_STRING="auto=1"
+              QUERY_STRING="auto=1" \
               REQUEST_METHOD="GET" \
               cgi-fcgi \
                 -bind \
                 -connect \
-                "{{- include "redcap.serviceName" . }}:{{ .Values.services.redcap.port }}"
+                127.0.0.1:9000
 
           initialDelaySeconds: 5
           timeoutSeconds: 60
@@ -197,7 +206,7 @@ spec:
               cgi-fcgi \
                 -bind \
                 -connect \
-                "{{- include "redcap.serviceName" . }}:{{ .Values.services.redcap.port }}"
+                127.0.0.1:9000
           initialDelaySeconds: 5
           timeoutSeconds: 5
           periodSeconds: 60
@@ -281,7 +290,7 @@ spec:
       {{- end }}
       - name: redcap-archive-cache
         emptyDir:
-          sizeLimit: 100Mi
+          sizeLimit: 500Mi
       - name: server-tmp
         emptyDir: 
           sizeLimit: 100Mi

@@ -16,6 +16,9 @@ httpd:
       cpu: "0.5"
 
 redcap:
+  image:
+    tag: "dev"
+
   install:
     enabled: true
     override: true
@@ -44,6 +47,7 @@ mysql:
         cpu: "2"
 
 backupJob:
+  enabled: false
   resources:
     requests:
       memory: "256Mi"

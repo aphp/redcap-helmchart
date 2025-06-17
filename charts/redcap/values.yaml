@@ -151,6 +151,12 @@ redcap:
     # -- The URL on which the application is exposed (useful if the application is behind a reverse-proxy).
     # @section -- REDCap settings
     externalURL: "http://localhost/"
+    # -- The name of the institution that is presented to the users.
+    # @section -- REDCap settings
+    institutionName: "REDCap Local Institution"
+    # -- The name of the administrator that is presented to the users.
+    # @section -- REDCap settings
+    adminName: "REDCap Local Admin"
     # -- The email of the administrator that is presented to the users.
     # @section -- REDCap settings
     adminMail: "redcap-admin@local.com"
