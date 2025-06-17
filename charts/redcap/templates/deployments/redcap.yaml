@@ -93,15 +93,11 @@ spec:
           imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
 
           env:
-          - name: DB_PASSWD
-            {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
-                key: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
-            {{- else }}
-            value: {{ .Values.redcap.config.database.auth.password.value }}
-            {{- end }}
+            - name: DB_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "mysql.secrets.password.name" .) .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+                  key: {{ default (include "mysql.secrets.password.key" .) .Values.redcap.config.database.auth.password.secretKeyRef.key }}
 
           command: 
           - "sh"
@@ -155,32 +151,22 @@ spec:
           runAsGroup: 2000
 
         env:
-        - name: XDG_CONFIG_HOME
-          value: "/var/run/secrets"
-        - name: DB_PASSWD
-          {{- if .Values.redcap.config.database.auth.password.secretKeyRef.name }}
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.redcap.config.database.auth.password.secretKeyRef.name }}
-              key: {{ .Values.redcap.config.database.auth.password.secretKeyRef.key }}
-          {{- else }}
-          value: {{ .Values.redcap.config.database.auth.password.value }}
-          {{- end }}
+          - name : REDCAP_INSTALL_PATH
+            value: "/app/redcap"
+          - name: XDG_CONFIG_HOME
+            value: "/var/run/secrets"
+          - name: DB_PASSWD
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (include "mysql.secrets.password.name" .) .Values.redcap.config.database.auth.password.secretKeyRef.name }}
+                key: {{ default (include "mysql.secrets.password.key" .) .Values.redcap.config.database.auth.password.secretKeyRef.key }}
 
         startupProbe:
           exec:
             command:
             - /bin/sh
             - -c
-            - |
-              SCRIPT_NAME="/var/www/redcap/install.php" \
-              SCRIPT_FILENAME="/var/www/redcap/install.php" \
-              QUERY_STRING="auto=1" \
-              REQUEST_METHOD="GET" \
-              cgi-fcgi \
-                -bind \
-                -connect \
-                127.0.0.1:9000
+            - /tmp/redcap-setup.sh
 
           initialDelaySeconds: 5
           timeoutSeconds: 60
@@ -239,6 +225,9 @@ spec:
         - name: redcap-config-script
           mountPath: /tmp/redcap-config.sh
           subPath: redcap-config.sh
+        - name: redcap-setup-script
+          mountPath: /tmp/redcap-setup.sh
+          subPath: redcap-setup.sh
         {{- if .Values.redcap.config.database.auth.password.secretKeyRef.key }}
         - name: mysql-password
           mountPath: /var/run/secrets/DB_PASSWD
@@ -282,12 +271,6 @@ spec:
       {{- end }}
 
       volumes:
-      {{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
-      - name: init-install-script
-        configMap:
-          name: {{ .Release.Name }}-init-install-script
-          defaultMode: 0777
-      {{- end }}
       - name: redcap-archive-cache
         emptyDir:
           sizeLimit: 500Mi
@@ -309,6 +292,18 @@ spec:
       - name: redcap-modules
         persistentVolumeClaim:
           claimName: {{ default (include "redcap.persistence.modules.pvc.name" .) .Values.persistence.modules.existingClaim.name }}
+      {{- if .Values.redcap.install.enabled }}
+      - name: init-install-script
+        configMap:
+          name: {{ .Release.Name }}-init-install-script
+          defaultMode: 0777
+      {{- end }}
+      {{- if .Values.redcap.install.enabled }}
+      - name: redcap-setup-script
+        configMap:
+          name: {{ .Release.Name }}-init-setup-script
+          defaultMode: 0777
+      {{- end }}
       - name: redcap-config-script
         configMap:
           name: {{ .Release.Name }}-init-config-script

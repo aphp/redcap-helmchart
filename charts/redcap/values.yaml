@@ -11,7 +11,7 @@ httpd:
     repository: "ghcr.io/aphp/redcap-httpd-shibd"
     # -- Image tag for Apache HTTPd.
     # @section -- HTTPd module settings
-    tag: "1.1.0"
+    tag: "1.2.0"
     # -- PullPolicy for Apache HTTPd's image.
     # @section -- HTTPd module settings
     pullPolicy: "Always"
@@ -87,10 +87,7 @@ redcap:
   install:
     # -- If `true`, enables REDCap installation process.
     # @section -- REDCap settings
-    enabled: false
-    # -- If `true`, overwrite any existing installation with the new one.
-    # @section -- REDCap settings
-    override: false
+    enabled: true
     image:
       # -- Image repository for REDCap installation process.
       # @section -- REDCap settings
@@ -104,7 +101,7 @@ redcap:
 
     # -- Version of the REDCap package to install
     # @section -- REDCap settings
-    version: "15.0.26"
+    version: "15.0.27"
 
     communityAuth:
       # -- Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.
@@ -130,7 +127,7 @@ redcap:
     pullPolicy: "Always"
     # -- Tag for REDCap PHP-FPM Image.
     # @section -- REDCap settings
-    tag: "1.1.0"
+    tag: "1.2.0"
 
   # -- Add additional init containers to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
@@ -154,6 +151,9 @@ redcap:
     # -- The name of the institution that is presented to the users.
     # @section -- REDCap settings
     institutionName: "REDCap Local Institution"
+    # -- The name of the origanization inside the institution that is presented to the users.
+    # @section -- REDCap settings
+    organizationName: "REDCap Local Organization"
     # -- The name of the administrator that is presented to the users.
     # @section -- REDCap settings
     adminName: "REDCap Local Admin"
@@ -202,16 +202,20 @@ redcap:
         # -- The username used to connect to REDCAP's database.
         # @section -- REDCap settings
         username: "redcap"
+          # -- The password used to connect to REDCAP's database. Automatically retrieved from the default mysql secret name if you enbaled
+          #    the MySQL database embedded in this chart. If you specified a reference to an secret for your MySQL database password, you 
+          #    have to set it here also, in the `secretKeyRef` section.
         password:
-          # -- The password used to connect to REDCAP's database.
+          # -- The password used to connect to REDCAP's database, as a clear string. Don't use the option for a production-grade deployment, 
+          #    refer to an external secret instead!
           # @section -- REDCap settings
-          value: "Redcap*!"
+          value: ""
           secretKeyRef:
-            # -- The name of the secret holding the password used to connect to REDCAP's database.
+            # -- The name of the secret holding the password used to connect to REDCAP database.
             #    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
             # @section -- REDCap settings
             name: ""
-            # -- The key of the secret holding the password used to connect to REDCAP's database.
+            # -- The key of the secret holding the password used to connect to REDCAP database.
             #    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
             # @section -- REDCap settings
             key: ""
@@ -267,8 +271,8 @@ redcap:
 #             See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/mysql
 # @section -- REDCap MySQL Database settings
 mysql:
-    # -- Override og the full name of the MySQL Database deployment.
-    #    Impacts the name of the services REDCap will use to connect to the Database.
+  # -- Override of the full name of the MySQL Database deployment.
+  #    Impacts the name of the services REDCap will use to connect to the Database.
   # @section -- REDCap MySQL Database settings
   fullnameOverride: "redcap-mysql"
   # -- If set to `true`, enables the deployment of MySQL as REDCap's database.
@@ -289,13 +293,13 @@ mysql:
     # -- Automatically create a database at the first run.
     # @section -- REDCap MySQL Database settings
     createDatabase: true
-    # -- Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
+    # -- Name of the database automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true`
     # @section -- REDCap MySQL Database settings
     database: "redcap"
-    # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
+    # -- Name of the database user automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true`
     # @section -- REDCap MySQL Database settings
     username: "redcap"
-    # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
+    # -- Name of the database user automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true`
     #    Not secure in production, use secret reference instead!
     # @section -- REDCap MySQL Database settings
     password: "Redcap*!"

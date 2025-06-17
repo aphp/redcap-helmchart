@@ -1,4 +1,4 @@
-{{- if and (.Values.redcap.install.enabled) (empty .Values.redcap.install.overrideInstallContainer) }}
+{{- if  .Values.redcap.install.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

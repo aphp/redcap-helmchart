@@ -686,6 +686,9 @@
                         "adminMail": {
                             "type": "string"
                         },
+                        "adminName": {
+                            "type": "string"
+                        },
                         "database": {
                             "properties": {
                                 "auth": {
@@ -746,6 +749,9 @@
                         "externalURL": {
                             "type": "string"
                         },
+                        "institutionName": {
+                            "type": "string"
+                        },
                         "logAllErrors": {
                             "type": "string"
                         },
@@ -787,6 +793,9 @@
                                 }
                             },
                             "type": "object"
+                        },
+                        "organizationName": {
+                            "type": "string"
                         },
                         "readOnlyAppDir": {
                             "type": "boolean"
@@ -870,9 +879,6 @@
                                 }
                             },
                             "type": "object"
-                        },
-                        "override": {
-                            "type": "boolean"
                         },
                         "overrideInstallContainer": {
                             "type": "array"

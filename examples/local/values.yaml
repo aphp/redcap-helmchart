@@ -16,12 +16,10 @@ httpd:
       cpu: "0.5"
 
 redcap:
-  image:
-    tag: "dev"
-
   install:
     enabled: true
-    override: true
+    version: "15.0.26"
+
     communityAuth:
       existingSecret: "redcap-community-credentials"
 

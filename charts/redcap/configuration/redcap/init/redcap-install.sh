@@ -10,6 +10,7 @@
 ### GLOBAL CONFIG ###
 #####################
 set -e
+REDCAP_INSTALL=1
 
 
 #############################
@@ -19,16 +20,13 @@ set -e
 # Installs the REDCap Application package by retrieving it directly from the Community Site API, using the user's credentials.
 install_redcap () {
 
-    # Skipping installation if an installation is already present, and the OVERRIDE_INSTALL hasn't been set.
-    if  [ "$(echo "$OVERRIDE_INSTALL" | tr '[:upper:]' '[:lower:]')" != "true" ] && [ -n "$(find "$REDCAP_INSTALL_PATH" -mindepth 1 -maxdepth 1 -not -path "$REDCAP_INSTALL_PATH/lost+found")" ]
-    then
-        echo "[INFO] An already existing REDCap application package is present, and the OVERRIDE_INSTALL option has not been enabled. Skipping REDCap installation."
-        exit 0
+    if [ "$REDCAP_INSTALL" = 1 ]; then
+        echo "[INFO] Installing REDCap from scratch"
+        echo "[INFO] Cleaning destination dir"
+        rm -rvf "${REDCAP_INSTALL_PATH:?}/*"
+    else
+        echo "[INFO] Updating existing REDCap installation"
     fi
-
-    echo "[INFO] Cleaning destination dir"
-    rm -rvf "${REDCAP_INSTALL_PATH:?}/redcap"
-
 
     echo "[INFO] Downloading and extracting REDCap package"
     curl -X POST \
@@ -37,7 +35,7 @@ install_redcap () {
         --data-urlencode "username=$REDCAP_COMMUNITY_USERNAME" \
         --data-urlencode "password=$REDCAP_COMMUNITY_PASSWORD" \
         --data-urlencode "version=$REDCAP_VERSION" \
-        --data-urlencode "install=1" \
+        --data-urlencode "install=$REDCAP_INSTALL" \
         --write-out "File name : %{filename_effective}\nFetched from: %{url}\nStatistics:\n\tDownload Time : %{time_total}\n\tDownload Size : %{size_download}\n\tDownload Speed : %{speed_download}\n" \
         --no-progress-meter \
         --verbose \
@@ -70,6 +68,18 @@ update_database_config () {
 ##########################
 ### SCRIPT STARTS HERE ###
 ##########################
+
+# Ugrading REDCap if an existing installation of lower version has been found
+if  [ -n "$(find "$REDCAP_INSTALL_PATH" -mindepth 1 -maxdepth 1 -not -path "$REDCAP_INSTALL_PATH/lost+found")" ]
+then
+    REDCAP_PREFIX='redcap_v'
+    REDCAP_CURRENT_VERSION=$(ls "${REDCAP_INSTALL_PATH}" | grep ${REDCAP_PREFIX} | sort -rst '/' -k1,1 | head -n 1 | sed -e "s/^${REDCAP_PREFIX}//")
+
+    if  [ "$REDCAP_VERSION" -gt "$REDCAP_CURRENT_VERSION" ]
+    then
+        REDCAP_INSTALL=0
+    fi
+fi
 
 echo "[INFO] Starting REDCap package installation script v1.1"
 install_redcap

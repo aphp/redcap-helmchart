@@ -49,7 +49,7 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 |-----|------|---------|-------------|
 | httpd.enabled | bool | `true` | If `true`, activates the deployment of the Apache HTTPd proxy. |
 | httpd.image.repository | string | `"ghcr.io/aphp/redcap-httpd-shibd"` | Image repository for Apache HTTPd. |
-| httpd.image.tag | string | `"1.1.0"` | Image tag for Apache HTTPd. |
+| httpd.image.tag | string | `"1.2.0"` | Image tag for Apache HTTPd. |
 | httpd.image.pullPolicy | string | `"Always"` | PullPolicy for Apache HTTPd's image. |
 | httpd.tls.enabled | bool | `false` | If `true` activates TLS termination on the Apache HTTPd proxy. |
 | httpd.tls.certificate | object | `{"existingSecret":""}` | Configuration relating to the server TLS certificate. |
@@ -74,24 +74,26 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| redcap.install.enabled | bool | `false` | If `true`, enables REDCap installation process. |
-| redcap.install.override | bool | `false` | If `true`, overwrite any existing installation with the new one. |
+| redcap.install.enabled | bool | `true` | If `true`, enables REDCap installation process. |
 | redcap.install.image.repository | string | `"alpine/curl"` | Image repository for REDCap installation process. |
 | redcap.install.image.tag | string | `"8.12.1"` | Image tag for REDCap installation process. |
 | redcap.install.image.pullPolicy | string | `"Always"` | PullPolicy for REDCap installation process. |
-| redcap.install.version | string | `"15.0.26"` | Version of the REDCap package to install |
+| redcap.install.version | string | `"15.0.27"` | Version of the REDCap package to install |
 | redcap.install.communityAuth.username | string | `""` | Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used. |
 | redcap.install.communityAuth.password | string | `""` | Password of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used. |
 | redcap.install.communityAuth.existingSecret | string | `""` | Existing secret containing the credentials of the REDCap Community user with whom the installation package is downloaded. |
 | redcap.install.overrideInstallContainer | list | `[]` | Overrides the initContainers that downloads the REDCap application package. |
 | redcap.image.repository | string | `"ghcr.io/aphp/redcap-php-fpm"` | Image repository for REDCap PHP-FPM Image. |
 | redcap.image.pullPolicy | string | `"Always"` | PullPolicy for REDCap PHP-FPM Image. |
-| redcap.image.tag | string | `"1.1.0"` | Tag for REDCap PHP-FPM Image. |
+| redcap.image.tag | string | `"1.2.0"` | Tag for REDCap PHP-FPM Image. |
 | redcap.extraInitContainers | list | `[]` | Add additional init containers to the PHP-FPM container hosting the REDCap application. |
 | redcap.extraContainers | list | `[]` | Add additional containers to the PHP-FPM container hosting the REDCap application. |
 | redcap.extraVolumes | list | `[]` | Add additional volumes to the PHP-FPM container hosting the REDCap application. |
 | redcap.config.logAllErrors | string | `"FALSE"` | If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION). |
 | redcap.config.externalURL | string | `"http://localhost/"` | The URL on which the application is exposed (useful if the application is behind a reverse-proxy). |
+| redcap.config.institutionName | string | `"REDCap Local Institution"` | The name of the institution that is presented to the users. |
+| redcap.config.organizationName | string | `"REDCap Local Organization"` | The name of the origanization inside the institution that is presented to the users. |
+| redcap.config.adminName | string | `"REDCap Local Admin"` | The name of the administrator that is presented to the users. |
 | redcap.config.adminMail | string | `"redcap-admin@local.com"` | The email of the administrator that is presented to the users. |
 | redcap.config.readOnlyAppDir | bool | `true` | Prevents modifications on REDCap application directory for security reasons. Not compatible with the     `Easy Upgrade` feature, that should be disabled from the Control Center if this option is enabled. |
 | redcap.config.tls.curlCA.secretKeyRef.name | string | `""` | The name of the secret containing the CA Certificate ued by the curl library of the application to reach external services, like an OIDC provider.    Useful some of those services are not signed by known CAs. |
@@ -102,9 +104,9 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 | redcap.config.database.auth.hostname | string | `"redcap-mysql"` | The hostname of REDCap's database instance. |
 | redcap.config.database.auth.databaseName | string | `"redcap"` | The name of REDCAP's database. |
 | redcap.config.database.auth.username | string | `"redcap"` | The username used to connect to REDCAP's database. |
-| redcap.config.database.auth.password.value | string | `"Redcap*!"` | The password used to connect to REDCAP's database. |
-| redcap.config.database.auth.password.secretKeyRef.name | string | `""` | The name of the secret holding the password used to connect to REDCAP's database.    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value. |
-| redcap.config.database.auth.password.secretKeyRef.key | string | `""` | The key of the secret holding the password used to connect to REDCAP's database.    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value. |
+| redcap.config.database.auth.password.value | string | `""` | The password used to connect to REDCAP's database, as a clear string. Don't use the option for a production-grade deployment,     refer to an external secret instead! |
+| redcap.config.database.auth.password.secretKeyRef.name | string | `""` | The name of the secret holding the password used to connect to REDCAP database.    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value. |
+| redcap.config.database.auth.password.secretKeyRef.key | string | `""` | The key of the secret holding the password used to connect to REDCAP database.    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value. |
 | redcap.config.mail.auth.server | string | `""` | The hostname or IP of the mail server used by REDCap. |
 | redcap.config.mail.auth.port | int | `465` | The port of the mail server used by REDCap. |
 | redcap.config.mail.auth.tls | bool | `true` | If set to `true`, will secure the communication with the mail server with TLS. |
@@ -123,15 +125,15 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| mysql.fullnameOverride | string | `"redcap-mysql"` | Override og the full name of the MySQL Database deployment.    Impacts the name of the services REDCap will use to connect to the Database. |
+| mysql.fullnameOverride | string | `"redcap-mysql"` | Override of the full name of the MySQL Database deployment.    Impacts the name of the services REDCap will use to connect to the Database. |
 | mysql.enabled | bool | `true` | If set to `true`, enables the deployment of MySQL as REDCap's database. |
 | mysql.architecture | string | `"standalone"` | Deployment type for the database, standalone or replicated. |
 | mysql.initdbScriptsConfigMap | string | `""` | Name of a configmap holding an SQL script to initialize the database with. |
 | mysql.networkPolicy.enabled | bool | `true` | Enable creation of NetworkPolicy resources |
 | mysql.auth.createDatabase | bool | `true` | Automatically create a database at the first run. |
-| mysql.auth.database | string | `"redcap"` | Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true` |
-| mysql.auth.username | string | `"redcap"` | Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true` |
-| mysql.auth.password | string | `"Redcap*!"` | Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`    Not secure in production, use secret reference instead! |
+| mysql.auth.database | string | `"redcap"` | Name of the database automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true` |
+| mysql.auth.username | string | `"redcap"` | Name of the database user automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true` |
+| mysql.auth.password | string | `"Redcap*!"` | Name of the database user automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true`    Not secure in production, use secret reference instead! |
 | mysql.primary.existingConfigmap | string | `"redcap-database-config"` | Name of existing ConfigMap with MySQL Primary configuration. |
 | mysql.primary.podLabels."app.kubernetes.io/role" | string | `"redcap-mysql"` | Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing! |
 | mysql.primary.service.port.mysql | int | `3306` | Port exposed by the MySQL service. |
@@ -298,4 +300,10 @@ helm install redcap aphp-redcap/redcap -f ./examples/basic-install.yaml
 |-----|------|---------|-------------|
 | persistence.edocs.storageClass | string | `"standard"` | StorageClass of the volume used to persist documents uploaded by REDCap users. |
 | persistence.modules.storageClass | string | `"standard"` | StorageClass of the volume used to persist REDCap modules. |
+
+### Other Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| redcap.config.database.auth.password | object | `{"secretKeyRef":{"key":"","name":""},"value":""}` | The password used to connect to REDCAP's database. Automatically retrieved from the default mysql secret name if you enbaled    the MySQL database embedded in this chart. If you specified a reference to an secret for your MySQL database password, you     have to set it here also, in the `secretKeyRef` section. |
 

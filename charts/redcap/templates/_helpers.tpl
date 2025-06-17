@@ -235,6 +235,14 @@ Secrets names
 {{ .Release.Name }}-db-audit-credentials
 {{- end }}
 
+{{- define "mysql.secrets.password.name" -}}
+{{ .Release.Name }}-mysql
+{{- end }}
+
+{{- define "mysql.secrets.password.key" -}}
+mysql-password
+{{- end }}
+
 {{/*
 Persistence volumes names
 */}}

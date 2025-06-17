@@ -29,6 +29,7 @@ mysql \
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.externalURL }}' WHERE field_name = 'redcap_base_url';
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.mail.auth.from }}' WHERE field_name = 'from_email²';
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.institutionName }}' WHERE field_name = 'institution';
+        UPDATE redcap_config SET value = '{{ .Values.redcap.config.organizationName }}' WHERE field_name = 'site_org_type';
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.adminName }}' WHERE field_name = 'homepage_contact';
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.adminMail }}' WHERE field_name = 'homepage_contact_email';
         UPDATE redcap_config SET value = '{{ .Values.redcap.config.adminName }}' WHERE field_name = 'project_contact_name';
