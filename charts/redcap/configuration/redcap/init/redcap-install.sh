@@ -21,15 +21,16 @@ REDCAP_INSTALL=1
 install_redcap () {
 
     if [ "$REDCAP_INSTALL" = 1 ]; then
-        echo "[INFO] Installing REDCap from scratch"
+        echo "[INFO] Installing REDCap version $REDCAP_VERSION from scratch"
         echo "[INFO] Cleaning destination dir"
         rm -rvf "${REDCAP_INSTALL_PATH:?}/*"
+
     else
-        echo "[INFO] Updating existing REDCap installation"
+        echo "[INFO] Updating existing REDCap installation to version $REDCAP_VERSION"
     fi
 
     echo "[INFO] Downloading and extracting REDCap package"
-    curl -X POST \
+    curl \
         --location 'https://redcap.vumc.org/plugins/redcap_consortium/versions.php' \
         --header 'Content-Type: application/x-www-form-urlencoded' \
         --data-urlencode "username=$REDCAP_COMMUNITY_USERNAME" \
@@ -38,7 +39,6 @@ install_redcap () {
         --data-urlencode "install=$REDCAP_INSTALL" \
         --write-out "File name : %{filename_effective}\nFetched from: %{url}\nStatistics:\n\tDownload Time : %{time_total}\n\tDownload Size : %{size_download}\n\tDownload Speed : %{speed_download}\n" \
         --no-progress-meter \
-        --verbose \
         --output '/tmp/redcap/redcap.zip'
 
     echo "[INFO] Installing REDCap package"
@@ -70,15 +70,18 @@ update_database_config () {
 ##########################
 
 # Ugrading REDCap if an existing installation of lower version has been found
-if  [ -n "$(find "$REDCAP_INSTALL_PATH" -mindepth 1 -maxdepth 1 -not -path "$REDCAP_INSTALL_PATH/lost+found")" ]
-then
+if  [ -n "$(find "$REDCAP_INSTALL_PATH" -mindepth 1 -maxdepth 1 -not -path "$REDCAP_INSTALL_PATH/lost+found")" ]; then
     REDCAP_PREFIX='redcap_v'
     REDCAP_CURRENT_VERSION=$(ls "${REDCAP_INSTALL_PATH}" | grep ${REDCAP_PREFIX} | sort -rst '/' -k1,1 | head -n 1 | sed -e "s/^${REDCAP_PREFIX}//")
 
-    if  [ "$REDCAP_VERSION" -gt "$REDCAP_CURRENT_VERSION" ]
-    then
+    if  [ "$REDCAP_VERSION" -eq "$REDCAP_CURRENT_VERSION" ]; then
+        echo "[INFO] REDCap version ${REDCAP_VERSION} files are already present in {$REDCAP_INSTALL_PATH}. Skipping installation process."
+        exit 0
+
+    elif  [ "$REDCAP_VERSION" -gt "$REDCAP_CURRENT_VERSION" ]; then
         REDCAP_INSTALL=0
     fi
+
 fi
 
 echo "[INFO] Starting REDCap package installation script v1.1"
