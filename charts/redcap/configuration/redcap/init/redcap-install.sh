@@ -25,8 +25,6 @@ install_redcap () {
         echo "[INFO] Cleaning destination dir"
         rm -rvf "${REDCAP_INSTALL_PATH:?}/*"
 
-    else
-        echo "[INFO] Updating existing REDCap installation to version $REDCAP_VERSION"
     fi
 
     echo "[INFO] Downloading and extracting REDCap package"
@@ -69,25 +67,31 @@ update_database_config () {
 ### SCRIPT STARTS HERE ###
 ##########################
 
+echo "[INFO] Starting REDCap package installation script v1.1"
+
 # Ugrading REDCap if an existing installation of lower version has been found
 if  [ -n "$(find "$REDCAP_INSTALL_PATH" -mindepth 1 -maxdepth 1 -not -path "$REDCAP_INSTALL_PATH/lost+found")" ]; then
     REDCAP_PREFIX='redcap_v'
-    REDCAP_CURRENT_VERSION=$(ls "${REDCAP_INSTALL_PATH}" | grep ${REDCAP_PREFIX} | sort -rst '/' -k1,1 | head -n 1 | sed -e "s/^${REDCAP_PREFIX}//")
 
-    if  [ "$REDCAP_VERSION" -eq "$REDCAP_CURRENT_VERSION" ]; then
+    REDCAP_VERSION_SANITIZED=$(echo "$REDCAP_VERSION" | tr -d '.')
+
+    REDCAP_CURRENT_VERSION=$(ls "${REDCAP_INSTALL_PATH}" | grep ${REDCAP_PREFIX} | sort -rst '/' -k1,1 | head -n 1 | sed -e "s/^${REDCAP_PREFIX}//")
+    REDCAP_CURRENT_VERSION_SANITIZED=$(echo "$REDCAP_CURRENT_VERSION" | tr -d '.')
+
+    if  [ "$REDCAP_VERSION_SANITIZED" -eq "$REDCAP_CURRENT_VERSION_SANITIZED" ]; then
         echo "[INFO] REDCap version ${REDCAP_VERSION} files are already present in {$REDCAP_INSTALL_PATH}. Skipping installation process."
         exit 0
 
-    elif  [ "$REDCAP_VERSION" -gt "$REDCAP_CURRENT_VERSION" ]; then
+    elif  [ "$REDCAP_VERSION_SANITIZED" -gt "$REDCAP_CURRENT_VERSION_SANITIZED" ]; then
+        echo "[INFO] Upgrading existing REDCap installation from version $REDCAP_CURRENT_VERSION to $REDCAP_VERSION"
         REDCAP_INSTALL=0
     fi
 
 fi
 
-echo "[INFO] Starting REDCap package installation script v1.1"
 install_redcap
 update_database_config
-echo "[INFO] REDCap have been correctly installed and configured."
+echo "[INFO] REDCap version $REDCAP_VERSION have been correctly installed."
 exit 0
 
 
