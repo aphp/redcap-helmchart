@@ -27,8 +27,10 @@ redcap:
       existingSecret: "redcap-prod-community-credentials"
     
   config: 
-    externalURL: "https://redcap-prod.com"
-    adminMail: "redcap-redcap@prod.com"
+    institutionName: "REDCap Production Institution"
+    organizationName: "REDCap production Organization"
+    adminName: "REDCap Production Admin"
+    adminMail: "redcap-admin@prod.com"
 
     database:
       salt:
@@ -66,17 +68,6 @@ redcap:
       cpu: "10"
 
 
-  adminJob: 
-    schedule: "0 * * * *"  
-    resources: 
-      requests:
-        memory: "512Mi"
-        cpu: "0.25"
-      limits:
-        memory: "1Gi"
-        cpu: "0.5"
-
-
 mysql:
   enabled: true
   fullnameOverride: "redcap-prod-mysql"
@@ -87,7 +78,7 @@ mysql:
     username: redcap
     existingSecret: "redcap-prod-mysql-passwd"
   primary:
-    existingConfigmap: "redcap-prod-mysql-config"
+    existingConfigmap: "redcap-prod-database-config"
     persistence: 
       annotations:
         helm.sh/resource-policy: keep
@@ -242,7 +233,7 @@ ingress:
        - redcap-prod.com
 
 
-service:
+services:
   httpd:
     enabled: true
     annotations: {}
@@ -259,7 +250,7 @@ service:
 
 
 persistence:
-  redcap_code:    
+  app:    
     annotations:
       helm.sh/resource-policy: "keep"
     size: 2Gi
@@ -272,6 +263,15 @@ persistence:
     annotations:
       helm.sh/resource-policy: "keep"
     size: 10Gi
+    storageClass: "csi-cinder-high-speed"
+    accessMode: "ReadWriteOnce"
+    existingClaim: 
+      name: ""
+
+  modules:
+    annotations:
+      helm.sh/resource-policy: "keep"
+    size: 1Gi
     storageClass: "csi-cinder-high-speed"
     accessMode: "ReadWriteOnce"
     existingClaim: 

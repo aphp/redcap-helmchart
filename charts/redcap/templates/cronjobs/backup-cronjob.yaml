@@ -136,7 +136,7 @@ spec:
           volumes: 
           - name: redcap-code
             persistentVolumeClaim:
-              claimName: {{ .Release.Name }}-code-pvc
+              claimName: {{ .Release.Name }}-app-pvc
           - name: edocs 
             persistentVolumeClaim:
               claimName: {{ .Release.Name }}-edocs-pvc

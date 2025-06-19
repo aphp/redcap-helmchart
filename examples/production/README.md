@@ -1,6 +1,6 @@
 # Production-grade installation
 
-This example provides with a more robust qnd secure deployment of REDCap.
+This example provides with a more robust and secure deployment of REDCap.
 
 ## Pre-requisites
 
@@ -16,7 +16,7 @@ You'll need to fulfill the following points before deploying this chart:
 
 ## Secret creation
 
-You'll first need to create the Secret needed to hold all the sensitive informations REDCap will need :
+You'll first need to create the Secret needed to hold all the sensitive information REDCap will need :
 
 - HTTPS TLS certificate : 
 ```sh
@@ -59,6 +59,10 @@ After ensuring that everything is OK, proceed with the next step.
 ## Installation
 To install REDCap, follow those steps :
 
+- Create the namespace that will contain the REDCap installation : 
+  ```
+  kubectl create namespace redcap
+  ```
 - Add this Helm Repository to your Helm installation : 
   ```sh
   helm repo add aphp-redcap https://aphp.github.io/redcap-helmchart
@@ -66,10 +70,6 @@ To install REDCap, follow those steps :
 - Update your Helm repositories :
   ```sh
   helm repo update
-  ```
-- Create the namespace that will contain the REDCap installation : 
-  ```
-  kubectl create namespace redcap
   ```
 - Install this chart using this values file : 
   ```sh
@@ -80,8 +80,6 @@ To install REDCap, follow those steps :
 You can access REDCap with the following URL : https://your-recap-host:443.
 
 The auto-install feature doesn't fully configure the REDCap installation, hence you'll need to do those post-installation actions in the REDCap Control Center as soon as possible : 
-- Set the `REDCap base URL`
-- Set the `Local Server File Storage` path to `/edocs`
 - Set an authentication method
 - Checks that the CronJobs were called (you can manually launch one if the Kubernetes CronJob dedicated to this task hasn't run yet)
 - Launch the `Configuration Check`

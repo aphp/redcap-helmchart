@@ -1,7 +1,7 @@
 # HTTPd module settings
 # @section -- HTTPd module settings
 httpd:
-  # -- If `true`, activates the deploment of the Apache HTTPd proxy.
+  # -- If `true`, activates the deployment of the Apache HTTPd proxy.
   # @section -- HTTPd module settings
   enabled: true
 
@@ -11,7 +11,7 @@ httpd:
     repository: "ghcr.io/aphp/redcap-httpd-shibd"
     # -- Image tag for Apache HTTPd.
     # @section -- HTTPd module settings
-    tag: "1.1.0"
+    tag: "1.2.0"
     # -- PullPolicy for Apache HTTPd's image.
     # @section -- HTTPd module settings
     pullPolicy: "Always"
@@ -82,24 +82,21 @@ redcap:
   install:
     # -- If `true`, enables REDCap installation process.
     # @section -- REDCap settings
-    enabled: false
-    # -- If `true`, overwrite any existing installation with the new one.
-    # @section -- REDCap settings
-    override: false
+    enabled: true
     image:
       # -- Image repository for REDCap installation process.
       # @section -- REDCap settings
       repository: "alpine/curl"
       # -- Image tag for REDCap installation process.
       # @section -- REDCap settings
-      tag: "8.9.1"
+      tag: "8.12.1"
       # -- PullPolicy for REDCap installation process.
       # @section -- REDCap settings
       pullPolicy: Always
 
     # -- Version of the REDCap package to install
     # @section -- REDCap settings
-    version: "14.5.26"
+    version: "15.0.27"
 
     communityAuth:
       # -- Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.
@@ -116,24 +113,6 @@ redcap:
     # @section -- REDCap settings
     overrideInstallContainer: []
 
-    initJob:
-      image:
-        # -- Image of the Init Job. Must be and FCGI Client capable to query REDCap's pod(s).
-        # @section -- REDCap settings
-        repository: "ghcr.io/aphp/redcap-fastcgi-client"
-        # -- Tag of the Admin Job's image.
-        # @section -- REDCap settings
-        tag: "1.1.0"
-        # -- PullPolicy of the Init Job's image.
-        # @section -- REDCap settings
-        pullPolicy: "Always"
-        # -- ImagePullSecret of the Init Job's image.
-        # @section -- REDCap settings
-        imagePullSecrets: []
-      # -- Resources for the Init Job's pod.
-      # @section -- REDCap settings
-      resources: {}
-
   image:
     # -- Image repository for REDCap PHP-FPM Image.
     # @section -- REDCap settings
@@ -143,17 +122,17 @@ redcap:
     pullPolicy: "Always"
     # -- Tag for REDCap PHP-FPM Image.
     # @section -- REDCap settings
-    tag: "1.1.0"
+    tag: "1.2.0"
 
-  # -- Add additional init containers to the PHP-FPM container hostin the REDCap application.
+  # -- Add additional init containers to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
   extraInitContainers: []
 
-  # -- Add additional containers to the PHP-FPM container hostin the REDCap application.
+  # -- Add additional containers to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
   extraContainers: []
 
-  # -- Add additional volumes to the PHP-FPM container hostin the REDCap application.
+  # -- Add additional volumes to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
   extraVolumes: []
 
@@ -161,12 +140,25 @@ redcap:
     # -- If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION).
     # @section -- REDCap settings
     logAllErrors: "FALSE"
-    # -- The URL on which the application is exposed (useful if the application is behind a reverse-proy).
+    # -- The URL on which the application is exposed (useful if the application is behind a reverse-proxy).
     # @section -- REDCap settings
-    externalURL: "localhost"
+    externalURL: "http://localhost/"
+    # -- The name of the institution that is presented to the users.
+    # @section -- REDCap settings
+    institutionName: "REDCap Local Institution"
+    # -- The name of the origanization inside the institution that is presented to the users.
+    # @section -- REDCap settings
+    organizationName: "REDCap Local Organization"
+    # -- The name of the administrator that is presented to the users.
+    # @section -- REDCap settings
+    adminName: "REDCap Local Admin"
     # -- The email of the administrator that is presented to the users.
     # @section -- REDCap settings
     adminMail: "redcap-admin@local.com"
+    # -- Prevents modifications on REDCap application directory for security reasons. Not compatible with the 
+    #    `Easy Upgrade` feature, that should be disabled from the Control Center if this option is enabled.
+    # @section -- REDCap settings
+    readOnlyAppDir: true
 
     tls:
       curlCA:
@@ -205,16 +197,20 @@ redcap:
         # -- The username used to connect to REDCAP's database.
         # @section -- REDCap settings
         username: "redcap"
+          # -- The password used to connect to REDCAP's database. Automatically retrieved from the default mysql secret name if you enbaled
+          #    the MySQL database embedded in this chart. If you specified a reference to an secret for your MySQL database password, you 
+          #    have to set it here also, in the `secretKeyRef` section.
         password:
-          # -- The password used to connect to REDCAP's database.
+          # -- The password used to connect to REDCAP's database, as a clear string. Don't use the option for a production-grade deployment, 
+          #    refer to an external secret instead!
           # @section -- REDCap settings
-          value: "Redcap*!"
+          value: ""
           secretKeyRef:
-            # -- The name of the secret holding the password used to connect to REDCAP's database.
+            # -- The name of the secret holding the password used to connect to REDCAP database.
             #    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
             # @section -- REDCap settings
             name: ""
-            # -- The key of the secret holding the password used to connect to REDCAP's database.
+            # -- The key of the secret holding the password used to connect to REDCAP database.
             #    If set, the value of that secret will override the `redcap.config.database.auth.password.value` value.
             # @section -- REDCap settings
             key: ""
@@ -264,36 +260,14 @@ redcap:
   # @section -- REDCap settings
   affinity: {}
 
-  # REDCap Administration Job's settings
-  adminJob:
-    # -- Schedule of the Admin Job, which runs every minute by default. This job is needed to refresh REDCap administrative's data.
-    # @section -- REDCap Administration Job's settings
-    schedule: "* * * * *"
-    image:
-      # -- Image of the Admin Job. Must be and FCGI Client capable to query REDCap's pod(s).
-      # @section -- REDCap Administration Job's settings
-      repository: "ghcr.io/aphp/redcap-fastcgi-client"
-      # -- Tag of the Admin Job's image.
-      # @section -- REDCap Administration Job's settings
-      tag: "1.1.0"
-      # -- PullPolicy of the Admin Job's image.
-      # @section -- REDCap Administration Job's settings
-      pullPolicy: "Always"
-      # -- ImagePullSecret of the Admin Job's image.
-      # @section -- REDCap Administration Job's settings
-      imagePullSecrets: []
-    # -- Resources for the admin job's pod.
-    # @section -- REDCap Administration Job's settings
-    resources: {}
-
 
 # REDCap MySQL Database settings
 # @default -- Settings for a standalone MySQL deployment compatible with REDCap.
 #             See original documentation @ https://github.com/bitnami/charts/tree/main/bitnami/mysql
 # @section -- REDCap MySQL Database settings
 mysql:
-    # -- Override og the full name of the MySQL Database deployment.
-    #    Impacts the name of the services REDCap will use to connect to the Database.
+  # -- Override of the full name of the MySQL Database deployment.
+  #    Impacts the name of the services REDCap will use to connect to the Database.
   # @section -- REDCap MySQL Database settings
   fullnameOverride: "redcap-mysql"
   # -- If set to `true`, enables the deployment of MySQL as REDCap's database.
@@ -314,13 +288,13 @@ mysql:
     # -- Automatically create a database at the first run.
     # @section -- REDCap MySQL Database settings
     createDatabase: true
-    # -- Name of the database automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
+    # -- Name of the database automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true`
     # @section -- REDCap MySQL Database settings
     database: "redcap"
-    # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
+    # -- Name of the database user automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true`
     # @section -- REDCap MySQL Database settings
     username: "redcap"
-    # -- Name of the database user automatically created at the first run, if ``mysql.auth.createDatabase` has been set to `true`
+    # -- Name of the database user automatically created at the first run, if `mysql.auth.createDatabase` has been set to `true`
     #    Not secure in production, use secret reference instead!
     # @section -- REDCap MySQL Database settings
     password: "Redcap*!"
@@ -329,7 +303,7 @@ mysql:
   primary:
     # -- Name of existing ConfigMap with MySQL Primary configuration.
     # @section -- REDCap MySQL Database settings
-    existingConfigmap: "redcap-mysql-config"
+    existingConfigmap: "redcap-database-config"
     podLabels:
       # -- Role to set for the networkPolicies. Not to be changed, unless you know exactly what you are doing!
       # @section -- REDCap MySQL Database settings
@@ -388,7 +362,7 @@ backupJob:
       repository: "bitnami/mysql"
       # -- Image tag for the REDCap database backup container.
       # @section -- REDCap Backup Job's settings
-      tag: "8.4.3-debian-12-r4"
+      tag: "9.3.0-debian-12-r1"
       # -- Image pullPolicy for the REDCap database backup container.
       # @section -- REDCap Backup Job's settings
       pullPolicy: "Always"
@@ -400,7 +374,7 @@ backupJob:
       repository: "bitnami/rclone"
       # -- Image tag for the REDCap backup uploader container.
       # @section -- REDCap Backup Job's settings
-      tag: "1.68.2"
+      tag: "1.69.3"
       # -- Image pullPolicy for the REDCap backup uploader container.
       # @section -- REDCap Backup Job's settings
       pullPolicy: "Always"
@@ -446,7 +420,7 @@ restoreJob:
   # @section -- REDCap Restore Job's settings
   imagePullSecrets: []
   # @section -- REDCap Restore Job's settings
-  # -- Schedule for the restore Cronjob. CronJob resources needs a valide schedule, but this one will never be used since it will always be suspended (see spec.suspend field).
+  # -- Schedule for the restore Cronjob. CronJob resources needs a valid schedule, but this one will never be used since it will always be suspended (see spec.suspend field).
   # @section -- REDCap Restore Job's settings
   schedule: "0 0 1 1 *"
   # -- Name of the backup archive to restore.
@@ -471,7 +445,7 @@ restoreJob:
       repository: "bitnami/mysql"
       # -- Image yag for the REDCap application restore container.
       # @section -- REDCap Restore Job's settings
-      tag: "8.0.32-debian-11-r14"
+      tag: "9.3.0-debian-12-r1"
       # -- Image pullPolicy for the REDCap application restore container.
       # @section -- REDCap Restore Job's settings
       pullPolicy: "Always"
@@ -483,7 +457,7 @@ restoreJob:
       repository: "bitnami/rclone"
       # -- Image tag for the REDCap downloader container.
       # @section -- REDCap Restore Job's settings
-      tag: "1.68.2"
+      tag: "1.69.3"
       # -- Image pullPolicy for the REDCap downloader container.
       # @section -- REDCap Restore Job's settings
       pullPolicy: "Always"
@@ -541,7 +515,7 @@ audit:
   - name: "init-driver-download"
     # -- Image used for the pod downloading the driver.
     # @section -- REDCap Audit Log Shipper settings
-    image: "alpine:3.18"
+    image: "alpine:3.21.3"
     # -- Image pullPolicy used for the pod downloading the driver.
     # @section -- REDCap Audit Log Shipper settings
     imagePullPolicy: "Always"
@@ -579,6 +553,8 @@ audit:
     # @section -- REDCap Audit Log Shipper settings
     # @default -- Mounted to `/driver`
     - name: "driver-dir"
+      # -- Mount path of the volume used to persist the JDBC driver.
+      # @section -- REDCap Audit Log Shipper settings
       mountPath: "/driver"
 
   # -- If set to `true`, allows the use of multiple pipelines. Needed for audit concurrent pipelines for performance reasons.
@@ -627,7 +603,7 @@ audit:
   - name: "driver-dir"
     emptyDir:
       sizeLimit: 50Mi
-  # -- Volume handling the CA used to validate the HTTPS connexions to the audit stack the logs are send to.
+  # -- Volume handling the CA used to validate the HTTPS connections to the audit stack the logs are send to.
   # @section -- REDCap Audit Log Shipper settings
   # @default -- Empty secret reference to the CA.
   - name: "api-ca"
@@ -640,7 +616,7 @@ audit:
   # @default -- Mounted on `/driver`
   - name: "driver-dir"
     mountPath: /driver
-  # -- Volume handling the CA used to validate the HTTPS connexion to the audit stack the logs are send to.
+  # -- Volume handling the CA used to validate the HTTPS connection to the audit stack the logs are send to.
   # @section -- REDCap Audit Log Shipper settings
   # @default -- Mounted on `/var/run/secret/api-ca.pem`
   - name: "api-ca"
@@ -703,22 +679,23 @@ ingress:
   # @section -- Ingress settings
   tls: []
 
-# Service settings
-service:
+# -- Service settings
+# @section -- Service settings
+services:
   httpd:
     # -- If set to `true`, enables the service for Apache HTTPd.
     # @section -- Service settings
     enabled: true
-    # -- Annotations for the Apache HTTPd service.
+    # -- Annotations for the Apache HTTPd services.
     # @section -- Service settings
     annotations: {}
-    # -- Type of the Apache HTTPd service.
+    # -- Type of the Apache HTTPd services.
     # @section -- Service settings
     type: "ClusterIP"
-    # -- Protocol of the Apache HTTPd service.
+    # -- Protocol of the Apache HTTPd services.
     # @section -- Service settings
     protocol: "TCP"
-    # -- Name of the Apache HTTPd service.
+    # -- Name of the Apache HTTPd services.
     # @section -- Service settings
     portName: "httpd-service-port"
 
@@ -727,22 +704,22 @@ service:
     # -- If set to `true`, enables the service for REDCap.
     # @section -- Service settings
     enabled: true
-    # -- Annotations for the REDCap service.
+    # -- Annotations for the REDCap services.
     # @section -- Service settings
     annotations: {}
-    # -- Type of the REDCap service.
+    # -- Type of the REDCap services.
     # @section -- Service settings
     type: "ClusterIP"
-    # -- Port of the REDCap service.
+    # -- Port of the REDCap services.
     # @section -- Service settings
     port: 9000
-    # -- Protocol of the REDCap service.
+    # -- Protocol of the REDCap services.
     # @section -- Service settings
     protocol: "TCP"
-    # -- Port of the REDCap service.
+    # -- Port of the REDCap services.
     # @section -- Service settings
     targetPort: 9000
-    # -- Name of the REDCap service.
+    # -- Name of the REDCap services.
     # @section -- Service settings
     portName: "redcap-service-port"
 
@@ -767,10 +744,7 @@ autoscaling:
 
 # Persistence settings
 persistence:
-  redcap_code:
-    # -- Annotations related to the volume handling the REDCap application.
-    # @section -- Persistence settings
-    # @default -- Keeping the volume after a Helm release deletion.
+  app:
     annotations:
       helm.sh/resource-policy: "keep"
     # -- Size of the volume used to persist REDCap code.
@@ -805,6 +779,24 @@ persistence:
     accessMode: "ReadWriteOnce"
     existingClaim:
       # -- Name of an existing PVC used to persist documents uploaded by REDCap users.
+      #    If set, overrides the previous settings, as no PVC will be created for that purpose.
+      # @section -- Persistence settings
+      name: ""
+
+  modules:
+    annotations:
+      helm.sh/resource-policy: "keep"
+    # -- Size of the volume used to persist REDCap modules.
+    # @section -- Persistence settings
+    size: "1Gi"
+    # -- StorageClass of the volume used to persist REDCap modules.
+    # @section -- Persistence uploaded
+    storageClass: "standard"
+    # -- AccessMode of the volume used to persist REDCap modules.
+    # @section -- Persistence settings
+    accessMode: "ReadWriteOnce"
+    existingClaim:
+      # -- Name of an existing PVC used to persist REDCap modules.
       #    If set, overrides the previous settings, as no PVC will be created for that purpose.
       # @section -- Persistence settings
       name: ""

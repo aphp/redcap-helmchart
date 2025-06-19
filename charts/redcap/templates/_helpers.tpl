@@ -5,14 +5,6 @@ Expand the name of the chart.
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{- define "redcap.adminJob.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}-admin-job
-{{- end }}
-
-{{- define "redcap.initJob.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}-init-job
-{{- end }}
-
 {{- define "redcap.backupJob.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}-backup-job
 {{- end }}
@@ -44,32 +36,6 @@ If release name contains chart name it will be used as a full name.
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
-
-{{- define "redcap.initJob.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}-init-job
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}-init-job
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}-init-job
-{{- end }}
-{{- end }}
-{{- end }}
-
-{{- define "redcap.adminJob.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}-admin-job
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}-admin-job
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}-admin-job
 {{- end }}
 {{- end }}
 {{- end }}
@@ -146,26 +112,6 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
-{{- define "redcap.initJob.labels" -}}
-helm.sh/chart: {{ include "redcap.chart" . }}
-{{ include "redcap.initJob.selectorLabels" . }}
-{{ include "redcap.initJob.networkPolicy.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{- define "redcap.adminJob.labels" -}}
-helm.sh/chart: {{ include "redcap.chart" . }}
-{{ include "redcap.adminJob.selectorLabels" . }}
-{{ include "redcap.adminJob.networkPolicy.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
 {{- define "redcap.backupJob.labels" -}}
 helm.sh/chart: {{ include "redcap.chart" . }}
 {{ include "redcap.backupJob.selectorLabels" . }}
@@ -215,16 +161,6 @@ app.kubernetes.io/name: {{ include "redcap.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "redcap.initJob.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "redcap.initJob.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{- define "redcap.adminJob.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "redcap.adminJob.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
 {{- define "redcap.backupJob.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "redcap.backupJob.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
@@ -250,14 +186,6 @@ Networkpolicies selector labels
 */}}
 {{- define "redcap.networkPolicy.selectorLabels" -}}
 app.kubernetes.io/role: redcap-app
-{{- end }}
-
-{{- define "redcap.initJob.networkPolicy.selectorLabels" -}}
-app.kubernetes.io/role: redcap-init-job
-{{- end }}
-
-{{- define "redcap.adminJob.networkPolicy.selectorLabels" -}}
-app.kubernetes.io/role: redcap-admin-job
 {{- end }}
 
 {{- define "redcap.backupJob.networkPolicy.selectorLabels" -}}
@@ -307,15 +235,27 @@ Secrets names
 {{ .Release.Name }}-db-audit-credentials
 {{- end }}
 
+{{- define "mysql.secrets.password.name" -}}
+{{ .Release.Name }}-mysql
+{{- end }}
+
+{{- define "mysql.secrets.password.key" -}}
+mysql-password
+{{- end }}
+
 {{/*
 Persistence volumes names
 */}}
-{{- define "redcap.persistence.code.pvc.name" -}}
-{{ .Release.Name }}-code-pvc
+{{- define "redcap.persistence.app.pvc.name" -}}
+{{ .Release.Name }}-app-pvc
 {{- end }}
 
 {{- define "redcap.persistence.edocs.pvc.name" -}}
 {{ .Release.Name }}-edocs-pvc
+{{- end }}
+
+{{- define "redcap.persistence.modules.pvc.name" -}}
+{{ .Release.Name }}-modules-pvc
 {{- end }}
 
 {{/*

@@ -1,0 +1,31 @@
+{{- if not .Values.persistence.modules.existingClaim.name }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "redcap.persistence.modules.pvc.name" . }}
+  namespace: {{ .Release.Namespace }}
+{{- with .Values.persistence.modules.annotations  }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app: "{{ .Release.Name }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+
+spec:
+  accessModes:
+    - {{ .Values.persistence.modules.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.modules.size | quote }}
+{{- if .Values.persistence.modules.storageClass }}
+{{- if (eq "-" .Values.persistence.modules.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.modules.storageClass }}"
+{{- end }}
+{{- end }}
+
+{{- end }}
