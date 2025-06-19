@@ -12,4 +12,6 @@ jobs:
   aphp-chart-ci-workflow:
     uses: aphp/ci-workflows/.github/workflows/chart-ci.yml@dev
     with:
+      kubernetes-version: "1.24.2"
       chart-dir: "charts/redcap"
+      chart-values: "./charts/redcap/ci/ct-values.yaml"
