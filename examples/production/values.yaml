@@ -25,15 +25,12 @@ redcap:
     enabled: true
     communityAuth:
       existingSecret: "redcap-prod-community-credentials"
-
-  image:
-    repository: "ghcr.io/aphp/redcap-php-fpm"
-    pullPolicy: "Always"
-    tag: "dev"
     
   config: 
-    externalURL: "https://redcap-prod.com"
-    adminMail: "redcap-redcap@prod.com"
+    institutionName: "REDCap Production Institution"
+    organizationName: "REDCap production Organization"
+    adminName: "REDCap Production Admin"
+    adminMail: "redcap-admin@prod.com"
 
     database:
       salt:
