@@ -79,7 +79,7 @@ if  [ -n "$(find "$REDCAP_INSTALL_PATH" -mindepth 1 -maxdepth 1 -not -path "$RED
     REDCAP_CURRENT_VERSION_SANITIZED=$(echo "$REDCAP_CURRENT_VERSION" | tr -d '.')
 
     if  [ "$REDCAP_VERSION_SANITIZED" -eq "$REDCAP_CURRENT_VERSION_SANITIZED" ]; then
-        echo "[INFO] REDCap version ${REDCAP_VERSION} files are already present in {$REDCAP_INSTALL_PATH}. Skipping installation process."
+        echo "[INFO] REDCap version ${REDCAP_VERSION} files are already present in ${REDCAP_INSTALL_PATH}. Skipping installation process."
         exit 0
 
     elif  [ "$REDCAP_VERSION_SANITIZED" -gt "$REDCAP_CURRENT_VERSION_SANITIZED" ]; then
