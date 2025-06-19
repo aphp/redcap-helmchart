@@ -17,12 +17,12 @@ dependencies:
   - condition: mysql.enabled
     name: mysql
     repository: https://charts.bitnami.com/bitnami
-    version: 13.0.0
+    version: 13.0.2
   - condition: audit.enabled
     name: logstash
     alias: audit
     repository: https://charts.bitnami.com/bitnami
-    version: 7.0.2
+    version: 7.0.4
 maintainers:
   - name: kzgrzendek
     email: kevin.zgrzendek@gmail.com
