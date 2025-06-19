@@ -38,7 +38,3 @@ To install REDCap, follow those steps :
 
 ## Post-installation
 You can access REDCap with the following URL : http://localhost:80.
-
-Make sure to take the following actions : 
-- In `Control Center` -> `General Configuration` -> REDCap base URL, set the field to `http://localhost/`
-- In `Control Center` -> `File Upload Settings` -> `Local Server File Storage`, set the field to `/edocs`, which is the mapping of the `edocs` dir in this REDCap installation.

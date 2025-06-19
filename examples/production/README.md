@@ -80,8 +80,6 @@ To install REDCap, follow those steps :
 You can access REDCap with the following URL : https://your-recap-host:443.
 
 The auto-install feature doesn't fully configure the REDCap installation, hence you'll need to do those post-installation actions in the REDCap Control Center as soon as possible : 
-- Set the `REDCap base URL`
-- Set the `Local Server File Storage` path to `/edocs`
 - Set an authentication method
 - Checks that the CronJobs were called (you can manually launch one if the Kubernetes CronJob dedicated to this task hasn't run yet)
 - Launch the `Configuration Check`
