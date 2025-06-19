@@ -29,7 +29,7 @@ Kubernetes: `>= 1.24.0-0`
 
 This Chart allows the Datalab to be deployed as follows :
 
-![REDCap Components](./resources/redcap-components.svg)
+![REDCap Components](./resources/redcap_arch-components.drawio.png)
 
 ## Installing the Chart
 
