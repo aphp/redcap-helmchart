@@ -22,7 +22,7 @@ spec:
             {{- end }}
       ports:
         - protocol: TCP
-          port: {{ default 3306 .Values.mysql.primary.service.ports.mysql }}
+          port: {{ default 3306 .Values.mysql.primary.service.port.mysql }}
 
     # allow DNS resolution
     - to:
