@@ -582,6 +582,36 @@
         },
         "persistence": {
             "properties": {
+                "app": {
+                    "properties": {
+                        "accessMode": {
+                            "type": "string"
+                        },
+                        "annotations": {
+                            "properties": {
+                                "helm.sh/resource-policy": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "existingClaim": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "size": {
+                            "type": "string"
+                        },
+                        "storageClass": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
                 "edocs": {
                     "properties": {
                         "accessMode": {
@@ -612,7 +642,7 @@
                     },
                     "type": "object"
                 },
-                "redcap_code": {
+                "modules": {
                     "properties": {
                         "accessMode": {
                             "type": "string"
@@ -647,35 +677,6 @@
         },
         "redcap": {
             "properties": {
-                "adminJob": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "imagePullSecrets": {
-                                    "type": "array"
-                                },
-                                "pullPolicy": {
-                                    "type": "string"
-                                },
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "resources": {
-                            "properties": {},
-                            "type": "object"
-                        },
-                        "schedule": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
                 "affinity": {
                     "properties": {},
                     "type": "object"
@@ -683,6 +684,9 @@
                 "config": {
                     "properties": {
                         "adminMail": {
+                            "type": "string"
+                        },
+                        "adminName": {
                             "type": "string"
                         },
                         "database": {
@@ -745,6 +749,9 @@
                         "externalURL": {
                             "type": "string"
                         },
+                        "institutionName": {
+                            "type": "string"
+                        },
                         "logAllErrors": {
                             "type": "string"
                         },
@@ -786,6 +793,12 @@
                                 }
                             },
                             "type": "object"
+                        },
+                        "organizationName": {
+                            "type": "string"
+                        },
+                        "readOnlyAppDir": {
+                            "type": "boolean"
                         },
                         "tls": {
                             "properties": {
@@ -866,35 +879,6 @@
                                 }
                             },
                             "type": "object"
-                        },
-                        "initJob": {
-                            "properties": {
-                                "image": {
-                                    "properties": {
-                                        "imagePullSecrets": {
-                                            "type": "array"
-                                        },
-                                        "pullPolicy": {
-                                            "type": "string"
-                                        },
-                                        "repository": {
-                                            "type": "string"
-                                        },
-                                        "tag": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "resources": {
-                                    "properties": {},
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "override": {
-                            "type": "boolean"
                         },
                         "overrideInstallContainer": {
                             "type": "array"
@@ -1059,7 +1043,22 @@
             },
             "type": "object"
         },
-        "service": {
+        "serviceAccount": {
+            "properties": {
+                "annotations": {
+                    "properties": {},
+                    "type": "object"
+                },
+                "create": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "services": {
             "properties": {
                 "httpd": {
                     "properties": {
@@ -1108,21 +1107,6 @@
                         }
                     },
                     "type": "object"
-                }
-            },
-            "type": "object"
-        },
-        "serviceAccount": {
-            "properties": {
-                "annotations": {
-                    "properties": {},
-                    "type": "object"
-                },
-                "create": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
                 }
             },
             "type": "object"

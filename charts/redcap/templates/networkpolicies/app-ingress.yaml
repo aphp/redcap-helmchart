@@ -11,18 +11,10 @@ spec:
     - Ingress
   ingress:
     - from:
-      {{- if .Values.redcap.install.enabled }}
-      - podSelector:
-          matchLabels:
-            {{ include "redcap.initJob.networkPolicy.selectorLabels" . | nindent 12 }}
-      {{- end }}
-      - podSelector:
-          matchLabels:
-            {{ include "redcap.adminJob.networkPolicy.selectorLabels" . | nindent 12 }}
       - podSelector:
           matchLabels:
             {{ include "httpd.networkPolicy.selectorLabels" . | nindent 12 }}
       ports:
         - protocol: TCP
-          port: {{ .Values.service.redcap.targetPort }}
+          port: {{ .Values.services.redcap.targetPort }}
 {{- end }}

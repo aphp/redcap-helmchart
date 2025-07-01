@@ -69,20 +69,11 @@ redcap:
       effect: "NoSchedule"
   affinity: {}
 
-  adminJob: 
-    schedule: "0 * * * *"  
-    resources: 
-      requests:
-        memory: "512Mi"
-        cpu: "0.25"
-      limits:
-        memory: "1Gi"
-        cpu: "0.5"
 
 mysql:
   enabled: true
   primary:
-    existingConfigmap: "redcap-ext-qual-mysql-config"
+    existingConfigmap: "redcap-ext-qual-database-config"
     persistence: 
       annotations:
         helm.sh/resource-policy: keep
@@ -204,7 +195,7 @@ ingress:
           pathType: ImplementationSpecific
 
 
-service:
+services:
   httpd:
     enabled: true
     annotations: {}

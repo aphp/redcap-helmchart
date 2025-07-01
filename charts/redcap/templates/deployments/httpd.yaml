@@ -30,9 +30,11 @@ spec:
         image: "{{ .Values.httpd.image.repository }}:{{ .Values.httpd.image.tag }}"
         imagePullPolicy: {{ .Values.httpd.image.pullPolicy }}
 
+        {{- if .Values.httpd.shibboleth.enabled }}
         env:
         - name: SHIBSP_LISTENER_ADDRESS
           value: /var/run/supervisor/shibd.sock
+        {{- end }}
 
         args:
         - "-c"
@@ -47,11 +49,16 @@ spec:
           protocol: TCP
 
         volumeMounts: 
-        - name: redcap-code
+        - name: redcap-app
           mountPath: /var/www/redcap
+          readOnly: true
         - name: supervisor-conf
           mountPath: /etc/supervisor/supervisord-redcap-front.conf
           subPath: supervisord.conf
+        - name: supervisor-pid
+          mountPath: /var/run/supervisor
+        - name: supervisor-tmp
+          mountPath: /tmp
         - name: httpd-conf
           mountPath: /etc/httpd/conf/httpd.conf
           subPath: httpd.conf
@@ -84,6 +91,7 @@ spec:
         {{- end }}
 
         securityContext:
+          readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
 
         readinessProbe:
@@ -99,15 +107,21 @@ spec:
           periodSeconds: 5
 
       volumes:
-      - name: redcap-code 
+      - name: redcap-app
         persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-code-pvc
+          claimName: {{ .Release.Name }}-app-pvc
       - name: httpd-conf
         configMap:
           name: {{ .Release.Name }}-httpd
       - name: supervisor-conf
         configMap:
           name: {{ .Release.Name }}-supervisor
+      - name: supervisor-pid
+        emptyDir:
+          sizeLimit: 1Mi
+      - name: supervisor-tmp
+        emptyDir:
+          sizeLimit: 25Mi
 
 
       {{- if .Values.httpd.tls.enabled }}

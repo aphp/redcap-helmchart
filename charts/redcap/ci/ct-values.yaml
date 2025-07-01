@@ -7,15 +7,9 @@ httpd:
       memory: "1Gi"
       cpu: "0.5"
 
-redcap:
-  adminJob:
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "0.25"
-      limits:
-        memory: "1Gi"
-        cpu: "0.5"
+redcap: 
+  install:
+    enabled: false
 
 mysql:
   primary:

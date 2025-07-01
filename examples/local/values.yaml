@@ -18,29 +18,21 @@ httpd:
 redcap:
   install:
     enabled: true
+    version: "15.0.27"
+
     communityAuth:
       existingSecret: "redcap-community-credentials"
 
   config:
     logAllErrors: "TRUE"
 
-    initJob:
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "0.25"
-        limits:
-          memory: "1Gi"
-          cpu: "0.5"
-
-    adminJob:
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "0.25"
-        limits:
-          memory: "1Gi"
-          cpu: "0.5"
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "0.5"
+    limits:
+      memory: "4Gi"
+      cpu: "2"
 
 mysql:
   primary:
@@ -53,6 +45,7 @@ mysql:
         cpu: "2"
 
 backupJob:
+  enabled: false
   resources:
     requests:
       memory: "256Mi"

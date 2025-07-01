@@ -9,7 +9,7 @@ $hostname 	= '{{ .Values.redcap.config.database.auth.hostname }}';
 $db 		= '{{ .Values.redcap.config.database.auth.databaseName }}';
 $username 	= '{{ .Values.redcap.config.database.auth.username }}';
 
-$password 	= {{ ternary (printf "%s" .Values.redcap.config.database.auth.password.value | quote) (printf "%s" "file_get_contents(\"/var/run/secrets/DB_PASSWD\")") (not .Values.redcap.config.database.auth.password.secretKeyRef.name) }};
+$password 	= {{ printf "%s" "getenv(\"DB_PASSWD\")" }}; // Mounted as k8s secret
 
 // You may optionally utilize a database connection over SSL/TLS for improved security. To do so, at minimum
 // you must provide the path of the key file, the certificate file, and certificate authority file.
