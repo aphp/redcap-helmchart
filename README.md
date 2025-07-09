@@ -16,7 +16,7 @@ This Chart aims to provide with an easy way to retrieve the REDcap application f
 
 The architecture of the REDCap stack deployed by this Chart is as follows :
 
-![REDCap Architecture](./resources/redcap_arch-global.drawio.png)
+![REDCap Architecture](./resources/redcap_arch-global.drawio.svg)
 
 A minimal setup of this stack includes : 
 - The HTTPd component
