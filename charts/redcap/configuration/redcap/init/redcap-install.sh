@@ -5,10 +5,6 @@
 # Author: APHP
 # Description : Retrieves and unpack REDCap and a translation package 
 
-
-#####################
-### GLOBAL CONFIG ###
-#####################
 set -e
 REDCAP_INSTALL=1
 
@@ -19,7 +15,6 @@ REDCAP_INSTALL=1
 
 # Installs the REDCap Application package by retrieving it directly from the Community Site API, using the user's credentials.
 install_redcap () {
-
     if [ "$REDCAP_INSTALL" = 1 ]; then
         echo "[INFO] Installing REDCap version $REDCAP_VERSION from scratch"
         echo "[INFO] Cleaning destination dir"
