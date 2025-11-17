@@ -37,6 +37,40 @@ entries:
     version: 1.4.5
   - apiVersion: v2
     appVersion: 14.5.25
+    created: "2025-11-17T12:55:25.681006388Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.bitnami.com/bitnami
+      version: 13.0.2
+    - alias: audit
+      condition: audit.enabled
+      name: logstash
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.0.4
+    description: A Helm chart to deploy REDCap on a Kubernetes cluster.
+    digest: a0784afc4806704e464a88e4bbddca1bee3ee6aecdcc81f12e7f5af904998e2c
+    home: https://www.project-redcap.org/
+    icon: https://www.lib.washington.edu/dataservices/images/REDCaplogo.jpg
+    keywords:
+    - redcap
+    - eCRF
+    - research
+    - clinical
+    kubeVersion: '>= 1.24.0-0'
+    maintainers:
+    - email: kevin.zgrzendek@gmail.com
+      name: kzgrzendek
+      url: https://github.com/kzgrzendek
+    name: redcap
+    sources:
+    - https://github.com/aphp/redcap-helmchart
+    type: application
+    urls:
+    - https://github.com/aphp/redcap-helmchart/releases/download/redcap-1.4.5-dev/redcap-1.4.5-dev.tgz
+    version: 1.4.5-dev
+  - apiVersion: v2
+    appVersion: 14.5.25
     created: "2025-11-17T09:41:22.832211233Z"
     dependencies:
     - condition: mysql.enabled
@@ -139,7 +173,7 @@ entries:
     version: 1.4.4
   - apiVersion: v2
     appVersion: 14.5.25
-    created: "2025-05-22T08:53:05.19835647Z"
+    created: "2025-05-22T09:52:28.913702966Z"
     dependencies:
     - condition: mysql.enabled
       name: mysql
@@ -151,7 +185,7 @@ entries:
       repository: https://charts.bitnami.com/bitnami
       version: 6.3.9
     description: A Helm chart to deploy REDCap on a Kubernetes cluster.
-    digest: f97b353a1c518f74c2036e04e08fa5a2d49030f74d5c3137986ae08341b714b8
+    digest: c3d02b8bb8bb30424ab66c4b08d27665adede035f3427fd115d09fa7b478d821
     home: https://www.project-redcap.org/
     icon: https://www.lib.washington.edu/dataservices/images/REDCaplogo.jpg
     keywords:
@@ -207,7 +241,7 @@ entries:
     version: 1.4.4-dev
   - apiVersion: v2
     appVersion: 14.5.25
-    created: "2025-05-22T09:52:28.913702966Z"
+    created: "2025-05-22T08:53:05.19835647Z"
     dependencies:
     - condition: mysql.enabled
       name: mysql
@@ -219,7 +253,7 @@ entries:
       repository: https://charts.bitnami.com/bitnami
       version: 6.3.9
     description: A Helm chart to deploy REDCap on a Kubernetes cluster.
-    digest: c3d02b8bb8bb30424ab66c4b08d27665adede035f3427fd115d09fa7b478d821
+    digest: f97b353a1c518f74c2036e04e08fa5a2d49030f74d5c3137986ae08341b714b8
     home: https://www.project-redcap.org/
     icon: https://www.lib.washington.edu/dataservices/images/REDCaplogo.jpg
     keywords:
@@ -443,40 +477,6 @@ entries:
     urls:
     - https://github.com/aphp/redcap-helmchart/releases/download/redcap-1.4.1/redcap-1.4.1.tgz
     version: 1.4.1
-  - apiVersion: v2
-    appVersion: 14.5.25
-    created: "2024-12-03T12:24:53.537315633Z"
-    dependencies:
-    - condition: mysql.enabled
-      name: mysql
-      repository: https://charts.bitnami.com/bitnami
-      version: 12.0.1
-    - alias: audit
-      condition: audit.enabled
-      name: logstash
-      repository: https://charts.bitnami.com/bitnami
-      version: 6.3.9
-    description: A Helm chart to deploy REDCap on a Kubernetes cluster.
-    digest: c961cfa8460d902a7bd54b35a5dc4285af38864e61f5ba1e9ae35009122627a8
-    home: https://www.project-redcap.org/
-    icon: https://www.lib.washington.edu/dataservices/images/REDCaplogo.jpg
-    keywords:
-    - redcap
-    - eCRF
-    - research
-    - clinical
-    kubeVersion: '>= 1.24.0-0'
-    maintainers:
-    - email: kevin.zgrzendek@gmail.com
-      name: kzgrzendek
-      url: https://github.com/kzgrzendek
-    name: redcap
-    sources:
-    - https://github.com/aphp/redcap-helmchart
-    type: application
-    urls:
-    - https://github.com/aphp/redcap-helmchart/releases/download/redcap-1.4.1-dev/redcap-1.4.1-dev.tgz
-    version: 1.4.1-dev
   - apiVersion: v2
     appVersion: 14.5.25
     created: "2024-12-03T12:16:39.627658191Z"
@@ -717,6 +717,40 @@ entries:
     version: 1.4.1-dev
   - apiVersion: v2
     appVersion: 14.5.25
+    created: "2024-12-03T12:24:53.537315633Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.0.1
+    - alias: audit
+      condition: audit.enabled
+      name: logstash
+      repository: https://charts.bitnami.com/bitnami
+      version: 6.3.9
+    description: A Helm chart to deploy REDCap on a Kubernetes cluster.
+    digest: c961cfa8460d902a7bd54b35a5dc4285af38864e61f5ba1e9ae35009122627a8
+    home: https://www.project-redcap.org/
+    icon: https://www.lib.washington.edu/dataservices/images/REDCaplogo.jpg
+    keywords:
+    - redcap
+    - eCRF
+    - research
+    - clinical
+    kubeVersion: '>= 1.24.0-0'
+    maintainers:
+    - email: kevin.zgrzendek@gmail.com
+      name: kzgrzendek
+      url: https://github.com/kzgrzendek
+    name: redcap
+    sources:
+    - https://github.com/aphp/redcap-helmchart
+    type: application
+    urls:
+    - https://github.com/aphp/redcap-helmchart/releases/download/redcap-1.4.1-dev/redcap-1.4.1-dev.tgz
+    version: 1.4.1-dev
+  - apiVersion: v2
+    appVersion: 14.5.25
     created: "2024-12-02T17:06:41.442831735Z"
     dependencies:
     - condition: mysql.enabled
@@ -783,4 +817,4 @@ entries:
     urls:
     - https://github.com/aphp/redcap-helmchart/releases/download/redcap-1.4.0-dev/redcap-1.4.0-dev.tgz
     version: 1.4.0-dev
-generated: "2025-11-17T09:41:22.832423159Z"
+generated: "2025-11-17T12:55:25.681287693Z"
