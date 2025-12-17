@@ -411,6 +411,40 @@ entries:
     version: 1.4.6-dev.56414e5
   - apiVersion: v2
     appVersion: 14.5.25
+    created: "2025-12-17T15:27:52.571708889Z"
+    dependencies:
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.8.0
+    - alias: audit
+      condition: audit.enabled
+      name: logstash
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.0.4
+    description: A Helm chart to deploy REDCap on a Kubernetes cluster.
+    digest: b9e32e0236005868fa13ac6cf7b17e8f4ea6fa596b43058ddcba764b0db2a767
+    home: https://www.project-redcap.org/
+    icon: https://www.lib.washington.edu/dataservices/images/REDCaplogo.jpg
+    keywords:
+    - redcap
+    - eCRF
+    - research
+    - clinical
+    kubeVersion: '>= 1.24.0-0'
+    maintainers:
+    - email: kevin.zgrzendek@gmail.com
+      name: kzgrzendek
+      url: https://github.com/kzgrzendek
+    name: redcap
+    sources:
+    - https://github.com/aphp/redcap-helmchart
+    type: application
+    urls:
+    - https://github.com/aphp/redcap-helmchart/releases/download/redcap-1.4.6-dev.53a42c0/redcap-1.4.6-dev.53a42c0.tgz
+    version: 1.4.6-dev.53a42c0
+  - apiVersion: v2
+    appVersion: 14.5.25
     created: "2025-12-11T13:19:46.327121703Z"
     dependencies:
     - condition: mariadb.enabled
@@ -1803,4 +1837,4 @@ entries:
     urls:
     - https://github.com/aphp/redcap-helmchart/releases/download/redcap-1.4.0-dev/redcap-1.4.0-dev.tgz
     version: 1.4.0-dev
-generated: "2025-12-15T14:31:18.707155882Z"
+generated: "2025-12-17T15:27:52.572068137Z"
