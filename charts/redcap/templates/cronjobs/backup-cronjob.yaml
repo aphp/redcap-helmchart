@@ -86,7 +86,6 @@ spec:
                   --password=${DB_PASSWD} \  
                   --databases {{ .Values.redcap.config.database.auth.databaseName }} \
                   --add-drop-database \
-                  --column-statistics \
                   -y \
                   -v \
                 > /backup-data/redcap-db/redcap-db-backup.sql"
