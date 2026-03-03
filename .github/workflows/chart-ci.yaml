@@ -18,3 +18,4 @@ jobs:
       kubernetes-version: "1.24.2"
       chart-dir: "charts/redcap"
       chart-values: "./charts/redcap/ci/ct-values.yaml"
+      
