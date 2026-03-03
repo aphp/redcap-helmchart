@@ -97,7 +97,6 @@ spec:
               runAsGroup: 999
               runAsNonRoot: true   
 
-
             volumeMounts:
             - name: backup-data
               mountPath: /backup-data
