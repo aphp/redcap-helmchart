@@ -182,6 +182,9 @@ spec:
             - name: redcap-install-script
               mountPath: /tmp/scripts/redcap-install.sh
               subPath: redcap-install.sh
+            - name: rclone-conf
+              mountPath: /config/rclone/rclone.conf
+              subPath: rclone.conf
             # - name: redcap-setup-script
             #   mountPath: /tmp/scripts/redcap-setup.sh
             #   subPath: redcap-setup.sh
