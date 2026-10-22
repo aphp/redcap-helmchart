@@ -122,7 +122,7 @@ redcap:
     pullPolicy: "Always"
     # -- Tag for REDCap PHP-FPM Image.
     # @section -- REDCap settings
-    tag: "1.2.1"
+    tag: "1.2.2-dev"
 
   # -- Add additional init containers to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
