@@ -96,7 +96,7 @@ redcap:
 
     # -- Version of the REDCap package to install
     # @section -- REDCap settings
-    version: "15.0.27"
+    version: "16.0.49"
 
     communityAuth:
       # -- Username of the REDCap Community user with whom the installation package is downloaded. Ignored if `existingSecret` is used.
@@ -122,7 +122,7 @@ redcap:
     pullPolicy: "Always"
     # -- Tag for REDCap PHP-FPM Image.
     # @section -- REDCap settings
-    tag: "1.2.2"
+    tag: "1.2.3"
 
   # -- Add additional init containers to the PHP-FPM container hosting the REDCap application.
   # @section -- REDCap settings
