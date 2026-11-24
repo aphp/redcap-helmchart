@@ -271,7 +271,7 @@ spec:
         {{- end }}
 
       {{- with .Values.redcap.extraVolumeMounts }}
-        {{- . | toYaml | nindent 12 }}
+        {{- . | toYaml | nindent 8 }}
       {{- end }}
 
       {{- with .Values.redcap.extraContainers }}
