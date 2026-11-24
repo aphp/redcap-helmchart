@@ -136,6 +136,10 @@ redcap:
   # @section -- REDCap settings
   extraVolumes: []
 
+ # -- Add additional volume mounts to the PHP-FPM container hosting the REDCap application.
+ # @section -- REDCap settings
+ extraVolumeMounts: []
+
   config:
     # -- If set to `true`, will log all the errors on the stdout (NOT RECOMMENDED IN PRODUCTION).
     # @section -- REDCap settings

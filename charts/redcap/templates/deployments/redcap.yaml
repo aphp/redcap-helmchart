@@ -270,6 +270,10 @@ spec:
           subPath: MAIL_PASSWORD
         {{- end }}
 
+      {{- with .Values.redcap.extraVolumeMounts }}
+        {{- . | toYaml | nindent 12 }}
+      {{- end }}
+
       {{- with .Values.redcap.extraContainers }}
         {{- . | toYaml | nindent 6 }}
       {{- end }}
